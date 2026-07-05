@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Java DSA Textbook</title>
+    <meta name="description" content="A Java-first data structures and algorithms textbook for tutoring." />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links" aria-label="Top navigation">
+        <a href="lessons/lesson-01.html">Start</a>
+        <a href="#chapters">Chapters</a>
+        <a href="#schedule">Schedule</a>
+        <a href="assignments.html">Assignments</a>
+      </nav>
+    </header>
+
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lessons/lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lessons/lesson-02.html">Time Complexity</a></li>
+          <li><a href="lessons/lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lessons/lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lessons/lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lessons/lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lessons/lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lessons/lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lessons/lesson-09.html">Hashing</a></li>
+          <li><a href="lessons/lesson-10.html">Sorting</a></li>
+          <li><a href="lessons/lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lessons/lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lessons/lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lessons/lesson-14.html">Integration Project</a></li>
+          <li><a href="assignments.html">Assignment Spec</a></li>
+        </ol>
+      </aside>
+
+      <main class="content wide">
+        <p class="lesson-kicker">Java-first DSA curriculum</p>
+        <h1>Data Structures and Algorithms in Java</h1>
+
+        <h2>Course philosophy</h2>
+        <p>
+          Most beginners learn data structures as a list of names: array, list, tree, heap, graph. That is not enough.
+          In this course, every topic is tied to one question: <strong>what operation are we trying to make cheap?</strong>
+          Once the student can answer that, the implementation details become much easier to remember.
+        </p>
+        <p>
+          The order is intentionally different from many textbooks. We build time complexity early, before spending
+          too much time on Java collections. This makes later chapters less mysterious: a stack is not just an API,
+          a heap is not just a class, and a graph algorithm is not just a template.
+        </p>
+        <p>
+          Each week is planned for a two-hour tutoring session. The target is not to "cover slides." The target is for
+          the student to leave with a working mental model, runnable Java code, and written complexity analysis.
+        </p>
+
+        <h2 id="chapters">Chapters</h2>
+        <div class="toc-grid">
+          <a class="chapter-card" href="lessons/lesson-01.html"><span>Lesson 1</span><strong>Java Warm-up</strong>From an array example to Java syntax, references, and testing habits.</a>
+          <a class="chapter-card" href="lessons/lesson-02.html"><span>Lesson 2</span><strong>Time Complexity</strong>How to count work, compare growth rates, and explain Big-O clearly.</a>
+          <a class="chapter-card" href="lessons/lesson-03.html"><span>Lesson 3</span><strong>Space and Amortization</strong>Java memory, auxiliary space, recursion stack, dynamic arrays, and amortized proofs.</a>
+          <a class="chapter-card" href="lessons/lesson-04.html"><span>Lesson 4</span><strong>Arrays and Patterns</strong>ArrayList, binary search, two pointers, sliding windows, prefix sums, and difference arrays.</a>
+          <a class="chapter-card" href="lessons/lesson-05.html"><span>Lesson 5</span><strong>Linked Lists, Stacks, Queues</strong>References, singly/doubly lists, sentinels, stacks, queues, deques, and ArrayDeque.</a>
+          <a class="chapter-card" href="lessons/lesson-06.html"><span>Lesson 6</span><strong>Recursion and Backtracking</strong>Call stack, recursive contracts, subsets, permutations, pruning, and divide and conquer.</a>
+          <a class="chapter-card" href="lessons/lesson-07.html"><span>Lesson 7</span><strong>Trees and BSTs</strong>Tree recursion, DFS/BFS traversal, BST invariants, insert/delete, LCA, and balance.</a>
+          <a class="chapter-card" href="lessons/lesson-08.html"><span>Lesson 8</span><strong>Heaps and Priority Queues</strong>Priority queue ADT, heap invariant, swim/sink, Top-K, median stream, and Java PriorityQueue.</a>
+          <a class="chapter-card" href="lessons/lesson-09.html"><span>Lesson 9</span><strong>Hashing</strong>HashMap, HashSet, buckets, collisions, load factor, equals/hashCode, and map patterns.</a>
+          <a class="chapter-card" href="lessons/lesson-10.html"><span>Lesson 10</span><strong>Sorting</strong>Bubble, selection, insertion, merge, quick, heap, counting, radix, stability, and lower bounds.</a>
+          <a class="chapter-card" href="lessons/lesson-11.html"><span>Lesson 11</span><strong>Union-Find and Graphs</strong>DSU, path compression, graph modeling, adjacency lists/matrices, and weighted edges.</a>
+          <a class="chapter-card" href="lessons/lesson-12.html"><span>Lesson 12</span><strong>Graph Algorithms</strong>BFS, DFS, grid graphs, topological sort, Dijkstra, Kruskal, Prim, and MST.</a>
+          <a class="chapter-card" href="lessons/lesson-13.html"><span>Lesson 13</span><strong>Dynamic Programming</strong>States, transitions, memoization, tabulation, 1D DP, grid DP, LCS, and knapsack.</a>
+          <a class="chapter-card" href="lessons/lesson-14.html"><span>Lesson 14</span><strong>Integration Project</strong>Build an autocomplete engine with tries, maps, DFS, ranking, heaps, tests, and analysis.</a>
+          <a class="chapter-card" href="assignments.html"><span>Spec</span><strong>GitHub Assignment Submission</strong>Repository structure, README, tests, commits, and complexity writeups.</a>
+        </div>
+
+        <h2 id="schedule">Suggested 12-week schedule</h2>
+        <table>
+          <thead>
+            <tr><th>Week</th><th>Focus</th><th>Homework</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Lessons 1-2</td><td>Complexity drills and Java array methods.</td></tr>
+            <tr><td>2</td><td>Lessons 3-4</td><td>Two pointers, sliding window, prefix sums.</td></tr>
+            <tr><td>3</td><td>Lesson 5</td><td>Implement linked list operations and stack/queue problems.</td></tr>
+            <tr><td>4</td><td>Lesson 6</td><td>Recursion tracing and backtracking problems.</td></tr>
+            <tr><td>5</td><td>Lesson 7</td><td>Tree traversal and BST validation.</td></tr>
+            <tr><td>6</td><td>Lessons 8-9</td><td>Top-K and HashMap frequency problems.</td></tr>
+            <tr><td>7</td><td>Lesson 10</td><td>Implement merge sort and analyze sorting tradeoffs.</td></tr>
+            <tr><td>8</td><td>Lesson 11</td><td>Union-Find and graph modeling exercises.</td></tr>
+            <tr><td>9</td><td>Lesson 12</td><td>BFS/DFS, shortest path, topological ordering.</td></tr>
+            <tr><td>10</td><td>Lesson 13</td><td>DP state-transition practice.</td></tr>
+            <tr><td>11</td><td>Lesson 14</td><td>Project implementation.</td></tr>
+            <tr><td>12</td><td>Review</td><td>Mock interview and project cleanup.</td></tr>
+          </tbody>
+        </table>
+        <p class="footer">Course note: every lesson should end with time complexity, space complexity, and a short explanation of why.</p>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 12 - Graph Algorithms</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-11.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-13.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a aria-current="page" href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 12</p>
+        <h1>Graph Algorithms: BFS, DFS, Shortest Paths, and MST</h1>
+        <p class="summary">
+          Once a problem is modeled as vertices and edges, graph algorithms answer questions about reachability,
+          distance, dependency order, and minimum-cost connection.
+        </p>
+
+        <h2>Example first: shortest path in an unweighted maze</h2>
+        <p>
+          A grid can be modeled as a graph: each open cell is a vertex, and adjacent open cells have edges between them.
+          If every move has the same cost, BFS finds the shortest number of moves.
+        </p>
+        <pre><code>static int shortestPath(int[][] grid) {
+    int rows = grid.length;
+    int cols = grid[0].length;
+    int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+    boolean[][] seen = new boolean[rows][cols];
+    Deque&lt;int[]&gt; queue = new ArrayDeque&lt;&gt;();
+    queue.addLast(new int[] {0, 0, 0}); // row, col, distance
+    seen[0][0] = true;
+
+    while (!queue.isEmpty()) {
+        int[] cur = queue.removeFirst();
+        int r = cur[0];
+        int c = cur[1];
+        int d = cur[2];
+        if (r == rows - 1 &amp;&amp; c == cols - 1) return d;
+
+        for (int[] dir : dirs) {
+            int nr = r + dir[0];
+            int nc = c + dir[1];
+            if (nr &lt; 0 || nr &gt;= rows || nc &lt; 0 || nc &gt;= cols) continue;
+            if (grid[nr][nc] == 1 || seen[nr][nc]) continue;
+            seen[nr][nc] = true;
+            queue.addLast(new int[] {nr, nc, d + 1});
+        }
+    }
+    return -1;
+}</code></pre>
+        <p>
+          BFS explores distance 0, then distance 1, then distance 2. That layer-by-layer order is why it gives shortest
+          paths in unweighted graphs.
+        </p>
+
+        <h2>Graph algorithm decision table</h2>
+        <table>
+          <thead><tr><th>Question</th><th>Use</th><th>Condition</th></tr></thead>
+          <tbody>
+            <tr><td>Can I reach every node in a component?</td><td>DFS or BFS</td><td>Unweighted reachability</td></tr>
+            <tr><td>Shortest number of edges?</td><td>BFS</td><td>All edges have equal cost</td></tr>
+            <tr><td>Shortest weighted path?</td><td>Dijkstra</td><td>Nonnegative edge weights</td></tr>
+            <tr><td>Task ordering with prerequisites?</td><td>Topological sort</td><td>Directed acyclic graph</td></tr>
+            <tr><td>Cheapest way to connect all nodes?</td><td>MST</td><td>Connected undirected weighted graph</td></tr>
+          </tbody>
+        </table>
+
+        <h2>BFS template</h2>
+        <pre><code>BFS(start):
+    create queue
+    mark start as seen
+    add start to queue
+    while queue is not empty:
+        node = remove first
+        for next in neighbors(node):
+            if next is not seen:
+                mark next as seen
+                record distance or parent if needed
+                add next to queue</code></pre>
+        <p>
+          Use a queue because nodes discovered earlier should be processed earlier. Time is <code>O(V + E)</code> with
+          an adjacency list.
+        </p>
+
+        <h2>DFS template</h2>
+        <pre><code>DFS(node):
+    mark node as seen
+    for next in neighbors(node):
+        if next is not seen:
+            DFS(next)</code></pre>
+        <p>
+          DFS is useful for connected components, cycle detection, topological sort, and exploring all structure in a
+          component. Recursive DFS uses <code>O(V)</code> stack space in the worst case.
+        </p>
+
+        <h2>Connected components with DFS</h2>
+        <pre><code>static int countComponents(List&lt;List&lt;Integer&gt;&gt; graph) {
+    boolean[] seen = new boolean[graph.size()];
+    int count = 0;
+
+    for (int v = 0; v &lt; graph.size(); v++) {
+        if (!seen[v]) {
+            dfs(graph, v, seen);
+            count++;
+        }
+    }
+    return count;
+}
+
+static void dfs(List&lt;List&lt;Integer&gt;&gt; graph, int node, boolean[] seen) {
+    seen[node] = true;
+    for (int next : graph.get(node)) {
+        if (!seen[next]) dfs(graph, next, seen);
+    }
+}</code></pre>
+
+        <h2>Grid graph pattern: number of islands</h2>
+        <p>
+          A grid of land and water is a graph without explicitly building an adjacency list. Neighbors are computed from
+          coordinates.
+        </p>
+        <pre><code>static int numIslands(char[][] grid) {
+    int count = 0;
+    for (int r = 0; r &lt; grid.length; r++) {
+        for (int c = 0; c &lt; grid[0].length; c++) {
+            if (grid[r][c] == '1') {
+                floodFill(grid, r, c);
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+static void floodFill(char[][] grid, int r, int c) {
+    if (r &lt; 0 || r &gt;= grid.length || c &lt; 0 || c &gt;= grid[0].length) return;
+    if (grid[r][c] != '1') return;
+    grid[r][c] = '0';
+    floodFill(grid, r + 1, c);
+    floodFill(grid, r - 1, c);
+    floodFill(grid, r, c + 1);
+    floodFill(grid, r, c - 1);
+}</code></pre>
+        <p>
+          This modifies the input grid. If modification is not allowed, use a separate <code>boolean[][] seen</code>.
+        </p>
+
+        <h2>Cycle detection in directed graphs</h2>
+        <p>
+          Directed cycle detection needs more than a simple seen set. We track nodes currently on the recursion stack.
+        </p>
+        <pre><code>static boolean hasDirectedCycle(List&lt;List&lt;Integer&gt;&gt; graph) {
+    int[] state = new int[graph.size()]; // 0 unvisited, 1 visiting, 2 done
+    for (int v = 0; v &lt; graph.size(); v++) {
+        if (state[v] == 0 &amp;&amp; dfsCycle(graph, v, state)) return true;
+    }
+    return false;
+}
+
+static boolean dfsCycle(List&lt;List&lt;Integer&gt;&gt; graph, int node, int[] state) {
+    state[node] = 1;
+    for (int next : graph.get(node)) {
+        if (state[next] == 1) return true;
+        if (state[next] == 0 &amp;&amp; dfsCycle(graph, next, state)) return true;
+    }
+    state[node] = 2;
+    return false;
+}</code></pre>
+
+        <h2>Topological sort</h2>
+        <p>
+          A topological order lists vertices so every directed edge goes from earlier to later. It exists only for a
+          directed acyclic graph, or DAG.
+        </p>
+        <pre><code>static List&lt;Integer&gt; topologicalSort(List&lt;List&lt;Integer&gt;&gt; graph) {
+    int n = graph.size();
+    int[] indegree = new int[n];
+    for (int u = 0; u &lt; n; u++) {
+        for (int v : graph.get(u)) indegree[v]++;
+    }
+
+    Deque&lt;Integer&gt; queue = new ArrayDeque&lt;&gt;();
+    for (int i = 0; i &lt; n; i++) {
+        if (indegree[i] == 0) queue.addLast(i);
+    }
+
+    List&lt;Integer&gt; order = new ArrayList&lt;&gt;();
+    while (!queue.isEmpty()) {
+        int u = queue.removeFirst();
+        order.add(u);
+        for (int v : graph.get(u)) {
+            indegree[v]--;
+            if (indegree[v] == 0) queue.addLast(v);
+        }
+    }
+    return order.size() == n ? order : List.of();
+}</code></pre>
+        <p>
+          This is Kahn's algorithm. If not all nodes are output, the graph has a cycle.
+        </p>
+
+        <h2>Dijkstra's algorithm</h2>
+        <p>
+          Dijkstra finds shortest paths from a source in a graph with nonnegative edge weights. It is BFS with a priority
+          queue ordered by current best distance.
+        </p>
+        <pre><code>record Edge(int to, int weight) { }
+record State(int node, int dist) { }
+
+static int[] dijkstra(List&lt;List&lt;Edge&gt;&gt; graph, int source) {
+    int n = graph.size();
+    int[] dist = new int[n];
+    Arrays.fill(dist, Integer.MAX_VALUE);
+    dist[source] = 0;
+
+    PriorityQueue&lt;State&gt; pq = new PriorityQueue&lt;&gt;(
+        Comparator.comparingInt(State::dist)
+    );
+    pq.add(new State(source, 0));
+
+    while (!pq.isEmpty()) {
+        State cur = pq.remove();
+        if (cur.dist() != dist[cur.node()]) continue;
+
+        for (Edge edge : graph.get(cur.node())) {
+            int nextDist = cur.dist() + edge.weight();
+            if (nextDist &lt; dist[edge.to()]) {
+                dist[edge.to()] = nextDist;
+                pq.add(new State(edge.to(), nextDist));
+            }
+        }
+    }
+    return dist;
+}</code></pre>
+        <p>
+          With an adjacency list and priority queue, runtime is typically <code>O((V + E) log V)</code>. Dijkstra does
+          not work correctly with negative edge weights.
+        </p>
+
+        <h2>Minimum spanning tree</h2>
+        <p>
+          A spanning tree connects all vertices with no cycles. A minimum spanning tree, or MST, has the smallest total
+          edge weight among all spanning trees. MSTs apply to undirected weighted graphs.
+        </p>
+        <h3>Kruskal's algorithm</h3>
+        <p>
+          Sort edges by weight, then add an edge if it connects two different components. Union-Find detects whether the
+          edge would create a cycle.
+        </p>
+        <pre><code>record WeightedEdge(int u, int v, int weight) { }
+
+static int kruskal(int n, List&lt;WeightedEdge&gt; edges) {
+    edges.sort(Comparator.comparingInt(WeightedEdge::weight));
+    DSU dsu = new DSU(n);
+    int total = 0;
+    int used = 0;
+
+    for (WeightedEdge edge : edges) {
+        if (dsu.union(edge.u(), edge.v())) {
+            total += edge.weight();
+            used++;
+            if (used == n - 1) break;
+        }
+    }
+    return used == n - 1 ? total : -1;
+}</code></pre>
+        <p>
+          Sorting dominates: <code>O(E log E)</code>. Union-Find operations are almost constant amortized time.
+        </p>
+
+        <h2>Prim's algorithm idea</h2>
+        <p>
+          Prim's algorithm grows one connected tree. It repeatedly chooses the cheapest edge from the current tree to an
+          outside vertex. This uses a priority queue.
+        </p>
+        <pre><code>PRIM(start):
+    add start to priority queue with cost 0
+    while queue is not empty:
+        remove cheapest candidate
+        if vertex is already in tree, skip it
+        add vertex to tree
+        add outgoing edges to priority queue</code></pre>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Using DFS when the problem asks for shortest path in an unweighted graph.</li>
+          <li>Using Dijkstra with negative edge weights.</li>
+          <li>Forgetting a seen set and looping forever on a cyclic graph.</li>
+          <li>Using Union-Find when the actual path is required.</li>
+          <li>Forgetting to add both directions in an undirected graph.</li>
+          <li>Returning a topological order without checking for cycles.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-GRAPH-ALGORITHM(problem):
+    1. Define V and E.
+    2. Identify graph type: directed, undirected, weighted, unweighted.
+    3. Identify the question: reachability, shortest path, ordering, MST.
+    4. Choose BFS, DFS, Dijkstra, topological sort, Kruskal, or Prim.
+    5. State data structures: queue, stack, priority queue, DSU, seen set.
+    6. State time and auxiliary space.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Use BFS to find shortest path length in an unweighted graph.</li>
+          <li>Use DFS to count connected components.</li>
+          <li>Count islands in a grid.</li>
+          <li>Detect a directed cycle with three-color DFS.</li>
+          <li>Produce a topological order using indegrees.</li>
+          <li>Run Dijkstra on a small weighted graph by hand.</li>
+          <li>Run Kruskal's algorithm and show each union step.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-12-graph-algorithms</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-12-graph-algorithms/
+  README.md
+  src/
+    GraphAlgorithms.java
+    WeightedGraphAlgorithms.java
+    GridProblems.java
+    Main.java
+  analysis/
+    graph-algorithms-analysis.md</code></pre>
+        <h3>Required implementation</h3>
+        <ul>
+          <li>BFS shortest path length in an unweighted graph.</li>
+          <li>DFS connected components.</li>
+          <li>Number of islands in a grid.</li>
+          <li>Directed cycle detection.</li>
+          <li>Topological sort.</li>
+          <li>Dijkstra's algorithm.</li>
+          <li>Kruskal's MST using DSU from Lesson 11.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>For each method, state what graph type it expects.</li>
+          <li>State time and auxiliary space using V and E.</li>
+          <li>Explain why BFS gives shortest paths only when edge costs are equal.</li>
+          <li>Explain why Dijkstra requires nonnegative weights.</li>
+          <li>Include at least two tests for every required method.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Implement path reconstruction for BFS or Dijkstra by storing a <code>parent</code> array.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to choose the correct graph algorithm from the question being asked,
+          not just from the fact that the input is a graph.
+        </div>
+        <nav class="pager"><a href="lesson-11.html">← Previous</a><a href="lesson-13.html">Next: Dynamic Programming →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

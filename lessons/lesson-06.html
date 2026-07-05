@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 6 - Recursion, Backtracking, and Divide and Conquer</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-05.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-07.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a aria-current="page" href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 6</p>
+        <h1>Recursion, Backtracking, and Divide and Conquer</h1>
+        <p class="summary">
+          Recursion solves a problem by reducing it to smaller versions of the same problem. Backtracking uses recursion
+          to explore choices. Divide and conquer uses recursion to split a problem, solve independent pieces, and
+          combine the results.
+        </p>
+
+        <h2>Example first: factorial</h2>
+        <p>
+          Factorial is not the most exciting algorithm, but it is a clean first example because the mathematical
+          definition is recursive:
+        </p>
+        <pre><code>0! = 1
+n! = n * (n - 1)! for n > 0</code></pre>
+        <p>
+          The Java code follows the definition.
+        </p>
+        <pre><code>static int factorial(int n) {
+    if (n == 0) return 1;
+    return n * factorial(n - 1);
+}</code></pre>
+        <p>
+          This method has two parts: a base case and a recursive case. Without a base case, recursion does not stop.
+          Without progress toward the base case, recursion still does not stop.
+        </p>
+
+        <h2>The call stack</h2>
+        <p>
+          Every method call gets a stack frame. A recursive method creates many stack frames, one for each active call.
+        </p>
+        <pre><code>factorial(4)
+  returns 4 * factorial(3)
+    returns 3 * factorial(2)
+      returns 2 * factorial(1)
+        returns 1 * factorial(0)
+          returns 1</code></pre>
+        <p>
+          After the base case returns, the calls finish in reverse order. This is why recursion often feels like
+          "going down" and then "coming back up."
+        </p>
+        <table>
+          <thead><tr><th>Method</th><th>Time</th><th>Auxiliary space</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>Recursive factorial</td><td>O(n)</td><td>O(n)</td><td>n calls on stack</td></tr>
+            <tr><td>Iterative factorial</td><td>O(n)</td><td>O(1)</td><td>constant local variables</td></tr>
+          </tbody>
+        </table>
+
+        <h2>The recursive contract</h2>
+        <p>
+          A recursive method should have a contract: a sentence describing what the method returns or accomplishes.
+          Trust the contract for smaller inputs, then use it to solve the current input.
+        </p>
+        <pre><code>static int sum(int[] a, int index) {
+    if (index == a.length) return 0;
+    return a[index] + sum(a, index + 1);
+}</code></pre>
+        <p>
+          Contract: <code>sum(a, index)</code> returns the sum of elements from <code>index</code> to the end. If we
+          trust that <code>sum(a, index + 1)</code> gives the rest, then the current answer is
+          <code>a[index] + rest</code>.
+        </p>
+        <div class="concept-grid">
+          <section class="concept-card">
+            <span class="mini-label">Base case</span>
+            <p>What is the smallest input we can answer directly?</p>
+          </section>
+          <section class="concept-card">
+            <span class="mini-label">Progress</span>
+            <p>How does each recursive call move closer to the base case?</p>
+          </section>
+        </div>
+
+        <h2>Recursion on linked lists</h2>
+        <p>
+          Linked lists are naturally recursive: a list is either empty, or it is one node followed by another list.
+        </p>
+        <pre><code>static int length(Node head) {
+    if (head == null) return 0;
+    return 1 + length(head.next);
+}</code></pre>
+        <p>
+          Contract: <code>length(head)</code> returns the number of nodes starting at <code>head</code>. This is elegant,
+          but remember the stack space is O(n).
+        </p>
+
+        <h2>Recursion tree for Fibonacci</h2>
+        <p>
+          Some recursive methods branch into multiple calls. Fibonacci is the warning example.
+        </p>
+        <pre><code>static int fibSlow(int n) {
+    if (n &lt;= 1) return n;
+    return fibSlow(n - 1) + fibSlow(n - 2);
+}</code></pre>
+        <p>
+          This recomputes the same subproblems many times.
+        </p>
+        <pre><code>fib(5)
+  fib(4)
+    fib(3)
+      fib(2)
+      fib(1)
+    fib(2)
+  fib(3)
+    fib(2)
+    fib(1)</code></pre>
+        <p>
+          The time is exponential, roughly <code>O(2^n)</code>. Later, dynamic programming will fix this by remembering
+          answers to repeated subproblems.
+        </p>
+
+        <h2>Backtracking: recursion over choices</h2>
+        <p>
+          Backtracking is used when the solution is built through a sequence of choices. At each step, choose one option,
+          recurse, then undo the choice so another option can be tried.
+        </p>
+        <pre><code>BACKTRACK(state):
+    if state is complete:
+        record answer
+        return
+
+    for choice in choices(state):
+        if choice is invalid:
+            continue
+        make choice
+        BACKTRACK(next state)
+        undo choice</code></pre>
+        <p>
+          The undo step is essential. In Java, it often means <code>path.remove(path.size() - 1)</code> or setting a
+          <code>used[i]</code> flag back to <code>false</code>.
+        </p>
+
+        <h2>Example: subsets</h2>
+        <p>
+          Given <code>[1, 2, 3]</code>, generate all subsets. For each number, choose include or skip.
+        </p>
+        <pre><code>static List&lt;List&lt;Integer&gt;&gt; subsets(int[] nums) {
+    List&lt;List&lt;Integer&gt;&gt; ans = new ArrayList&lt;&gt;();
+    buildSubsets(nums, 0, new ArrayList&lt;&gt;(), ans);
+    return ans;
+}
+
+static void buildSubsets(
+        int[] nums,
+        int index,
+        List&lt;Integer&gt; path,
+        List&lt;List&lt;Integer&gt;&gt; ans) {
+    if (index == nums.length) {
+        ans.add(new ArrayList&lt;&gt;(path));
+        return;
+    }
+
+    path.add(nums[index]);
+    buildSubsets(nums, index + 1, path, ans);
+    path.remove(path.size() - 1);
+
+    buildSubsets(nums, index + 1, path, ans);
+}</code></pre>
+        <p>
+          State sentence: we have decided what to do with elements before <code>index</code>, and <code>path</code>
+          stores the subset built so far.
+        </p>
+        <p>
+          There are <code>2^n</code> subsets. If we copy each subset into the answer, output size contributes up to
+          <code>O(n * 2^n)</code> total work.
+        </p>
+
+        <h2>Example: permutations</h2>
+        <p>
+          A permutation chooses every number exactly once. We need to remember which indices are already used.
+        </p>
+        <pre><code>static List&lt;List&lt;Integer&gt;&gt; permutations(int[] nums) {
+    List&lt;List&lt;Integer&gt;&gt; ans = new ArrayList&lt;&gt;();
+    boolean[] used = new boolean[nums.length];
+    permute(nums, used, new ArrayList&lt;&gt;(), ans);
+    return ans;
+}
+
+static void permute(
+        int[] nums,
+        boolean[] used,
+        List&lt;Integer&gt; path,
+        List&lt;List&lt;Integer&gt;&gt; ans) {
+    if (path.size() == nums.length) {
+        ans.add(new ArrayList&lt;&gt;(path));
+        return;
+    }
+
+    for (int i = 0; i &lt; nums.length; i++) {
+        if (used[i]) continue;
+        used[i] = true;
+        path.add(nums[i]);
+        permute(nums, used, path, ans);
+        path.remove(path.size() - 1);
+        used[i] = false;
+    }
+}</code></pre>
+        <p>
+          There are <code>n!</code> permutations. This is not inefficient; it is unavoidable if the task asks us to list
+          every permutation.
+        </p>
+
+        <h2>Example: combination sum</h2>
+        <p>
+          Given candidate numbers and a target, find combinations that sum to the target. We can reuse a candidate
+          multiple times.
+        </p>
+        <pre><code>static List&lt;List&lt;Integer&gt;&gt; combinationSum(int[] nums, int target) {
+    List&lt;List&lt;Integer&gt;&gt; ans = new ArrayList&lt;&gt;();
+    Arrays.sort(nums);
+    combo(nums, target, 0, new ArrayList&lt;&gt;(), ans);
+    return ans;
+}
+
+static void combo(
+        int[] nums,
+        int remaining,
+        int start,
+        List&lt;Integer&gt; path,
+        List&lt;List&lt;Integer&gt;&gt; ans) {
+    if (remaining == 0) {
+        ans.add(new ArrayList&lt;&gt;(path));
+        return;
+    }
+
+    for (int i = start; i &lt; nums.length; i++) {
+        if (nums[i] &gt; remaining) break;
+        path.add(nums[i]);
+        combo(nums, remaining - nums[i], i, path, ans);
+        path.remove(path.size() - 1);
+    }
+}</code></pre>
+        <p>
+          The <code>start</code> index prevents duplicate combinations in different orders. Sorting allows pruning with
+          <code>break</code> once the candidate is too large.
+        </p>
+
+        <h2>Pruning</h2>
+        <p>
+          Pruning means stopping a branch early because it cannot lead to a valid answer. Pruning does not change the
+          worst-case exponential nature of many backtracking problems, but it can make real inputs much faster.
+        </p>
+        <pre><code>if (currentSum &gt; target) {
+    return; // no need to continue this branch
+}</code></pre>
+        <p>
+          Good pruning depends on knowing the problem constraints. For example, the combination-sum pruning above works
+          because candidates are positive and sorted.
+        </p>
+
+        <h2>Backtracking complexity</h2>
+        <p>
+          Backtracking complexity is often best understood through the decision tree.
+        </p>
+        <table>
+          <thead><tr><th>Problem</th><th>Branching idea</th><th>Number of outputs</th></tr></thead>
+          <tbody>
+            <tr><td>Subsets</td><td>Include or skip each item</td><td><code>2^n</code></td></tr>
+            <tr><td>Permutations</td><td>Choose one unused item at each depth</td><td><code>n!</code></td></tr>
+            <tr><td>Binary strings length n</td><td>Choose 0 or 1 at each position</td><td><code>2^n</code></td></tr>
+            <tr><td>Combinations size k</td><td>Choose k of n items</td><td><code>C(n, k)</code></td></tr>
+          </tbody>
+        </table>
+        <p>
+          If a problem asks us to output exponentially many answers, exponential time is expected. The goal is to avoid
+          unnecessary work beyond the output size.
+        </p>
+
+        <h2>Divide and conquer</h2>
+        <p>
+          Divide and conquer also uses recursion, but it is different from backtracking. Instead of exploring choices, it
+          splits the input into smaller independent subproblems.
+        </p>
+        <pre><code>DIVIDE-AND-CONQUER(problem):
+    if problem is small:
+        solve directly
+    split problem into smaller parts
+    solve each part recursively
+    combine the results</code></pre>
+
+        <h2>Example: recursive binary search</h2>
+        <pre><code>static int binarySearch(int[] a, int target) {
+    return binarySearch(a, target, 0, a.length - 1);
+}
+
+static int binarySearch(int[] a, int target, int lo, int hi) {
+    if (lo &gt; hi) return -1;
+    int mid = lo + (hi - lo) / 2;
+    if (a[mid] == target) return mid;
+    if (a[mid] &lt; target) return binarySearch(a, target, mid + 1, hi);
+    return binarySearch(a, target, lo, mid - 1);
+}</code></pre>
+        <p>
+          Time is <code>O(log n)</code>. Recursive stack space is also <code>O(log n)</code>. The iterative version from
+          Lesson 4 uses <code>O(1)</code> auxiliary space.
+        </p>
+
+        <h2>Example: merge sort</h2>
+        <p>
+          Merge sort recursively sorts two halves, then merges them.
+        </p>
+        <pre><code>static void mergeSort(int[] a) {
+    int[] aux = new int[a.length];
+    mergeSort(a, aux, 0, a.length);
+}
+
+static void mergeSort(int[] a, int[] aux, int lo, int hi) {
+    if (hi - lo &lt;= 1) return;
+    int mid = lo + (hi - lo) / 2;
+    mergeSort(a, aux, lo, mid);
+    mergeSort(a, aux, mid, hi);
+    merge(a, aux, lo, mid, hi);
+}</code></pre>
+        <p>
+          Recurrence: <code>T(n) = 2T(n/2) + O(n)</code>. By recursion tree or Master Theorem, time is
+          <code>O(n log n)</code>. Auxiliary array space is <code>O(n)</code>; recursion stack is <code>O(log n)</code>.
+        </p>
+
+        <h2>Recursion vs iteration</h2>
+        <p>
+          Recursion is not always better. Use recursion when the problem structure is naturally recursive: trees,
+          divide-and-conquer, search spaces, and backtracking. Use iteration when a simple loop is clearer and avoids
+          stack overhead.
+        </p>
+        <table>
+          <thead><tr><th>Situation</th><th>Usually prefer</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Simple scan</td><td>Iteration</td><td>Less overhead, easier space analysis</td></tr>
+            <tr><td>Binary tree traversal</td><td>Recursion first</td><td>Tree structure is recursive</td></tr>
+            <tr><td>Generate all choices</td><td>Backtracking</td><td>Decision tree is recursive</td></tr>
+            <tr><td>Very deep input</td><td>Iteration or explicit stack</td><td>Avoid stack overflow</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Writing recursion without a clear contract.</li>
+          <li>Forgetting the base case or failing to make progress.</li>
+          <li>Mutating <code>path</code> in backtracking but forgetting to undo the mutation.</li>
+          <li>Adding <code>path</code> directly to answers instead of copying it.</li>
+          <li>Ignoring recursion stack space.</li>
+          <li>Using recursion for a simple loop where it adds no clarity.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-RECURSION(problem):
+    1. Write the recursive contract in one sentence.
+    2. Identify the base case.
+    3. Identify how each call makes progress.
+    4. Count the number of calls or draw the recursion tree.
+    5. Count work per call.
+    6. Include recursion stack space.
+    7. If it outputs many answers, include output size.
+    8. For backtracking, define path, choices, and undo step.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Trace <code>factorial(4)</code> on the call stack.</li>
+          <li>Write recursive and iterative versions of array sum.</li>
+          <li>Generate all binary strings of length n.</li>
+          <li>Generate all subsets of an array.</li>
+          <li>Generate all permutations of distinct integers.</li>
+          <li>Solve recursive binary search and compare stack space with the iterative version.</li>
+          <li>Explain merge sort using a recursion tree.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-06-recursion</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-06-recursion/
+  README.md
+  src/
+    RecursionBasics.java
+    BacktrackingProblems.java
+    DivideAndConquer.java
+    Main.java
+  analysis/
+    recursion-analysis.md</code></pre>
+        <h3>Required methods</h3>
+        <ul>
+          <li>Recursive <code>sum(int[] a)</code>.</li>
+          <li>Recursive binary search.</li>
+          <li><code>subsets(int[] nums)</code>.</li>
+          <li><code>permutations(int[] nums)</code>.</li>
+          <li><code>combinationSum(int[] nums, int target)</code>.</li>
+          <li>Merge sort with an auxiliary array.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>For each recursive method, write the recursive contract.</li>
+          <li>State the base case and progress step.</li>
+          <li>State time and auxiliary space.</li>
+          <li>For backtracking methods, define <code>path</code>, choices, and undo step.</li>
+          <li>Include at least two tests for each method.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Implement N-Queens for an <code>n x n</code> board. Use sets or boolean arrays to track occupied columns and
+          diagonals.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to explain recursion using contracts and call stacks, and explain
+          backtracking using state, choices, constraints, and undo operations.
+        </div>
+        <nav class="pager"><a href="lesson-05.html">← Previous</a><a href="lesson-07.html">Next: Trees and BSTs →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

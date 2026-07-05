@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 5 - Linked Lists, Stacks, Queues, and Deques</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-04.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-06.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a aria-current="page" href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 5</p>
+        <h1>Linked Lists, Stacks, Queues, and Deques</h1>
+        <p class="summary">
+          Arrays are built around indexing. Linked lists are built around references. Stacks, queues, and deques are
+          restricted access patterns that appear everywhere: parsing, undo history, BFS, scheduling, simulations, and
+          monotonic stack problems.
+        </p>
+
+        <h2>Example first: playlist editing</h2>
+        <p>
+          Imagine a music playlist. Users may add a song to the front, add a song to the end, remove the current first
+          song, or move through songs one by one. An array can store the songs, but inserting at the front requires
+          shifting every existing song.
+        </p>
+        <p>
+          A linked list takes a different approach. Each item stores a value and a reference to the next item. To add at
+          the front, we create one new node and point it at the old first node.
+        </p>
+        <pre><code>class Node {
+    String song;
+    Node next;
+
+    Node(String song, Node next) {
+        this.song = song;
+        this.next = next;
+    }
+}
+
+static Node addFirst(Node head, String song) {
+    return new Node(song, head);
+}</code></pre>
+        <p>
+          This operation is <code>O(1)</code>. We do not move old nodes. We only allocate a new node and update one
+          reference.
+        </p>
+
+        <h2>The reference model</h2>
+        <p>
+          A linked list is a chain of node objects. The list variable stores a reference to the first node, usually
+          called <code>head</code>.
+        </p>
+        <pre><code>head
+ |
+ v
+["A"] -> ["B"] -> ["C"] -> null</code></pre>
+        <p>
+          The arrows are references. This is the main concept. Linked list bugs are usually reference-update bugs:
+          forgetting to update <code>head</code>, losing the rest of the list, or creating a cycle by accident.
+        </p>
+        <p class="note">
+          Drawing rule: before writing linked list code, draw the nodes and arrows. Then write the assignment statements
+          that transform the old picture into the new picture.
+        </p>
+
+        <h2>Arrays vs linked lists</h2>
+        <table>
+          <thead><tr><th>Operation</th><th>Array / ArrayList</th><th>Singly linked list</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>Get by index</td><td>O(1)</td><td>O(n)</td><td>Linked list must walk node by node</td></tr>
+            <tr><td>Add at front</td><td>O(n)</td><td>O(1)</td><td>Array shifts; linked list changes head</td></tr>
+            <tr><td>Add at end</td><td>Amortized O(1)</td><td>O(1) with tail, O(n) without tail</td><td>Tail reference matters</td></tr>
+            <tr><td>Remove first</td><td>O(n)</td><td>O(1)</td><td>Linked list moves head</td></tr>
+            <tr><td>Search value</td><td>O(n)</td><td>O(n)</td><td>Both may inspect every element</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Linked lists are not "always faster." They make some updates cheap, but they give up fast random access and
+          usually use more memory per element because every node stores references.
+        </p>
+
+        <h2>Interface first: linked list ADT</h2>
+        <p>
+          Start with operations. A simple linked list ADT may look like this:
+        </p>
+        <pre><code>interface LinkedListADT&lt;E&gt; {
+    void addFirst(E value);
+    void addLast(E value);
+    E removeFirst();
+    E getFirst();
+    int size();
+    boolean isEmpty();
+}</code></pre>
+        <p>
+          This interface intentionally does not include fast <code>get(index)</code>, because singly linked lists are not
+          good at random index access.
+        </p>
+
+        <h2>Singly linked list implementation</h2>
+        <p>
+          A practical singly linked list stores <code>head</code>, <code>tail</code>, and <code>size</code>. The tail
+          reference makes <code>addLast</code> O(1).
+        </p>
+        <pre><code>class SinglyLinkedList&lt;E&gt; implements LinkedListADT&lt;E&gt; {
+    private static class Node&lt;E&gt; {
+        E item;
+        Node&lt;E&gt; next;
+
+        Node(E item, Node&lt;E&gt; next) {
+            this.item = item;
+            this.next = next;
+        }
+    }
+
+    private Node&lt;E&gt; head;
+    private Node&lt;E&gt; tail;
+    private int size;
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public E getFirst() {
+        if (head == null) throw new NoSuchElementException();
+        return head.item;
+    }
+}</code></pre>
+
+        <h2>Implementing addFirst</h2>
+        <p>
+          Adding to the front has two cases: empty list and non-empty list. The code can handle both if we update
+          <code>tail</code> only when the list was empty.
+        </p>
+        <pre><code>public void addFirst(E value) {
+    head = new Node&lt;&gt;(value, head);
+    if (tail == null) {
+        tail = head;
+    }
+    size++;
+}</code></pre>
+        <pre><code>Before:
+head -> ["B"] -> ["C"] -> null
+
+After addFirst("A"):
+head -> ["A"] -> ["B"] -> ["C"] -> null</code></pre>
+
+        <h2>Implementing addLast</h2>
+        <p>
+          If the list is empty, the new node becomes both head and tail. Otherwise, attach the new node after the old
+          tail and then move the tail reference.
+        </p>
+        <pre><code>public void addLast(E value) {
+    Node&lt;E&gt; node = new Node&lt;&gt;(value, null);
+    if (tail == null) {
+        head = node;
+    } else {
+        tail.next = node;
+    }
+    tail = node;
+    size++;
+}</code></pre>
+        <p>
+          The order matters. If we set <code>tail = node</code> before connecting <code>tail.next</code>, we lose access
+          to the old tail.
+        </p>
+
+        <h2>Implementing removeFirst</h2>
+        <p>
+          Removing the first node also has a special empty-list case and a special one-element case.
+        </p>
+        <pre><code>public E removeFirst() {
+    if (head == null) throw new NoSuchElementException();
+    E answer = head.item;
+    head = head.next;
+    if (head == null) {
+        tail = null;
+    }
+    size--;
+    return answer;
+}</code></pre>
+        <p>
+          When removing the only node, <code>head</code> becomes <code>null</code>. The list must also set
+          <code>tail</code> to <code>null</code>; otherwise the tail would point to a node that is no longer in the list.
+        </p>
+
+        <h2>Reversing a linked list</h2>
+        <p>
+          Reversal is a classic linked list exercise because it forces careful reference management.
+        </p>
+        <pre><code>static Node reverse(Node head) {
+    Node prev = null;
+    Node cur = head;
+    while (cur != null) {
+        Node next = cur.next;
+        cur.next = prev;
+        prev = cur;
+        cur = next;
+    }
+    return prev;
+}</code></pre>
+        <p>
+          State definitions:
+        </p>
+        <ul>
+          <li><code>prev</code>: the reversed part of the list.</li>
+          <li><code>cur</code>: the node currently being moved.</li>
+          <li><code>next</code>: the rest of the original list, saved before changing <code>cur.next</code>.</li>
+        </ul>
+
+        <h2>Cycle detection: slow and fast pointers</h2>
+        <p>
+          A linked list can accidentally contain a cycle. Floyd's cycle detection uses two pointers: one moves one step,
+          the other moves two steps. If there is a cycle, they eventually meet.
+        </p>
+        <pre><code>static boolean hasCycle(Node head) {
+    Node slow = head;
+    Node fast = head;
+    while (fast != null &amp;&amp; fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow == fast) return true;
+    }
+    return false;
+}</code></pre>
+        <p>
+          Time is <code>O(n)</code>, and auxiliary space is <code>O(1)</code>. A HashSet solution is also possible, but
+          it uses <code>O(n)</code> extra space.
+        </p>
+
+        <h2>Doubly linked lists</h2>
+        <p>
+          A doubly linked list stores both <code>next</code> and <code>prev</code> references. This makes it easier to
+          remove a known node or move backward, but each node uses more memory.
+        </p>
+        <pre><code>private static class DNode&lt;E&gt; {
+    E item;
+    DNode&lt;E&gt; prev;
+    DNode&lt;E&gt; next;
+
+    DNode(E item, DNode&lt;E&gt; prev, DNode&lt;E&gt; next) {
+        this.item = item;
+        this.prev = prev;
+        this.next = next;
+    }
+}</code></pre>
+        <table>
+          <thead><tr><th>Structure</th><th>Benefit</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Singly linked list</td><td>Simple, less memory</td><td>Cannot move backward</td></tr>
+            <tr><td>Doubly linked list</td><td>Easy removal when node is known</td><td>Extra <code>prev</code> reference per node</td></tr>
+            <tr><td>Sentinel list</td><td>Fewer edge cases</td><td>Extra dummy node and more setup</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Sentinel nodes</h2>
+        <p>
+          A sentinel node is a dummy node that does not store real data. It exists to simplify edge cases. For example,
+          a circular doubly linked list can use one sentinel whose <code>next</code> points to the first real node and
+          whose <code>prev</code> points to the last real node.
+        </p>
+        <pre><code>class SentinelDeque&lt;E&gt; {
+    private final DNode&lt;E&gt; sentinel;
+    private int size;
+
+    SentinelDeque() {
+        sentinel = new DNode&lt;&gt;(null, null, null);
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
+    }
+}</code></pre>
+        <p>
+          With a sentinel, the empty list is not represented by <code>null</code>. It is represented by
+          <code>sentinel.next == sentinel</code>. This makes add/remove operations more uniform.
+        </p>
+
+        <h2>Stack ADT</h2>
+        <p>
+          A stack is LIFO: last in, first out. Think of plates stacked on a table. The most recently added item is the
+          first one removed.
+        </p>
+        <pre><code>interface StackADT&lt;E&gt; {
+    void push(E value);
+    E pop();
+    E peek();
+    int size();
+    boolean isEmpty();
+}</code></pre>
+        <p>
+          Stack applications include function calls, undo history, parsing parentheses, evaluating expressions, DFS, and
+          monotonic stack problems.
+        </p>
+
+        <h2>Queue ADT</h2>
+        <p>
+          A queue is FIFO: first in, first out. Think of a line at a store. The earliest item added is the earliest item
+          removed.
+        </p>
+        <pre><code>interface QueueADT&lt;E&gt; {
+    void enqueue(E value);
+    E dequeue();
+    E peek();
+    int size();
+    boolean isEmpty();
+}</code></pre>
+        <p>
+          Queue applications include BFS, task scheduling, simulations, producer-consumer systems, and buffering.
+        </p>
+
+        <h2>Deque ADT</h2>
+        <p>
+          A deque, pronounced "deck", is a double-ended queue. It supports adding and removing at both ends.
+        </p>
+        <pre><code>interface DequeADT&lt;E&gt; {
+    void addFirst(E value);
+    void addLast(E value);
+    E removeFirst();
+    E removeLast();
+    E peekFirst();
+    E peekLast();
+    int size();
+    boolean isEmpty();
+}</code></pre>
+        <p>
+          A deque can behave like both a stack and a queue. In Java, <code>ArrayDeque</code> is usually the best default
+          implementation.
+        </p>
+
+        <h2>Java collections: use ArrayDeque</h2>
+        <p>
+          Java has an old <code>Stack</code> class, but for modern Java code, prefer <code>ArrayDeque</code>. It is
+          faster and cleaner for stack and queue operations.
+        </p>
+        <pre><code>Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+stack.push(10);
+stack.push(20);
+int top = stack.pop(); // 20
+
+Deque&lt;Integer&gt; queue = new ArrayDeque&lt;&gt;();
+queue.addLast(10);
+queue.addLast(20);
+int first = queue.removeFirst(); // 10</code></pre>
+        <table>
+          <thead><tr><th>Behavior</th><th>Add</th><th>Remove</th><th>Peek</th></tr></thead>
+          <tbody>
+            <tr><td>Stack</td><td><code>push(x)</code></td><td><code>pop()</code></td><td><code>peek()</code></td></tr>
+            <tr><td>Queue</td><td><code>addLast(x)</code></td><td><code>removeFirst()</code></td><td><code>peekFirst()</code></td></tr>
+            <tr><td>Deque front</td><td><code>addFirst(x)</code></td><td><code>removeFirst()</code></td><td><code>peekFirst()</code></td></tr>
+            <tr><td>Deque back</td><td><code>addLast(x)</code></td><td><code>removeLast()</code></td><td><code>peekLast()</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2>Application 1: valid parentheses</h2>
+        <p>
+          Parentheses are naturally stack-shaped. Every closing bracket should match the most recent unmatched opening
+          bracket.
+        </p>
+        <pre><code>static boolean isValid(String s) {
+    Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
+    for (char c : s.toCharArray()) {
+        if (c == '(' || c == '[' || c == '{') {
+            stack.push(c);
+        } else {
+            if (stack.isEmpty()) return false;
+            char open = stack.pop();
+            if (c == ')' &amp;&amp; open != '(') return false;
+            if (c == ']' &amp;&amp; open != '[') return false;
+            if (c == '}' &amp;&amp; open != '{') return false;
+        }
+    }
+    return stack.isEmpty();
+}</code></pre>
+        <p>
+          Time is <code>O(n)</code>. Space is <code>O(n)</code> in the worst case, such as a string of all opening
+          brackets.
+        </p>
+
+        <h2>Application 2: evaluate postfix expressions</h2>
+        <p>
+          In postfix notation, operators come after their operands. Example: <code>2 3 + 4 *</code> means
+          <code>(2 + 3) * 4</code>.
+        </p>
+        <pre><code>static int evalPostfix(String[] tokens) {
+    Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+    for (String token : tokens) {
+        if (token.equals("+") || token.equals("-") ||
+            token.equals("*") || token.equals("/")) {
+            int b = stack.pop();
+            int a = stack.pop();
+            stack.push(apply(a, b, token));
+        } else {
+            stack.push(Integer.parseInt(token));
+        }
+    }
+    return stack.pop();
+}
+
+static int apply(int a, int b, String op) {
+    if (op.equals("+")) return a + b;
+    if (op.equals("-")) return a - b;
+    if (op.equals("*")) return a * b;
+    return a / b;
+}</code></pre>
+
+        <h2>Application 3: monotonic stack</h2>
+        <p>
+          A monotonic stack keeps values in increasing or decreasing order. It is useful for "next greater element" and
+          temperature-style problems.
+        </p>
+        <p>
+          Example: for each day's temperature, how many days until a warmer temperature?
+        </p>
+        <pre><code>static int[] dailyTemperatures(int[] temps) {
+    int[] ans = new int[temps.length];
+    Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;(); // indices, temps decreasing
+
+    for (int i = 0; i &lt; temps.length; i++) {
+        while (!stack.isEmpty() &amp;&amp; temps[i] &gt; temps[stack.peek()]) {
+            int prev = stack.pop();
+            ans[prev] = i - prev;
+        }
+        stack.push(i);
+    }
+    return ans;
+}</code></pre>
+        <p>
+          Each index is pushed once and popped once, so the time is <code>O(n)</code>, even though there is a nested
+          <code>while</code> loop.
+        </p>
+
+        <h2>Application 4: BFS uses a queue</h2>
+        <p>
+          Breadth-first search explores nodes by distance from the start. This requires a queue: first discovered, first
+          explored.
+        </p>
+        <pre><code>static void bfs(List&lt;List&lt;Integer&gt;&gt; graph, int start) {
+    boolean[] seen = new boolean[graph.size()];
+    Deque&lt;Integer&gt; queue = new ArrayDeque&lt;&gt;();
+    seen[start] = true;
+    queue.addLast(start);
+
+    while (!queue.isEmpty()) {
+        int node = queue.removeFirst();
+        for (int next : graph.get(node)) {
+            if (!seen[next]) {
+                seen[next] = true;
+                queue.addLast(next);
+            }
+        }
+    }
+}</code></pre>
+        <p>
+          We will study graphs later, but this example shows why queues are not just a small API detail. They encode the
+          order of exploration.
+        </p>
+
+        <h2>Choosing the right structure</h2>
+        <table>
+          <thead><tr><th>Need</th><th>Use</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>Fast index access</td><td>ArrayList or array</td><td>O(1) get by index</td></tr>
+            <tr><td>Add/remove at front and back</td><td>Deque</td><td>Both ends are cheap</td></tr>
+            <tr><td>LIFO processing</td><td>Stack behavior with ArrayDeque</td><td>Most recent item first</td></tr>
+            <tr><td>FIFO processing</td><td>Queue behavior with ArrayDeque</td><td>Oldest item first</td></tr>
+            <tr><td>Teach references or pointer updates</td><td>Linked list</td><td>Nodes expose object-reference structure</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Using a linked list when random access is the main operation.</li>
+          <li>Forgetting to update <code>tail</code> when removing the last node.</li>
+          <li>Changing <code>cur.next</code> before saving the old next node during reversal.</li>
+          <li>Using Java's old <code>Stack</code> class instead of <code>ArrayDeque</code>.</li>
+          <li>Using <code>removeFirst</code> without checking whether the deque is empty.</li>
+          <li>Claiming a monotonic stack is O(n^2) because it has a nested loop, without counting pushes and pops.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-LINEAR-STRUCTURE(problem):
+    1. Identify the access pattern: index, front, back, LIFO, FIFO.
+    2. Choose array, linked list, stack, queue, or deque.
+    3. Define the state: head, tail, size, stack contents, or queue contents.
+    4. For linked lists, draw the reference updates.
+    5. Count each operation: add, remove, peek, search.
+    6. State time and auxiliary space.
+    7. State edge cases: empty list, one element, many elements.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Draw <code>addFirst</code>, <code>addLast</code>, and <code>removeFirst</code> on a 3-node list.</li>
+          <li>Implement <code>contains</code> for a singly linked list.</li>
+          <li>Reverse a linked list and explain the meaning of <code>prev</code>, <code>cur</code>, and <code>next</code>.</li>
+          <li>Use a stack to validate parentheses.</li>
+          <li>Use a queue to simulate customers arriving and being served.</li>
+          <li>Use a monotonic stack for next greater element.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-05-linked-stacks-queues</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-05-linked-stacks-queues/
+  README.md
+  src/
+    LinkedListADT.java
+    SinglyLinkedList.java
+    StackProblems.java
+    QueueProblems.java
+    Main.java
+  analysis/
+    linear-structures.md</code></pre>
+        <h3>Required implementation</h3>
+        <ul>
+          <li>Implement <code>SinglyLinkedList&lt;E&gt;</code> with <code>addFirst</code>, <code>addLast</code>, <code>removeFirst</code>, <code>getFirst</code>, <code>size</code>, and <code>isEmpty</code>.</li>
+          <li>Implement linked list reversal as a static method.</li>
+          <li>Implement cycle detection using slow and fast pointers.</li>
+          <li>Implement valid parentheses using <code>ArrayDeque</code>.</li>
+          <li>Implement daily temperatures using a monotonic stack.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>Describe the difference between arrays and linked lists.</li>
+          <li>Explain stack, queue, and deque access order.</li>
+          <li>Include at least two tests for each required method.</li>
+          <li>State time and auxiliary space for every method.</li>
+          <li>Include drawings or written pointer-update explanations for linked list operations.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Implement a deque using a circular sentinel doubly linked list. Support <code>addFirst</code>,
+          <code>addLast</code>, <code>removeFirst</code>, and <code>removeLast</code> in O(1) time.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to explain why linked lists trade random access for cheap reference
+          updates, and why stacks, queues, and deques are about access order rather than storage alone.
+        </div>
+        <nav class="pager"><a href="lesson-04.html">← Previous</a><a href="lesson-06.html">Next: Recursion and Backtracking →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

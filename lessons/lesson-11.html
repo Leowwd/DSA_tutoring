@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 11 - Union-Find and Graph Modeling</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-10.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-12.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a aria-current="page" href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 11</p>
+        <h1>Union-Find and Graph Modeling</h1>
+        <p class="summary">
+          Graphs model relationships. Union-Find answers connectivity questions when edges are added over time. This
+          lesson teaches both the data structure and the modeling skill needed before graph algorithms make sense.
+        </p>
+
+        <h2>Example first: connected friend groups</h2>
+        <p>
+          Suppose students join clubs. Each pair <code>(a, b)</code> means student a and student b are connected through
+          a shared club. After many pairs, we want to answer:
+        </p>
+        <ul>
+          <li>Are student 2 and student 9 in the same connected group?</li>
+          <li>How many separate groups are there?</li>
+          <li>Does adding this connection create a cycle?</li>
+        </ul>
+        <p>
+          We do not need the exact path between students. We only need component membership. That is exactly what
+          Union-Find is built for.
+        </p>
+
+        <h2>Disjoint set ADT</h2>
+        <p>
+          Union-Find is also called Disjoint Set Union, or DSU. It maintains a partition of items into non-overlapping
+          sets.
+        </p>
+        <pre><code>interface DisjointSet {
+    int find(int x);
+    boolean connected(int a, int b);
+    boolean union(int a, int b);
+    int componentCount();
+}</code></pre>
+        <table>
+          <thead><tr><th>Operation</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>find(x)</code></td><td>Return the representative/root of x's component</td></tr>
+            <tr><td><code>connected(a, b)</code></td><td>Return whether a and b have the same representative</td></tr>
+            <tr><td><code>union(a, b)</code></td><td>Merge the two components if different</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Quick-find idea</h2>
+        <p>
+          The simplest version stores a component id for every item.
+        </p>
+        <pre><code>id[x] = component id of x</code></pre>
+        <p>
+          Then <code>connected(a, b)</code> is O(1), but <code>union(a, b)</code> may need to scan the whole array and
+          change many ids. That makes union O(n).
+        </p>
+
+        <h2>Quick-union idea</h2>
+        <p>
+          Quick-union stores parent pointers. Each component is a tree. The root is the representative.
+        </p>
+        <pre><code>parent[x] = parent of x
+if parent[x] == x, x is a root</code></pre>
+        <p>
+          To find the root, follow parent pointers.
+        </p>
+        <pre><code>int find(int x) {
+    while (parent[x] != x) {
+        x = parent[x];
+    }
+    return x;
+}</code></pre>
+        <p>
+          Plain quick-union can become tall, like an unbalanced tree. We need two optimizations.
+        </p>
+
+        <h2>Optimization 1: union by size</h2>
+        <p>
+          When merging two components, attach the smaller tree under the larger tree. This keeps trees shorter.
+        </p>
+        <pre><code>if (size[rootA] &lt; size[rootB]) {
+    parent[rootA] = rootB;
+    size[rootB] += size[rootA];
+} else {
+    parent[rootB] = rootA;
+    size[rootA] += size[rootB];
+}</code></pre>
+
+        <h2>Optimization 2: path compression</h2>
+        <p>
+          During <code>find</code>, make every visited node point directly to the root. Future finds become faster.
+        </p>
+        <pre><code>int find(int x) {
+    if (parent[x] != x) {
+        parent[x] = find(parent[x]);
+    }
+    return parent[x];
+}</code></pre>
+        <p>
+          Union by size plus path compression gives almost constant amortized time. More precisely, operations are
+          <code>O(α(n))</code> amortized, where <code>α</code> is the inverse Ackermann function, which grows so slowly
+          that it is effectively constant for any realistic input size.
+        </p>
+
+        <h2>Full DSU implementation</h2>
+        <pre><code>class DSU implements DisjointSet {
+    private final int[] parent;
+    private final int[] size;
+    private int components;
+
+    DSU(int n) {
+        parent = new int[n];
+        size = new int[n];
+        components = n;
+        for (int i = 0; i &lt; n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
+
+    public int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+
+    public boolean connected(int a, int b) {
+        return find(a) == find(b);
+    }
+
+    public boolean union(int a, int b) {
+        int rootA = find(a);
+        int rootB = find(b);
+        if (rootA == rootB) return false;
+
+        if (size[rootA] &lt; size[rootB]) {
+            parent[rootA] = rootB;
+            size[rootB] += size[rootA];
+        } else {
+            parent[rootB] = rootA;
+            size[rootA] += size[rootB];
+        }
+        components--;
+        return true;
+    }
+
+    public int componentCount() {
+        return components;
+    }
+}</code></pre>
+
+        <h2>Application 1: number of connected components</h2>
+        <p>
+          Given n nodes and undirected edges, count connected components.
+        </p>
+        <pre><code>static int countComponents(int n, int[][] edges) {
+    DSU dsu = new DSU(n);
+    for (int[] edge : edges) {
+        dsu.union(edge[0], edge[1]);
+    }
+    return dsu.componentCount();
+}</code></pre>
+        <p>
+          If there are m edges, runtime is <code>O((n + m) α(n))</code>, effectively linear.
+        </p>
+
+        <h2>Application 2: cycle detection in an undirected graph</h2>
+        <p>
+          When processing an undirected edge <code>(u, v)</code>, if u and v are already connected, then adding the edge
+          creates a cycle.
+        </p>
+        <pre><code>static boolean hasCycleUndirected(int n, int[][] edges) {
+    DSU dsu = new DSU(n);
+    for (int[] edge : edges) {
+        if (!dsu.union(edge[0], edge[1])) {
+            return true;
+        }
+    }
+    return false;
+}</code></pre>
+
+        <h2>Application 3: accounts merge</h2>
+        <p>
+          If two accounts share an email address, they likely belong to the same person. Union-Find can group account
+          indices that share emails.
+        </p>
+        <pre><code>Map&lt;String, Integer&gt; owner = new HashMap&lt;&gt;();
+DSU dsu = new DSU(accounts.size());
+
+for (int i = 0; i &lt; accounts.size(); i++) {
+    for (String email : accounts.get(i).emails()) {
+        if (owner.containsKey(email)) {
+            dsu.union(i, owner.get(email));
+        } else {
+            owner.put(email, i);
+        }
+    }
+}</code></pre>
+        <p>
+          This combines hashing and Union-Find: the map finds previous owners of an email, and DSU merges account
+          groups.
+        </p>
+
+        <h2>Graph vocabulary</h2>
+        <p>
+          A graph is a set of vertices connected by edges.
+        </p>
+        <table>
+          <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>Vertex / node</td><td>An object in the graph</td></tr>
+            <tr><td>Edge</td><td>A relationship between two vertices</td></tr>
+            <tr><td>Directed edge</td><td>One-way relationship: u -> v</td></tr>
+            <tr><td>Undirected edge</td><td>Two-way relationship: u -- v</td></tr>
+            <tr><td>Weighted edge</td><td>Edge with a cost, distance, or strength</td></tr>
+            <tr><td>Path</td><td>Sequence of edges connecting vertices</td></tr>
+            <tr><td>Cycle</td><td>Path that returns to a previous vertex</td></tr>
+            <tr><td>Connected component</td><td>Maximal group where vertices can reach each other</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Graph modeling questions</h2>
+        <p>
+          Before choosing an algorithm, model the problem.
+        </p>
+        <pre><code>GRAPH-MODELING-CHECKLIST:
+    1. What are the vertices?
+    2. What are the edges?
+    3. Are edges directed or undirected?
+    4. Are edges weighted or unweighted?
+    5. What question are we asking: connectivity, path, shortest path, cycle, ordering?
+    6. What are V and E?</code></pre>
+        <p>
+          Many graph mistakes happen before coding. The wrong model leads to the wrong algorithm.
+        </p>
+
+        <h2>Adjacency matrix</h2>
+        <p>
+          An adjacency matrix uses a 2D array. <code>matrix[u][v]</code> tells whether edge u -> v exists.
+        </p>
+        <pre><code>boolean[][] graph = new boolean[n][n];
+graph[u][v] = true;
+graph[v][u] = true; // for undirected graph</code></pre>
+        <table>
+          <thead><tr><th>Operation</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Check whether edge u-v exists</td><td>O(1)</td></tr>
+            <tr><td>List all neighbors of u</td><td>O(V)</td></tr>
+            <tr><td>Space</td><td>O(V^2)</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Matrices are useful for dense graphs or when edge existence checks are frequent.
+        </p>
+
+        <h2>Adjacency list</h2>
+        <p>
+          An adjacency list stores neighbors for each vertex. This is usually better for sparse graphs.
+        </p>
+        <pre><code>List&lt;List&lt;Integer&gt;&gt; graph = new ArrayList&lt;&gt;();
+for (int i = 0; i &lt; n; i++) {
+    graph.add(new ArrayList&lt;&gt;());
+}
+
+graph.get(u).add(v);
+graph.get(v).add(u); // undirected</code></pre>
+        <table>
+          <thead><tr><th>Operation</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>List all neighbors of u</td><td>O(degree(u))</td></tr>
+            <tr><td>Check whether edge u-v exists</td><td>O(degree(u)) unless using a set</td></tr>
+            <tr><td>Space</td><td>O(V + E)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Graph interface</h2>
+        <p>
+          Algorithms should ask for neighbors. They should not care whether the graph is stored with lists, sets, or a
+          matrix.
+        </p>
+        <pre><code>interface Graph {
+    int vertexCount();
+    void addEdge(int from, int to);
+    Iterable&lt;Integer&gt; neighbors(int v);
+}</code></pre>
+        <pre><code>class AdjListGraph implements Graph {
+    private final List&lt;List&lt;Integer&gt;&gt; adj;
+
+    AdjListGraph(int n) {
+        adj = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; n; i++) {
+            adj.add(new ArrayList&lt;&gt;());
+        }
+    }
+
+    public int vertexCount() {
+        return adj.size();
+    }
+
+    public void addEdge(int from, int to) {
+        adj.get(from).add(to);
+    }
+
+    public Iterable&lt;Integer&gt; neighbors(int v) {
+        return adj.get(v);
+    }
+}</code></pre>
+
+        <h2>Weighted graph representation</h2>
+        <p>
+          For weighted graphs, store edge objects.
+        </p>
+        <pre><code>record Edge(int to, int weight) { }
+
+List&lt;List&lt;Edge&gt;&gt; graph = new ArrayList&lt;&gt;();
+for (int i = 0; i &lt; n; i++) graph.add(new ArrayList&lt;&gt;());
+
+graph.get(u).add(new Edge(v, weight));</code></pre>
+        <p>
+          Weights might represent distance, time, cost, similarity, capacity, or risk.
+        </p>
+
+        <h2>Union-Find vs graph traversal</h2>
+        <table>
+          <thead><tr><th>Question</th><th>Better tool</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Are u and v connected after many added edges?</td><td>Union-Find</td><td>Fast component queries</td></tr>
+            <tr><td>How many components after processing edges?</td><td>Union-Find</td><td>Components are the main state</td></tr>
+            <tr><td>What is the actual path from u to v?</td><td>BFS/DFS</td><td>Union-Find does not store paths</td></tr>
+            <tr><td>What is the shortest path?</td><td>BFS/Dijkstra</td><td>Need distances, not just components</td></tr>
+            <tr><td>Can we topologically order tasks?</td><td>Graph algorithm</td><td>Direction and dependencies matter</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Using Union-Find when the problem asks for an actual path.</li>
+          <li>Forgetting to add both directions for an undirected adjacency list.</li>
+          <li>Using an adjacency matrix for a huge sparse graph.</li>
+          <li>Confusing number of vertices V with number of edges E.</li>
+          <li>Calling a directed graph connected without defining reachability carefully.</li>
+          <li>Forgetting that weighted graphs need edge objects, not just neighbor integers.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-GRAPH-MODEL(problem):
+    1. Define vertices and edges.
+    2. Decide directed vs undirected.
+    3. Decide weighted vs unweighted.
+    4. Choose adjacency list or matrix.
+    5. Identify whether the question is connectivity, path, shortest path, cycle, or ordering.
+    6. If connectivity only, consider Union-Find.
+    7. State complexity using V and E.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Trace DSU parent arrays after a sequence of unions.</li>
+          <li>Implement <code>connected</code> and <code>union</code> with path compression.</li>
+          <li>Count connected components from an edge list.</li>
+          <li>Detect a cycle in an undirected graph using Union-Find.</li>
+          <li>Model a class prerequisite graph: what are vertices and edges?</li>
+          <li>Build adjacency list and adjacency matrix for the same graph.</li>
+          <li>Represent a weighted road network using <code>Edge</code> records.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-11-union-find-graphs</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-11-union-find-graphs/
+  README.md
+  src/
+    DisjointSet.java
+    DSU.java
+    Graph.java
+    AdjListGraph.java
+    GraphModelingProblems.java
+    Main.java
+  analysis/
+    graph-modeling-analysis.md</code></pre>
+        <h3>Required implementation</h3>
+        <ul>
+          <li>Implement <code>DSU</code> with path compression and union by size.</li>
+          <li>Implement <code>countComponents</code>.</li>
+          <li>Implement <code>hasCycleUndirected</code>.</li>
+          <li>Implement <code>AdjListGraph</code>.</li>
+          <li>Implement a weighted adjacency list using an <code>Edge</code> record.</li>
+          <li>Write a short modeling explanation for three real-world graph examples.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>Explain <code>find</code>, <code>union</code>, path compression, and union by size.</li>
+          <li>Explain adjacency list vs adjacency matrix.</li>
+          <li>For each graph example, define vertices, edges, direction, weights, V, and E.</li>
+          <li>State time and space complexity for DSU operations and graph representations.</li>
+          <li>Include at least two tests for every required method.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Implement Kruskal's minimum spanning tree algorithm using your DSU. Sort edges by weight, then union endpoints
+          when they are not already connected.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to implement optimized Union-Find, choose an appropriate graph
+          representation, and model a real problem using vertices, edges, direction, and weights.
+        </div>
+        <nav class="pager"><a href="lesson-10.html">← Previous</a><a href="lesson-12.html">Next: Graph Algorithms →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

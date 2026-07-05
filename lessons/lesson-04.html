@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 4 - Arrays, ArrayList, and Array Patterns</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-03.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-05.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a aria-current="page" href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 4</p>
+        <h1>Arrays, ArrayList, and Core Array Patterns</h1>
+        <p class="summary">
+          Arrays are the foundation for many data structures and many data-processing workflows. This lesson studies arrays
+          from three angles: how they store data, what operations they make cheap, and which algorithmic patterns they
+          enable.
+        </p>
+
+        <h2>Example first: daily temperature data</h2>
+        <p>
+          Suppose we have daily high temperatures for a city. We might want to answer questions like:
+        </p>
+        <ul>
+          <li>What was the hottest day?</li>
+          <li>What was the average temperature over a 7-day window?</li>
+          <li>Was there a pair of days whose temperatures sum to a target?</li>
+          <li>How many days are above a threshold in a range?</li>
+        </ul>
+        <pre><code>int[] temps = {42, 45, 51, 50, 49, 55, 61, 63, 60, 58};</code></pre>
+        <p>
+          These are array questions. Even if the real data eventually lives in a table or dataframe, the basic
+          computational model is often a sequence of values.
+        </p>
+
+        <h2>Why arrays matter</h2>
+        <p>
+          An array stores elements in indexed positions. Java arrays have fixed length. The key operation is random
+          access: given an index, retrieve or update that position in constant time.
+        </p>
+        <pre><code>int first = temps[0];
+int seventh = temps[6];
+temps[2] = 52;</code></pre>
+        <p>
+          This is powerful because many algorithms are built around controlling indices carefully. The weakness is that
+          arrays do not naturally grow, and inserting in the middle requires shifting elements.
+        </p>
+
+        <h2>Java array basics</h2>
+        <pre><code>int[] a = new int[5];       // [0, 0, 0, 0, 0]
+int[] b = {3, 1, 4, 1, 5}; // literal initialization
+
+System.out.println(b.length); // 5
+System.out.println(b[2]);     // 4</code></pre>
+        <p>
+          Array indices run from <code>0</code> to <code>length - 1</code>. Accessing outside that range throws
+          <code>ArrayIndexOutOfBoundsException</code>.
+        </p>
+        <pre><code>for (int i = 0; i &lt; b.length; i++) {
+    System.out.println("index " + i + ": " + b[i]);
+}</code></pre>
+        <p>
+          Enhanced for-loops are nice when you only need values. Use index loops when the index itself matters.
+        </p>
+        <pre><code>for (int x : b) {
+    System.out.println(x);
+}</code></pre>
+
+        <h2>Array vs ArrayList</h2>
+        <p>
+          Java arrays are fixed-size. <code>ArrayList</code> is a dynamic array implementation from the Java Collections
+          Framework. It grows as needed and stores objects, not primitives.
+        </p>
+        <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;&gt;();
+nums.add(10);
+nums.add(20);
+nums.add(30);
+System.out.println(nums.get(1)); // 20
+nums.set(1, 99);</code></pre>
+        <table>
+          <thead><tr><th>Operation</th><th>Array</th><th>ArrayList</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>Get by index</td><td>O(1)</td><td>O(1)</td><td>Direct indexed access</td></tr>
+            <tr><td>Set by index</td><td>O(1)</td><td>O(1)</td><td>Direct indexed update</td></tr>
+            <tr><td>Append</td><td>Not flexible</td><td>Amortized O(1)</td><td>Dynamic resizing</td></tr>
+            <tr><td>Insert at front</td><td>O(n)</td><td>O(n)</td><td>Shift elements right</td></tr>
+            <tr><td>Remove from front</td><td>O(n)</td><td>O(n)</td><td>Shift elements left</td></tr>
+            <tr><td>Search unsorted</td><td>O(n)</td><td>O(n)</td><td>May inspect every value</td></tr>
+          </tbody>
+        </table>
+
+        <h2>ADT view: indexed sequence</h2>
+        <p>
+          From an interface perspective, arrays and ArrayLists are both indexed sequences. The interface tells us what
+          operations we expect, while the implementation controls the cost.
+        </p>
+        <pre><code>interface IndexedSeq&lt;E&gt; {
+    int size();
+    boolean isEmpty();
+    E get(int index);
+    void set(int index, E value);
+    void addLast(E value);
+    E removeLast();
+}</code></pre>
+        <p>
+          This interface is good when index access is central. It is not ideal when we need frequent insertions at the
+          front; that will motivate linked lists and deques in the next lesson.
+        </p>
+
+        <h2>Pattern 1: single pass scan</h2>
+        <p>
+          The simplest array pattern is scanning once while maintaining a small amount of state.
+        </p>
+        <pre><code>static int max(int[] a) {
+    int best = a[0];
+    for (int i = 1; i &lt; a.length; i++) {
+        if (a[i] &gt; best) best = a[i];
+    }
+    return best;
+}</code></pre>
+        <p>
+          State: <code>best</code>. Time: <code>O(n)</code>. Auxiliary space: <code>O(1)</code>. This is optimal for an
+          unsorted array because every element might be the maximum.
+        </p>
+
+        <h2>Pattern 2: binary search</h2>
+        <p>
+          If an array is sorted, we can repeatedly cut the search range in half. This changes search from O(n) to
+          O(log n).
+        </p>
+        <pre><code>static int binarySearch(int[] a, int target) {
+    int lo = 0;
+    int hi = a.length - 1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] == target) return mid;
+        if (a[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}</code></pre>
+        <p>
+          The invariant is: if the target exists, it must be inside <code>[lo, hi]</code>. Each iteration preserves this
+          invariant while shrinking the interval.
+        </p>
+        <h3>Lower-bound style binary search</h3>
+        <p>
+          Many real problems ask for the first position where a condition becomes true.
+        </p>
+        <pre><code>static int lowerBound(int[] a, int target) {
+    int lo = 0;
+    int hi = a.length; // answer may be a.length
+    while (lo &lt; hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] &lt; target) lo = mid + 1;
+        else hi = mid;
+    }
+    return lo;
+}</code></pre>
+        <p>
+          This returns the first index <code>i</code> such that <code>a[i] >= target</code>, or <code>a.length</code> if
+          no such index exists.
+        </p>
+
+        <h2>Pattern 3: two pointers from both ends</h2>
+        <p>
+          Two pointers are useful when sorted order gives direction. Consider finding two values in a sorted array that
+          sum to a target.
+        </p>
+        <pre><code>static int[] twoSumSorted(int[] a, int target) {
+    int left = 0;
+    int right = a.length - 1;
+    while (left &lt; right) {
+        int sum = a[left] + a[right];
+        if (sum == target) return new int[] {left, right};
+        if (sum &lt; target) left++;
+        else right--;
+    }
+    return new int[] {-1, -1};
+}</code></pre>
+        <p>
+          If the sum is too small, increasing <code>left</code> is the only useful move. If the sum is too large,
+          decreasing <code>right</code> is the only useful move. Each pointer moves at most n times, so the runtime is
+          <code>O(n)</code>.
+        </p>
+        <p class="note">
+          Pointer rule: each pointer must have a meaning. Here, <code>left</code> is the smallest remaining candidate and
+          <code>right</code> is the largest remaining candidate.
+        </p>
+
+        <h2>Pattern 4: slow and fast pointers</h2>
+        <p>
+          Slow/fast pointers appear in arrays and linked lists. In arrays, they are often used to compact data in place.
+        </p>
+        <pre><code>static int removeDuplicatesSorted(int[] a) {
+    if (a.length == 0) return 0;
+    int write = 1;
+    for (int read = 1; read &lt; a.length; read++) {
+        if (a[read] != a[write - 1]) {
+            a[write] = a[read];
+            write++;
+        }
+    }
+    return write;
+}</code></pre>
+        <p>
+          After the loop, the first <code>write</code> positions contain the unique values. The rest of the array is
+          ignored. Time is <code>O(n)</code>, and auxiliary space is <code>O(1)</code>.
+        </p>
+
+        <h2>Pattern 5: fixed-size sliding window</h2>
+        <p>
+          A sliding window is useful for contiguous subarrays or substrings. If the window size is fixed, update the
+          answer by adding the new right value and removing the old left value.
+        </p>
+        <pre><code>static int maxSumLengthK(int[] a, int k) {
+    int window = 0;
+    for (int i = 0; i &lt; k; i++) {
+        window += a[i];
+    }
+
+    int best = window;
+    for (int right = k; right &lt; a.length; right++) {
+        window += a[right];
+        window -= a[right - k];
+        best = Math.max(best, window);
+    }
+    return best;
+}</code></pre>
+        <p>
+          Without the sliding update, recomputing every length-k sum would cost O(nk). With the window, the cost is O(n).
+        </p>
+
+        <h2>Pattern 6: variable-size sliding window</h2>
+        <p>
+          Variable-size windows are useful when we expand until a condition is violated, then shrink until it becomes
+          valid again. This works best when moving the right pointer only makes the window "larger" in a monotonic way.
+        </p>
+        <p>
+          Example: find the shortest subarray with sum at least target, assuming all numbers are positive.
+        </p>
+        <pre><code>static int minLengthAtLeastTarget(int[] a, int target) {
+    int left = 0;
+    int sum = 0;
+    int best = Integer.MAX_VALUE;
+
+    for (int right = 0; right &lt; a.length; right++) {
+        sum += a[right];
+        while (sum &gt;= target) {
+            best = Math.min(best, right - left + 1);
+            sum -= a[left];
+            left++;
+        }
+    }
+    return best == Integer.MAX_VALUE ? 0 : best;
+}</code></pre>
+        <p>
+          The positivity assumption matters. If negative numbers are allowed, removing the left value may increase the
+          sum, so the simple sliding-window logic can fail.
+        </p>
+
+        <h2>Pattern 7: prefix sums</h2>
+        <p>
+          Prefix sums trade O(n) preprocessing space for O(1) range sum queries.
+        </p>
+        <pre><code>static int[] buildPrefix(int[] a) {
+    int[] prefix = new int[a.length + 1];
+    for (int i = 0; i &lt; a.length; i++) {
+        prefix[i + 1] = prefix[i] + a[i];
+    }
+    return prefix;
+}
+
+static int rangeSum(int[] prefix, int left, int rightExclusive) {
+    return prefix[rightExclusive] - prefix[left];
+}</code></pre>
+        <p>
+          The convention <code>prefix[0] = 0</code> makes ranges clean:
+          <code>sum(left, rightExclusive) = prefix[rightExclusive] - prefix[left]</code>.
+        </p>
+
+        <h2>Prefix sums with HashMap: count subarrays</h2>
+        <p>
+          Prefix sums become more powerful when combined with hashing. Count the number of subarrays whose sum equals
+          <code>k</code>.
+        </p>
+        <pre><code>static int countSubarraysWithSumK(int[] a, int k) {
+    Map&lt;Integer, Integer&gt; freq = new HashMap&lt;&gt;();
+    freq.put(0, 1);
+
+    int prefix = 0;
+    int count = 0;
+    for (int x : a) {
+        prefix += x;
+        count += freq.getOrDefault(prefix - k, 0);
+        freq.put(prefix, freq.getOrDefault(prefix, 0) + 1);
+    }
+    return count;
+}</code></pre>
+        <p>
+          If the current prefix sum is <code>S</code>, we need an earlier prefix sum of <code>S - k</code>. This gives
+          <code>O(n)</code> expected time and <code>O(n)</code> auxiliary space.
+        </p>
+
+        <h2>Pattern 8: difference arrays</h2>
+        <p>
+          A difference array is useful for many range updates. Suppose we repeatedly add a value to every element in a
+          range. Updating every position in every range may be too slow.
+        </p>
+        <pre><code>static int[] applyRangeAdds(int n, int[][] updates) {
+    int[] diff = new int[n + 1];
+    for (int[] u : updates) {
+        int left = u[0];
+        int rightInclusive = u[1];
+        int delta = u[2];
+        diff[left] += delta;
+        diff[rightInclusive + 1] -= delta;
+    }
+
+    int[] result = new int[n];
+    int running = 0;
+    for (int i = 0; i &lt; n; i++) {
+        running += diff[i];
+        result[i] = running;
+    }
+    return result;
+}</code></pre>
+        <p>
+          Range updates become O(1) each, followed by one O(n) reconstruction pass. This is the reverse idea of prefix
+          sums.
+        </p>
+
+        <h2>Choosing the right pattern</h2>
+        <table>
+          <thead><tr><th>Problem clue</th><th>Pattern to consider</th><th>Key condition</th></tr></thead>
+          <tbody>
+            <tr><td>Need min/max/count over all elements</td><td>Single pass scan</td><td>Small state is enough</td></tr>
+            <tr><td>Sorted array, find value or boundary</td><td>Binary search</td><td>Search space is monotonic</td></tr>
+            <tr><td>Sorted array, pair condition</td><td>Two pointers</td><td>Moving pointers gives direction</td></tr>
+            <tr><td>Contiguous fixed-length subarray</td><td>Fixed sliding window</td><td>Window size is constant</td></tr>
+            <tr><td>Contiguous subarray with positive values</td><td>Variable sliding window</td><td>Condition changes monotonically</td></tr>
+            <tr><td>Many range sum queries</td><td>Prefix sums</td><td>Data is mostly static</td></tr>
+            <tr><td>Many range updates</td><td>Difference array</td><td>Can reconstruct after updates</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Using sliding window when negative numbers break monotonicity.</li>
+          <li>Forgetting whether a range is inclusive or exclusive.</li>
+          <li>Writing binary search without a clear invariant.</li>
+          <li>Sorting an array and accidentally losing the original order needed by the problem.</li>
+          <li>Using <code>ArrayList&lt;Integer&gt;</code> without remembering that it stores boxed objects, not primitive <code>int</code>.</li>
+          <li>Calling a two-pointer algorithm O(n) without explaining that each pointer moves at most n times.</li>
+        </ul>
+
+        <h2>Analysis routine for array problems</h2>
+        <pre><code>ANALYZE-ARRAY-PROBLEM(problem):
+    1. Is order important?
+    2. Is the array sorted, or are we allowed to sort it?
+    3. Are we asking about individual elements, pairs, or contiguous ranges?
+    4. Can one pass with small state solve it?
+    5. Would preprocessing with prefix sums or a HashMap help?
+    6. Define every pointer or index in English.
+    7. State time and auxiliary space.
+    8. State whether the input is modified.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Implement <code>contains</code>, <code>max</code>, and <code>countAbove</code> for an <code>int[]</code>.</li>
+          <li>Use binary search to find the first index where <code>a[i] >= target</code>.</li>
+          <li>Remove duplicates from a sorted array in place.</li>
+          <li>Find the maximum sum of a length-k subarray.</li>
+          <li>Find the minimum length positive subarray with sum at least target.</li>
+          <li>Use prefix sums to answer five range-sum queries.</li>
+          <li>Use a difference array to apply many range increments.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-04-arrays</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-04-arrays/
+  README.md
+  src/
+    ArrayPatterns.java
+    Main.java
+  analysis/
+    array-patterns.md</code></pre>
+        <h3>Required methods</h3>
+        <pre><code>class ArrayPatterns {
+    static int binarySearch(int[] a, int target) { ... }
+    static int lowerBound(int[] a, int target) { ... }
+    static int[] twoSumSorted(int[] a, int target) { ... }
+    static int removeDuplicatesSorted(int[] a) { ... }
+    static int maxSumLengthK(int[] a, int k) { ... }
+    static int minLengthAtLeastTarget(int[] a, int target) { ... }
+    static int[] buildPrefix(int[] a) { ... }
+    static int rangeSum(int[] prefix, int left, int rightExclusive) { ... }
+    static int countSubarraysWithSumK(int[] a, int k) { ... }
+}</code></pre>
+        <h3>README requirements</h3>
+        <ul>
+          <li>Explain which pattern each method uses.</li>
+          <li>Include at least two tests for each method.</li>
+          <li>For every method, state time complexity and auxiliary space.</li>
+          <li>For sliding window methods, state the condition that makes the window valid.</li>
+          <li>For binary search methods, state the invariant.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Implement <code>productExceptSelf</code> without division in O(n) time. Try first with O(n) extra space, then
+          improve to O(1) auxiliary space besides the output array.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to choose between scanning, binary search, two pointers, sliding
+          window, prefix sums, and difference arrays based on the operation the problem needs.
+        </div>
+        <nav class="pager"><a href="lesson-03.html">← Previous</a><a href="lesson-05.html">Next: Linked Lists, Stacks, Queues →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

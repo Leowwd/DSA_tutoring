@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 7 - Trees and Binary Search Trees</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-06.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-08.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a aria-current="page" href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 7</p>
+        <h1>Trees, Traversals, and Binary Search Trees</h1>
+        <p class="summary">
+          Trees are recursive data structures. Each node can be treated as the root of a smaller tree. This lesson uses
+          the recursive contract from Lesson 6 to understand traversal, tree properties, and binary search trees.
+        </p>
+
+        <h2>Example first: a file system</h2>
+        <p>
+          A folder can contain files and other folders. Each subfolder can contain more files and folders. This nested
+          structure is a tree.
+        </p>
+        <pre><code>project/
+  src/
+    Main.java
+    TreeNode.java
+  tests/
+    TreeTest.java
+  README.md</code></pre>
+        <p>
+          Trees appear in file systems, HTML documents, JSON data, decision trees, database indexes, syntax trees, game
+          search, and hierarchical clustering.
+        </p>
+
+        <h2>Tree vocabulary</h2>
+        <table>
+          <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>Root</td><td>The top node of the tree</td></tr>
+            <tr><td>Parent / child</td><td>Direct relationship between connected nodes</td></tr>
+            <tr><td>Leaf</td><td>A node with no children</td></tr>
+            <tr><td>Subtree</td><td>A node together with all descendants below it</td></tr>
+            <tr><td>Depth</td><td>Number of edges from root to the node</td></tr>
+            <tr><td>Height</td><td>Number of edges on the longest path down to a leaf</td></tr>
+            <tr><td>Binary tree</td><td>Each node has at most two children</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Binary tree node</h2>
+        <pre><code>class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+}</code></pre>
+        <p>
+          A binary tree is either empty, or it is a node with a left subtree and a right subtree. That sentence is the
+          reason recursion works so well on trees.
+        </p>
+
+        <h2>Recursive contract: sum of a tree</h2>
+        <pre><code>static int sum(TreeNode root) {
+    if (root == null) return 0;
+    return root.val + sum(root.left) + sum(root.right);
+}</code></pre>
+        <p>
+          Contract: <code>sum(root)</code> returns the sum of every value in the tree rooted at <code>root</code>. If
+          <code>root</code> is null, the tree is empty and the sum is 0. Otherwise, the answer is the root value plus the
+          sums of the two smaller trees.
+        </p>
+
+        <h2>Common tree property methods</h2>
+        <pre><code>static int countNodes(TreeNode root) {
+    if (root == null) return 0;
+    return 1 + countNodes(root.left) + countNodes(root.right);
+}
+
+static int maxDepth(TreeNode root) {
+    if (root == null) return 0;
+    return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
+}
+
+static boolean contains(TreeNode root, int target) {
+    if (root == null) return false;
+    if (root.val == target) return true;
+    return contains(root.left, target) || contains(root.right, target);
+}</code></pre>
+        <p>
+          Each method visits every node in the worst case, so time is <code>O(n)</code>. Stack space is <code>O(h)</code>,
+          where h is tree height.
+        </p>
+
+        <h2>Depth-first traversals</h2>
+        <p>
+          A traversal is an order for visiting nodes. Depth-first traversals go down a branch before coming back up.
+        </p>
+        <table>
+          <thead><tr><th>Traversal</th><th>Order</th><th>Useful for</th></tr></thead>
+          <tbody>
+            <tr><td>Preorder</td><td>Node, left, right</td><td>Copying or serializing a tree</td></tr>
+            <tr><td>Inorder</td><td>Left, node, right</td><td>Sorted order in a BST</td></tr>
+            <tr><td>Postorder</td><td>Left, right, node</td><td>Deleting/freeing, computing child info first</td></tr>
+          </tbody>
+        </table>
+        <pre><code>static void preorder(TreeNode root) {
+    if (root == null) return;
+    System.out.println(root.val);
+    preorder(root.left);
+    preorder(root.right);
+}
+
+static void inorder(TreeNode root) {
+    if (root == null) return;
+    inorder(root.left);
+    System.out.println(root.val);
+    inorder(root.right);
+}
+
+static void postorder(TreeNode root) {
+    if (root == null) return;
+    postorder(root.left);
+    postorder(root.right);
+    System.out.println(root.val);
+}</code></pre>
+
+        <h2>Level-order traversal: BFS on a tree</h2>
+        <p>
+          Level-order traversal visits nodes by distance from the root. It uses a queue.
+        </p>
+        <pre><code>static List&lt;List&lt;Integer&gt;&gt; levelOrder(TreeNode root) {
+    List&lt;List&lt;Integer&gt;&gt; levels = new ArrayList&lt;&gt;();
+    if (root == null) return levels;
+
+    Deque&lt;TreeNode&gt; queue = new ArrayDeque&lt;&gt;();
+    queue.addLast(root);
+
+    while (!queue.isEmpty()) {
+        int levelSize = queue.size();
+        List&lt;Integer&gt; level = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; levelSize; i++) {
+            TreeNode node = queue.removeFirst();
+            level.add(node.val);
+            if (node.left != null) queue.addLast(node.left);
+            if (node.right != null) queue.addLast(node.right);
+        }
+        levels.add(level);
+    }
+    return levels;
+}</code></pre>
+        <p>
+          Time is <code>O(n)</code>. Auxiliary space is <code>O(w)</code>, where w is the maximum width of the tree. In
+          the worst case, this can be <code>O(n)</code>.
+        </p>
+
+        <h2>Binary search tree invariant</h2>
+        <p>
+          A binary search tree, or BST, is a binary tree with an ordering invariant:
+        </p>
+        <pre><code>For every node:
+    all values in the left subtree are smaller
+    all values in the right subtree are larger</code></pre>
+        <p>
+          The invariant must hold for every subtree, not just direct children.
+        </p>
+        <pre><code>        8
+      /   \
+     3     10
+    / \      \
+   1   6      14</code></pre>
+        <p>
+          Inorder traversal of a BST visits values in sorted order.
+        </p>
+
+        <h2>Ordered set interface</h2>
+        <p>
+          A BST is one implementation of an ordered set. The interface describes behavior; the tree shape determines
+          performance.
+        </p>
+        <pre><code>interface OrderedSet&lt;E extends Comparable&lt;E&gt;&gt; {
+    boolean contains(E value);
+    void add(E value);
+    boolean remove(E value);
+    E min();
+    E max();
+    int size();
+    boolean isEmpty();
+}</code></pre>
+
+        <h2>BST search</h2>
+        <p>
+          Search compares the target with the current node and chooses one subtree.
+        </p>
+        <pre><code>public boolean contains(int x) {
+    TreeNode cur = root;
+    while (cur != null) {
+        if (x == cur.val) return true;
+        if (x &lt; cur.val) cur = cur.left;
+        else cur = cur.right;
+    }
+    return false;
+}</code></pre>
+        <p>
+          Time is <code>O(h)</code>, where h is tree height. If the tree is balanced, h is <code>O(log n)</code>. If the
+          tree is a chain, h is <code>O(n)</code>.
+        </p>
+
+        <h2>BST insertion</h2>
+        <p>
+          Recursive insertion often returns the new subtree root. This pattern makes it easy to attach new nodes.
+        </p>
+        <pre><code>class IntBST {
+    private TreeNode root;
+    private int size;
+
+    public void add(int x) {
+        int oldSize = size;
+        root = add(root, x);
+    }
+
+    private TreeNode add(TreeNode node, int x) {
+        if (node == null) {
+            size++;
+            return new TreeNode(x);
+        }
+        if (x &lt; node.val) node.left = add(node.left, x);
+        else if (x &gt; node.val) node.right = add(node.right, x);
+        return node;
+    }
+}</code></pre>
+        <p>
+          This version ignores duplicates. Another design could store duplicate counts or allow equal values on one side.
+          The important part is to define the rule clearly.
+        </p>
+
+        <h2>BST min and max</h2>
+        <p>
+          The minimum value is the leftmost node. The maximum value is the rightmost node.
+        </p>
+        <pre><code>public int min() {
+    if (root == null) throw new NoSuchElementException();
+    TreeNode cur = root;
+    while (cur.left != null) {
+        cur = cur.left;
+    }
+    return cur.val;
+}
+
+public int max() {
+    if (root == null) throw new NoSuchElementException();
+    TreeNode cur = root;
+    while (cur.right != null) {
+        cur = cur.right;
+    }
+    return cur.val;
+}</code></pre>
+
+        <h2>BST deletion</h2>
+        <p>
+          Deletion has three cases:
+        </p>
+        <ol>
+          <li>The node is a leaf: remove it directly.</li>
+          <li>The node has one child: replace the node with its child.</li>
+          <li>The node has two children: replace the value with its inorder successor, then delete the successor.</li>
+        </ol>
+        <pre><code>private TreeNode remove(TreeNode node, int x) {
+    if (node == null) return null;
+
+    if (x &lt; node.val) {
+        node.left = remove(node.left, x);
+    } else if (x &gt; node.val) {
+        node.right = remove(node.right, x);
+    } else {
+        if (node.left == null) return node.right;
+        if (node.right == null) return node.left;
+
+        TreeNode successor = minNode(node.right);
+        node.val = successor.val;
+        node.right = remove(node.right, successor.val);
+    }
+    return node;
+}
+
+private TreeNode minNode(TreeNode node) {
+    while (node.left != null) node = node.left;
+    return node;
+}</code></pre>
+        <p>
+          Deletion is the first tree operation where the cases matter a lot. Draw the tree before coding.
+        </p>
+
+        <h2>Validating a BST</h2>
+        <p>
+          A common incorrect solution only compares each node to its children. That misses deeper violations. The correct
+          recursive state is a valid range.
+        </p>
+        <pre><code>static boolean isValidBST(TreeNode root) {
+    return valid(root, Long.MIN_VALUE, Long.MAX_VALUE);
+}
+
+static boolean valid(TreeNode node, long low, long high) {
+    if (node == null) return true;
+    if (node.val &lt;= low || node.val &gt;= high) return false;
+    return valid(node.left, low, node.val)
+        &amp;&amp; valid(node.right, node.val, high);
+}</code></pre>
+        <p>
+          Contract: <code>valid(node, low, high)</code> returns whether every value in the subtree is strictly between
+          <code>low</code> and <code>high</code>.
+        </p>
+
+        <h2>Lowest common ancestor</h2>
+        <p>
+          The lowest common ancestor of two nodes is the deepest node that has both as descendants. For a general binary
+          tree:
+        </p>
+        <pre><code>static TreeNode lca(TreeNode root, TreeNode p, TreeNode q) {
+    if (root == null || root == p || root == q) return root;
+    TreeNode left = lca(root.left, p, q);
+    TreeNode right = lca(root.right, p, q);
+    if (left != null &amp;&amp; right != null) return root;
+    return left != null ? left : right;
+}</code></pre>
+        <p>
+          In a BST, the ordering invariant gives a simpler solution: if both values are smaller, go left; if both are
+          larger, go right; otherwise the current node is the split point.
+        </p>
+        <pre><code>static TreeNode lcaBST(TreeNode root, int a, int b) {
+    TreeNode cur = root;
+    while (cur != null) {
+        if (a &lt; cur.val &amp;&amp; b &lt; cur.val) cur = cur.left;
+        else if (a &gt; cur.val &amp;&amp; b &gt; cur.val) cur = cur.right;
+        else return cur;
+    }
+    return null;
+}</code></pre>
+
+        <h2>Balanced vs unbalanced trees</h2>
+        <p>
+          A BST is fast only when its height is small. If values are inserted in sorted order, the tree can become a
+          linked list.
+        </p>
+        <pre><code>Insert: 1, 2, 3, 4, 5
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5</code></pre>
+        <p>
+          Search becomes <code>O(n)</code>. Balanced search trees, such as AVL trees, red-black trees, and B-trees, add
+          rules to keep height <code>O(log n)</code>. Java's <code>TreeSet</code> and <code>TreeMap</code> are backed by
+          balanced red-black trees.
+        </p>
+
+        <h2>Java library connection</h2>
+        <table>
+          <thead><tr><th>Need</th><th>Java structure</th><th>Typical cost</th></tr></thead>
+          <tbody>
+            <tr><td>Ordered unique values</td><td><code>TreeSet&lt;E&gt;</code></td><td>O(log n) add/search/remove</td></tr>
+            <tr><td>Ordered key-value pairs</td><td><code>TreeMap&lt;K,V&gt;</code></td><td>O(log n) put/get/remove</td></tr>
+            <tr><td>Fast unordered lookup</td><td><code>HashSet</code>, <code>HashMap</code></td><td>Expected O(1)</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Use a tree when order matters: smallest, largest, range queries, sorted iteration, floor/ceiling operations.
+          Use a hash table when order does not matter and expected constant lookup is enough.
+        </p>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Assuming every binary tree is a BST.</li>
+          <li>Checking BST validity only against direct children.</li>
+          <li>Forgetting recursion stack space: <code>O(h)</code>.</li>
+          <li>Assuming BST operations are always O(log n) without checking balance.</li>
+          <li>Confusing depth and height.</li>
+          <li>Using inorder traversal on a non-BST and expecting sorted output.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-TREE(problem):
+    1. Is this a general tree, binary tree, or BST?
+    2. Define the recursive contract.
+    3. Identify what each subtree should return.
+    4. Count whether every node is visited or only one path is followed.
+    5. Use n for number of nodes and h for height.
+    6. Include recursion stack or queue space.
+    7. State whether balance assumptions are required.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Write preorder, inorder, and postorder traversals.</li>
+          <li>Compute sum, node count, and max depth.</li>
+          <li>Implement level-order traversal using <code>ArrayDeque</code>.</li>
+          <li>Validate a BST using low/high bounds.</li>
+          <li>Implement BST insert and search.</li>
+          <li>Find min and max in a BST.</li>
+          <li>Find lowest common ancestor in both a binary tree and a BST.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-07-trees</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-07-trees/
+  README.md
+  src/
+    TreeNode.java
+    TreeProblems.java
+    OrderedSet.java
+    IntBST.java
+    Main.java
+  analysis/
+    tree-analysis.md</code></pre>
+        <h3>Required methods</h3>
+        <ul>
+          <li><code>sum(TreeNode root)</code></li>
+          <li><code>countNodes(TreeNode root)</code></li>
+          <li><code>maxDepth(TreeNode root)</code></li>
+          <li><code>levelOrder(TreeNode root)</code></li>
+          <li><code>isValidBST(TreeNode root)</code></li>
+          <li><code>lca(TreeNode root, TreeNode p, TreeNode q)</code></li>
+          <li><code>IntBST.contains</code>, <code>add</code>, <code>min</code>, <code>max</code>, and optional <code>remove</code></li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>Define root, leaf, subtree, height, and depth.</li>
+          <li>Explain preorder, inorder, postorder, and level-order traversal.</li>
+          <li>For every method, state time and auxiliary space using n and h.</li>
+          <li>Explain why an unbalanced BST can degrade to O(n).</li>
+          <li>Include at least two tests for each required method.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Build a balanced BST from a sorted array in O(n) time. Then compare its height with a BST built by inserting
+          the same values in sorted order.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to write recursive contracts for tree methods, explain traversal order,
+          and distinguish general binary tree logic from BST invariant logic.
+        </div>
+        <nav class="pager"><a href="lesson-06.html">← Previous</a><a href="lesson-08.html">Next: Heaps and Priority Queues →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

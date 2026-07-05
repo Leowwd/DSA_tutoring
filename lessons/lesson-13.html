@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 13 - Dynamic Programming</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-12.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-14.html">Next</a></nav>
+    </header>
+
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a aria-current="page" href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 13</p>
+        <h1>Dynamic Programming: States, Transitions, and Tables</h1>
+        <p class="summary">
+          Dynamic programming is a way to avoid solving the same subproblem over and over. The core skill is not
+          memorizing formulas. The core skill is learning how to define a state, connect states with transitions,
+          and compute them in a valid order.
+        </p>
+
+        <h2>Example first: why naive recursion becomes slow</h2>
+        <p>
+          Suppose a staircase has <code>n</code> steps. You can climb either 1 or 2 steps at a time. How many different
+          ways are there to reach the top?
+        </p>
+        <p>
+          The natural recursive idea is simple: to reach step <code>n</code>, the last move came from
+          <code>n - 1</code> or <code>n - 2</code>.
+        </p>
+        <pre><code>static int climbStairsSlow(int n) {
+    if (n == 0) return 1;
+    if (n &lt; 0) return 0;
+    return climbStairsSlow(n - 1) + climbStairsSlow(n - 2);
+}</code></pre>
+        <p>
+          This code is correct, but it is slow. For example, <code>climbStairsSlow(6)</code> calls
+          <code>climbStairsSlow(4)</code> more than once. It also calls <code>climbStairsSlow(3)</code>,
+          <code>climbStairsSlow(2)</code>, and <code>climbStairsSlow(1)</code> many times. The recursion tree has
+          repeated subtrees.
+        </p>
+        <p class="note">
+          DP starts when two things are both true: the problem can be split into smaller subproblems, and many of those
+          subproblems repeat.
+        </p>
+
+        <h2>Memoization: recursion plus a cache</h2>
+        <p>
+          Memoization keeps the recursive meaning but stores each answer after computing it once. The first call to a
+          state does the work; later calls return from the cache.
+        </p>
+        <pre><code>static int climbStairsMemo(int n) {
+    int[] memo = new int[n + 1];
+    Arrays.fill(memo, -1);
+    return climb(n, memo);
+}
+
+static int climb(int stepsLeft, int[] memo) {
+    if (stepsLeft == 0) return 1;
+    if (stepsLeft &lt; 0) return 0;
+    if (memo[stepsLeft] != -1) return memo[stepsLeft];
+
+    memo[stepsLeft] = climb(stepsLeft - 1, memo) + climb(stepsLeft - 2, memo);
+    return memo[stepsLeft];
+}</code></pre>
+        <p>
+          There are only <code>n + 1</code> possible values of <code>stepsLeft</code>. Each one is computed once, so the
+          time complexity becomes <code>O(n)</code>. The memo array and recursion stack use <code>O(n)</code> space.
+        </p>
+
+        <h2>Tabulation: build the table bottom-up</h2>
+        <p>
+          Tabulation removes recursion. Instead of asking the original problem to call smaller problems, we fill smaller
+          answers first and use them to build larger answers.
+        </p>
+        <pre><code>static int climbStairsTable(int n) {
+    int[] dp = new int[n + 1];
+    dp[0] = 1;
+
+    for (int i = 1; i &lt;= n; i++) {
+        dp[i] += dp[i - 1];
+        if (i &gt;= 2) dp[i] += dp[i - 2];
+    }
+    return dp[n];
+}</code></pre>
+        <p>
+          Here, <code>dp[i]</code> means "the number of ways to reach step <code>i</code>." The transition says:
+          every way to reach <code>i - 1</code> can take one more step, and every way to reach <code>i - 2</code> can
+          take a two-step jump.
+        </p>
+
+        <h2>The four questions of DP</h2>
+        <p>
+          Before writing Java, answer these four questions in complete sentences. If any answer is vague, the code will
+          probably be vague too.
+        </p>
+        <table>
+          <thead><tr><th>Question</th><th>What it means</th><th>Climbing stairs answer</th></tr></thead>
+          <tbody>
+            <tr><td>State</td><td>What does one table entry represent?</td><td><code>dp[i]</code> is ways to reach step <code>i</code>.</td></tr>
+            <tr><td>Transition</td><td>How do smaller states create this state?</td><td><code>dp[i] = dp[i - 1] + dp[i - 2]</code>.</td></tr>
+            <tr><td>Base case</td><td>What answers are known immediately?</td><td><code>dp[0] = 1</code>.</td></tr>
+            <tr><td>Order</td><td>Which states must be computed first?</td><td>Compute from small <code>i</code> to large <code>i</code>.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Memoization vs tabulation</h2>
+        <table>
+          <thead><tr><th>Style</th><th>Best when</th><th>Risk</th></tr></thead>
+          <tbody>
+            <tr><td>Memoization</td><td>The recursive structure is obvious, or not all states are reachable.</td><td>Deep recursion can overflow the stack.</td></tr>
+            <tr><td>Tabulation</td><td>The evaluation order is simple and all states are likely needed.</td><td>It is easy to fill the table in the wrong direction.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Both styles have the same DP idea. Memoization asks, "What is the answer to this state?" Tabulation asks,
+          "Which states can I already build?"
+        </p>
+
+        <h2>Pattern 1: 1D choice DP</h2>
+        <p>
+          Many DP problems process an array from left to right. At each index, we choose whether to take something,
+          skip something, start something, or extend something.
+        </p>
+        <p>
+          Example: a row of houses contains money. Adjacent houses cannot both be chosen. What is the maximum money
+          that can be collected?
+        </p>
+        <pre><code>static int rob(int[] money) {
+    if (money.length == 0) return 0;
+
+    int[] dp = new int[money.length + 1];
+    dp[0] = 0;
+    dp[1] = money[0];
+
+    for (int i = 2; i &lt;= money.length; i++) {
+        int skip = dp[i - 1];
+        int take = dp[i - 2] + money[i - 1];
+        dp[i] = Math.max(skip, take);
+    }
+    return dp[money.length];
+}</code></pre>
+        <p>
+          State: <code>dp[i]</code> is the best answer using the first <code>i</code> houses. Transition:
+          either skip house <code>i - 1</code>, or take it and combine it with the best answer before its neighbor.
+        </p>
+        <p>
+          The table version uses <code>O(n)</code> space, but the transition only needs the previous two values. We can
+          compress it to <code>O(1)</code> extra space.
+        </p>
+        <pre><code>static int robSpaceOptimized(int[] money) {
+    int twoBack = 0;
+    int oneBack = 0;
+
+    for (int amount : money) {
+        int cur = Math.max(oneBack, twoBack + amount);
+        twoBack = oneBack;
+        oneBack = cur;
+    }
+    return oneBack;
+}</code></pre>
+
+        <h2>Pattern 2: grid DP</h2>
+        <p>
+          Grid DP usually means the state is a cell, such as <code>dp[r][c]</code>. The transition depends on the legal
+          directions of movement.
+        </p>
+        <p>
+          Example: starting at the top-left corner, moving only right or down, how many paths reach the bottom-right
+          corner?
+        </p>
+        <pre><code>static int uniquePaths(int rows, int cols) {
+    int[][] dp = new int[rows][cols];
+
+    for (int r = 0; r &lt; rows; r++) dp[r][0] = 1;
+    for (int c = 0; c &lt; cols; c++) dp[0][c] = 1;
+
+    for (int r = 1; r &lt; rows; r++) {
+        for (int c = 1; c &lt; cols; c++) {
+            dp[r][c] = dp[r - 1][c] + dp[r][c - 1];
+        }
+    }
+    return dp[rows - 1][cols - 1];
+}</code></pre>
+        <p>
+          State: <code>dp[r][c]</code> is the number of ways to reach cell <code>(r, c)</code>. Transition:
+          the last move came from above or from the left.
+        </p>
+
+        <h2>Grid DP with costs</h2>
+        <p>
+          Instead of counting paths, sometimes we want the cheapest path. The state shape is the same, but the transition
+          changes from addition to minimum.
+        </p>
+        <pre><code>static int minPathSum(int[][] cost) {
+    int rows = cost.length;
+    int cols = cost[0].length;
+    int[][] dp = new int[rows][cols];
+
+    dp[0][0] = cost[0][0];
+    for (int r = 1; r &lt; rows; r++) {
+        dp[r][0] = dp[r - 1][0] + cost[r][0];
+    }
+    for (int c = 1; c &lt; cols; c++) {
+        dp[0][c] = dp[0][c - 1] + cost[0][c];
+    }
+
+    for (int r = 1; r &lt; rows; r++) {
+        for (int c = 1; c &lt; cols; c++) {
+            dp[r][c] = cost[r][c] + Math.min(dp[r - 1][c], dp[r][c - 1]);
+        }
+    }
+    return dp[rows - 1][cols - 1];
+}</code></pre>
+        <p>
+          A useful observation: graph shortest path and DP can look similar. The difference is that DP normally relies
+          on an acyclic dependency order. In this grid, every state depends only on cells above or left, so the row-major
+          order is valid.
+        </p>
+
+        <h2>Pattern 3: subsequence DP</h2>
+        <p>
+          Subsequence problems often compare prefixes of strings or arrays. A subsequence keeps relative order but does
+          not need to be contiguous.
+        </p>
+        <p>
+          Example: what is the length of the longest common subsequence between two strings?
+        </p>
+        <pre><code>static int longestCommonSubsequence(String a, String b) {
+    int[][] dp = new int[a.length() + 1][b.length() + 1];
+
+    for (int i = 1; i &lt;= a.length(); i++) {
+        for (int j = 1; j &lt;= b.length(); j++) {
+            if (a.charAt(i - 1) == b.charAt(j - 1)) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[a.length()][b.length()];
+}</code></pre>
+        <p>
+          State: <code>dp[i][j]</code> is the LCS length using the first <code>i</code> characters of <code>a</code>
+          and the first <code>j</code> characters of <code>b</code>. The extra row and column represent empty prefixes,
+          which makes the base cases clean.
+        </p>
+        <pre><code>// Example:
+// a = "abcde"
+// b = "ace"
+// LCS = "ace", length 3</code></pre>
+
+        <h2>Pattern 4: knapsack DP</h2>
+        <p>
+          Knapsack problems are about limited resources. Each item has a cost, and we want the best value without
+          exceeding capacity.
+        </p>
+        <p>
+          In 0/1 knapsack, each item can be chosen at most once.
+        </p>
+        <pre><code>static int knapsack(int[] weight, int[] value, int capacity) {
+    int n = weight.length;
+    int[][] dp = new int[n + 1][capacity + 1];
+
+    for (int i = 1; i &lt;= n; i++) {
+        for (int cap = 0; cap &lt;= capacity; cap++) {
+            dp[i][cap] = dp[i - 1][cap];
+
+            if (weight[i - 1] &lt;= cap) {
+                int take = dp[i - 1][cap - weight[i - 1]] + value[i - 1];
+                dp[i][cap] = Math.max(dp[i][cap], take);
+            }
+        }
+    }
+    return dp[n][capacity];
+}</code></pre>
+        <p>
+          State: <code>dp[i][cap]</code> is the best value using the first <code>i</code> items with capacity
+          <code>cap</code>. Transition: skip item <code>i - 1</code>, or take it if there is enough capacity.
+        </p>
+        <p>
+          Time complexity is <code>O(n * capacity)</code>. This is called pseudo-polynomial time because it depends on
+          the numeric capacity, not only the number of input items.
+        </p>
+
+        <h2>Space optimization and loop direction</h2>
+        <p>
+          0/1 knapsack can be compressed to a 1D array, but the loop direction matters. We iterate capacity backward so
+          the same item is not reused multiple times in one iteration.
+        </p>
+        <pre><code>static int knapsackOneArray(int[] weight, int[] value, int capacity) {
+    int[] dp = new int[capacity + 1];
+
+    for (int i = 0; i &lt; weight.length; i++) {
+        for (int cap = capacity; cap &gt;= weight[i]; cap--) {
+            dp[cap] = Math.max(dp[cap], dp[cap - weight[i]] + value[i]);
+        }
+    }
+    return dp[capacity];
+}</code></pre>
+        <p>
+          If the inner loop goes forward, <code>dp[cap - weight[i]]</code> may already include item <code>i</code>,
+          which would turn the solution into an unbounded knapsack variant by accident.
+        </p>
+
+        <h2>Top-down DP with non-array states</h2>
+        <p>
+          Not every DP state is a clean integer index. Sometimes a state is a pair, a string, a bitmask, or a custom
+          object. In those cases, a <code>HashMap</code> memo can be easier than an array.
+        </p>
+        <pre><code>static int minCoins(int[] coins, int amount) {
+    Map&lt;Integer, Integer&gt; memo = new HashMap&lt;&gt;();
+    int ans = minCoinsFrom(coins, amount, memo);
+    return ans &gt;= 1_000_000 ? -1 : ans;
+}
+
+static int minCoinsFrom(int[] coins, int remaining, Map&lt;Integer, Integer&gt; memo) {
+    if (remaining == 0) return 0;
+    if (remaining &lt; 0) return 1_000_000;
+    if (memo.containsKey(remaining)) return memo.get(remaining);
+
+    int best = 1_000_000;
+    for (int coin : coins) {
+        best = Math.min(best, 1 + minCoinsFrom(coins, remaining - coin, memo));
+    }
+
+    memo.put(remaining, best);
+    return best;
+}</code></pre>
+        <p>
+          This is DP because <code>remaining</code> is the state, and many paths may ask for the same remaining amount.
+          It is also a shortest-path-like problem where every coin is an edge from one amount to a smaller amount.
+        </p>
+
+        <h2>DP as a graph of dependencies</h2>
+        <p>
+          A good way to understand DP is to imagine each state as a vertex in a directed graph. If
+          <code>dp[i]</code> depends on <code>dp[i - 1]</code>, draw an edge from <code>i</code> to
+          <code>i - 1</code>. A tabulation order is valid only if every dependency is computed before the state that
+          needs it.
+        </p>
+        <pre><code>dp[i] depends on dp[i - 1] and dp[i - 2]
+
+0    1    2    3    4    5
+          ^    ^    ^    ^
+          |    |    |    |
+        earlier states must already be known</code></pre>
+        <p>
+          This is why some DP problems are naturally left-to-right, some are right-to-left, some are diagonal across a
+          matrix, and some are easier with memoized recursion.
+        </p>
+
+        <h2>How to recognize DP</h2>
+        <ul>
+          <li>The problem asks for an optimum: minimum, maximum, fewest, most, longest, shortest under special constraints.</li>
+          <li>The problem asks for a count of ways.</li>
+          <li>A recursive solution works but repeats many calls.</li>
+          <li>The decision at one index affects which future choices are legal.</li>
+          <li>The input has prefixes, capacities, grid positions, or remaining amounts.</li>
+        </ul>
+        <p>
+          These are signals, not guarantees. Some "shortest" problems are graph problems, some "maximum" problems are
+          greedy, and some counting problems require combinatorics. The state definition is what decides whether DP is
+          a good fit.
+        </p>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li><strong>Writing code before defining the state.</strong> A DP table without a clear meaning is just an array.</li>
+          <li><strong>Off-by-one errors.</strong> Extra rows and columns are often worth it because empty prefixes become easy.</li>
+          <li><strong>Wrong loop direction.</strong> Especially dangerous in compressed knapsack-style DP.</li>
+          <li><strong>Returning the wrong cell.</strong> Know whether the answer is <code>dp[n]</code>, <code>max(dp)</code>, or another state.</li>
+          <li><strong>Confusing subsequence and substring.</strong> Substrings are contiguous; subsequences are not.</li>
+          <li><strong>Ignoring integer overflow.</strong> Counting problems can exceed <code>int</code>; use <code>long</code> if needed.</li>
+        </ul>
+
+        <h2>Complexity analysis routine</h2>
+        <p>
+          For DP, complexity is usually found by counting states and work per state.
+        </p>
+        <pre><code>time = number of states * work per state
+space = number of stored states + recursion stack if memoized</code></pre>
+        <table>
+          <thead><tr><th>Problem</th><th>States</th><th>Work per state</th><th>Time</th><th>Space</th></tr></thead>
+          <tbody>
+            <tr><td>Climbing stairs</td><td><code>n</code></td><td><code>O(1)</code></td><td><code>O(n)</code></td><td><code>O(n)</code> or <code>O(1)</code></td></tr>
+            <tr><td>Unique paths</td><td><code>rows * cols</code></td><td><code>O(1)</code></td><td><code>O(rows * cols)</code></td><td><code>O(rows * cols)</code></td></tr>
+            <tr><td>LCS</td><td><code>m * n</code></td><td><code>O(1)</code></td><td><code>O(m * n)</code></td><td><code>O(m * n)</code></td></tr>
+            <tr><td>Knapsack</td><td><code>n * capacity</code></td><td><code>O(1)</code></td><td><code>O(n * capacity)</code></td><td><code>O(n * capacity)</code> or <code>O(capacity)</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2>Practice sequence for a two-hour session</h2>
+        <ol>
+          <li>Trace <code>climbStairsSlow(5)</code> and circle repeated calls.</li>
+          <li>Write the four DP questions for climbing stairs, then implement memoization and tabulation.</li>
+          <li>Solve house robber by first writing a state sentence, not code.</li>
+          <li>Solve unique paths and min path sum to compare counting vs optimization on the same grid shape.</li>
+          <li>Trace a small LCS table by hand for <code>"abc"</code> and <code>"ac"</code>.</li>
+          <li>Implement 0/1 knapsack, then explain why the compressed version loops backward.</li>
+        </ol>
+
+        <h2>Homework: lesson-13-dynamic-programming</h2>
+        <p>
+          Create or update a GitHub repository folder named <code>lesson-13-dynamic-programming</code>. Include Java
+          source files, tests or a runnable demo, and a README with state definitions and complexity analysis.
+        </p>
+        <h3>Required problems</h3>
+        <ul>
+          <li><strong>Climbing stairs:</strong> implement slow recursion, memoization, tabulation, and space optimization.</li>
+          <li><strong>House robber:</strong> return the maximum non-adjacent sum and explain the take/skip transition.</li>
+          <li><strong>Unique paths:</strong> count paths in a grid moving only right or down.</li>
+          <li><strong>Min path sum:</strong> compute the minimum-cost path in a grid.</li>
+          <li><strong>Longest common subsequence:</strong> return the LCS length for two strings.</li>
+          <li><strong>0/1 knapsack:</strong> implement the 2D version and the 1D space-optimized version.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>For each problem, define the state in one complete English sentence.</li>
+          <li>Write the transition formula or transition rule.</li>
+          <li>List base cases and explain why they are correct.</li>
+          <li>Give time and space complexity using "number of states times work per state."</li>
+          <li>For knapsack, explain why the 1D loop must go backward.</li>
+        </ul>
+        <p class="checkpoint">
+          A good DP submission should make the table meaning obvious before the code. The goal is not only to pass
+          tests; the goal is to explain why each table entry is correct.
+        </p>
+
+        <nav class="pager"><a href="lesson-12.html">&larr; Previous</a><a href="lesson-14.html">Next: Integration Project &rarr;</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

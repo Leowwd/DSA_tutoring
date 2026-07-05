@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 14 - Integration Project</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-13.html">Previous</a><a href="../assignments.html">Assignments</a><a href="../index.html">Home</a></nav>
+    </header>
+
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a aria-current="page" href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 14</p>
+        <h1>Integration Project: Autocomplete Search Engine</h1>
+        <p class="summary">
+          This capstone lesson connects strings, maps, trees, DFS, heaps, sorting, testing, and complexity analysis in
+          one Java project. The goal is not to build a production search engine. The goal is to learn how engineers
+          choose data structures from the operations they need to support.
+        </p>
+
+        <h2>Example first: why autocomplete is a DSA problem</h2>
+        <p>
+          Imagine a command-line program with a dictionary of searchable phrases. When the user types
+          <code>"app"</code>, the program should return suggestions such as <code>"apple"</code>,
+          <code>"application"</code>, and <code>"apply"</code>. If some words have been searched more often, those
+          should appear first.
+        </p>
+        <p>
+          The simplest approach stores all words in an array and scans every word for each query.
+        </p>
+        <pre><code>static List&lt;String&gt; naiveSuggestions(List&lt;String&gt; words, String prefix) {
+    List&lt;String&gt; result = new ArrayList&lt;&gt;();
+    for (String word : words) {
+        if (word.startsWith(prefix)) {
+            result.add(word);
+        }
+    }
+    return result;
+}</code></pre>
+        <p>
+          This is easy to write, but every query costs <code>O(n * p)</code> in the worst case, where
+          <code>n</code> is the number of words and <code>p</code> is the prefix length checked by
+          <code>startsWith</code>. If the dictionary grows, scanning everything becomes wasteful.
+        </p>
+        <p class="note">
+          The project question is: can we make prefix lookup depend mostly on the prefix length instead of the number
+          of stored words?
+        </p>
+
+        <h2>Operations before data structures</h2>
+        <p>
+          A common beginner mistake is to pick a data structure because it sounds advanced. A better engineering habit
+          is to list operations first, then choose structures that make those operations cheap.
+        </p>
+        <table>
+          <thead><tr><th>Operation</th><th>Question</th><th>Useful structure</th></tr></thead>
+          <tbody>
+            <tr><td>Add a term</td><td>Can we insert a word character by character?</td><td>Trie</td></tr>
+            <tr><td>Exact lookup</td><td>Does this complete word exist?</td><td>Trie or HashSet</td></tr>
+            <tr><td>Prefix lookup</td><td>Which words start with this prefix?</td><td>Trie plus DFS</td></tr>
+            <tr><td>Frequency tracking</td><td>How often was a word selected?</td><td>HashMap</td></tr>
+            <tr><td>Top-k ranking</td><td>Which k suggestions have highest score?</td><td>PriorityQueue or sorting</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Project interface</h2>
+        <p>
+          Start with an interface. This separates the public behavior from the implementation. A future implementation
+          could use a sorted array, a trie, or a database, but users of the class should not need to know that.
+        </p>
+        <pre><code>public interface Autocomplete {
+    void add(String term);
+    boolean contains(String term);
+    void recordSelection(String term);
+    List&lt;String&gt; suggestions(String prefix, int limit);
+}</code></pre>
+        <p>
+          The method <code>recordSelection</code> lets the engine learn from usage. If <code>"application"</code> is
+          selected often, it should rank above less common terms with the same prefix.
+        </p>
+
+        <h2>Trie node design</h2>
+        <p>
+          A trie is a tree where each edge represents a character. Words with the same prefix share the same path.
+          Each node needs child links, a marker for complete words, and enough data to recover or rank the term.
+        </p>
+        <pre><code>class TrieNode {
+    Map&lt;Character, TrieNode&gt; children = new HashMap&lt;&gt;();
+    boolean isTerm;
+    String term;
+}</code></pre>
+        <p>
+          Storing <code>term</code> only at terminal nodes makes collection easier: when DFS reaches a node where
+          <code>isTerm</code> is true, it can add <code>node.term</code> directly.
+        </p>
+
+        <h2>Basic implementation</h2>
+        <p>
+          The first version supports insertion, exact lookup, and finding the node that represents a prefix.
+        </p>
+        <pre><code>public class TrieAutocomplete implements Autocomplete {
+    private final TrieNode root = new TrieNode();
+    private final Map&lt;String, Integer&gt; frequency = new HashMap&lt;&gt;();
+
+    @Override
+    public void add(String term) {
+        String cleaned = normalize(term);
+        if (cleaned.isEmpty()) return;
+
+        TrieNode cur = root;
+        for (char ch : cleaned.toCharArray()) {
+            cur = cur.children.computeIfAbsent(ch, key -&gt; new TrieNode());
+        }
+        cur.isTerm = true;
+        cur.term = cleaned;
+        frequency.putIfAbsent(cleaned, 0);
+    }
+
+    @Override
+    public boolean contains(String term) {
+        TrieNode node = findNode(normalize(term));
+        return node != null &amp;&amp; node.isTerm;
+    }
+
+    private TrieNode findNode(String text) {
+        TrieNode cur = root;
+        for (char ch : text.toCharArray()) {
+            cur = cur.children.get(ch);
+            if (cur == null) return null;
+        }
+        return cur;
+    }
+
+    private String normalize(String text) {
+        if (text == null) return "";
+        return text.trim().toLowerCase();
+    }
+}</code></pre>
+        <p>
+          Inserting a term of length <code>L</code> takes <code>O(L)</code> expected time because each character causes
+          one hash map lookup or insertion. Exact lookup also takes <code>O(L)</code> expected time.
+        </p>
+
+        <h2>Collecting all prefix matches with DFS</h2>
+        <p>
+          Once we find the node for a prefix, every complete term below that node is a valid suggestion. This is just
+          DFS on a tree.
+        </p>
+        <pre><code>private void collectAll(TrieNode node, List&lt;String&gt; out) {
+    if (node.isTerm) {
+        out.add(node.term);
+    }
+
+    for (TrieNode child : node.children.values()) {
+        collectAll(child, out);
+    }
+}</code></pre>
+        <p>
+          This traversal costs <code>O(m)</code>, where <code>m</code> is the number of trie nodes in the prefix
+          subtree visited by the search. Returning all matches can be expensive if the prefix is short, such as
+          <code>"a"</code>.
+        </p>
+
+        <h2>Ranking suggestions by frequency</h2>
+        <p>
+          A plain trie finds matching terms, but it does not decide which suggestions are most useful. We can track how
+          often each term is selected with a <code>HashMap&lt;String, Integer&gt;</code>.
+        </p>
+        <pre><code>@Override
+public void recordSelection(String term) {
+    String cleaned = normalize(term);
+    if (!contains(cleaned)) {
+        add(cleaned);
+    }
+    frequency.put(cleaned, frequency.getOrDefault(cleaned, 0) + 1);
+}</code></pre>
+        <p>
+          A simple ranked implementation can collect all matches, then sort them by frequency descending and
+          lexicographic order ascending.
+        </p>
+        <pre><code>@Override
+public List&lt;String&gt; suggestions(String prefix, int limit) {
+    if (limit &lt;= 0) return List.of();
+
+    TrieNode start = findNode(normalize(prefix));
+    if (start == null) return List.of();
+
+    List&lt;String&gt; matches = new ArrayList&lt;&gt;();
+    collectAll(start, matches);
+
+    matches.sort((a, b) -&gt; {
+        int byFrequency = Integer.compare(frequency.getOrDefault(b, 0), frequency.getOrDefault(a, 0));
+        if (byFrequency != 0) return byFrequency;
+        return a.compareTo(b);
+    });
+
+    if (matches.size() &lt;= limit) return matches;
+    return new ArrayList&lt;&gt;(matches.subList(0, limit));
+}</code></pre>
+        <p>
+          If there are <code>s</code> matching terms, sorting costs <code>O(s log s)</code>. This is perfectly fine for
+          a first project version because it is simple and correct.
+        </p>
+
+        <h2>Top-k with a priority queue</h2>
+        <p>
+          If the prefix has many matches but the user only wants <code>k</code> suggestions, a heap can avoid sorting
+          every match. Keep a min-heap of size at most <code>k</code>. The weakest suggestion stays at the top and gets
+          removed when a stronger one appears.
+        </p>
+        <pre><code>private List&lt;String&gt; topK(List&lt;String&gt; matches, int k) {
+    PriorityQueue&lt;String&gt; heap = new PriorityQueue&lt;&gt;((a, b) -&gt; {
+        int byFrequency = Integer.compare(frequency.getOrDefault(a, 0), frequency.getOrDefault(b, 0));
+        if (byFrequency != 0) return byFrequency;
+        return b.compareTo(a);
+    });
+
+    for (String term : matches) {
+        heap.add(term);
+        if (heap.size() &gt; k) {
+            heap.remove();
+        }
+    }
+
+    List&lt;String&gt; result = new ArrayList&lt;&gt;();
+    while (!heap.isEmpty()) {
+        result.add(heap.remove());
+    }
+    Collections.reverse(result);
+    return result;
+}</code></pre>
+        <p>
+          This costs <code>O(s log k)</code> after collecting matches, where <code>s</code> is the number of matching
+          terms. Sorting costs <code>O(s log s)</code>. The heap version is better when <code>k</code> is much smaller
+          than <code>s</code>.
+        </p>
+
+        <h2>Putting the pieces together</h2>
+        <p>
+          A complete version can use sorting first because it is easier to reason about. Then the project can add the
+          heap version as an optimization.
+        </p>
+        <pre><code>public List&lt;String&gt; suggestionsWithHeap(String prefix, int limit) {
+    if (limit &lt;= 0) return List.of();
+
+    TrieNode start = findNode(normalize(prefix));
+    if (start == null) return List.of();
+
+    List&lt;String&gt; matches = new ArrayList&lt;&gt;();
+    collectAll(start, matches);
+    return topK(matches, limit);
+}</code></pre>
+        <p>
+          This method combines several previous lessons: trie nodes are tree nodes, <code>collectAll</code> is DFS,
+          <code>frequency</code> is a hash map, and <code>topK</code> uses a heap.
+        </p>
+
+        <h2>Command-line demo</h2>
+        <p>
+          A small CLI makes the project easier to test manually. It does not need to be fancy. The important part is
+          that the program exercises the public interface instead of reaching into private fields.
+        </p>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Autocomplete engine = new TrieAutocomplete();
+        engine.add("apple");
+        engine.add("application");
+        engine.add("apply");
+        engine.add("banana");
+
+        engine.recordSelection("application");
+        engine.recordSelection("application");
+        engine.recordSelection("apple");
+
+        System.out.println(engine.suggestions("app", 3));
+    }
+}</code></pre>
+        <pre><code>// Expected output:
+// [application, apple, apply]</code></pre>
+
+        <h2>Testing strategy</h2>
+        <p>
+          A capstone project needs tests because multiple data structures interact. Test behavior through the interface.
+          Do not test private implementation details.
+        </p>
+        <table>
+          <thead><tr><th>Test case</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td>Empty prefix</td><td>Decide whether it returns top terms or all terms up to the limit.</td></tr>
+            <tr><td>No matching prefix</td><td>Should return an empty list, not crash.</td></tr>
+            <tr><td>Duplicate add</td><td>Should not create duplicate suggestions.</td></tr>
+            <tr><td>Case and spaces</td><td><code>" Apple "</code> and <code>"apple"</code> should behave consistently if normalized.</td></tr>
+            <tr><td>Frequency tie</td><td>Should use lexicographic order or another documented tie-breaker.</td></tr>
+            <tr><td>Limit smaller than matches</td><td>Should return exactly the best <code>k</code> suggestions.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>static void expectEquals(Object expected, Object actual) {
+    if (!Objects.equals(expected, actual)) {
+        throw new AssertionError("expected " + expected + " but got " + actual);
+    }
+}
+
+static void testRanking() {
+    Autocomplete engine = new TrieAutocomplete();
+    engine.add("apple");
+    engine.add("application");
+    engine.add("apply");
+
+    engine.recordSelection("apply");
+    engine.recordSelection("apply");
+    engine.recordSelection("apple");
+
+    expectEquals(List.of("apply", "apple"), engine.suggestions("app", 2));
+}</code></pre>
+
+        <h2>Complexity summary</h2>
+        <table>
+          <thead><tr><th>Operation</th><th>Time</th><th>Space</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>add(term)</code></td><td><code>O(L)</code> expected</td><td><code>O(L)</code> new nodes worst case</td><td><code>L</code> is term length.</td></tr>
+            <tr><td><code>contains(term)</code></td><td><code>O(L)</code> expected</td><td><code>O(1)</code></td><td>One child lookup per character.</td></tr>
+            <tr><td>Find prefix node</td><td><code>O(P)</code> expected</td><td><code>O(1)</code></td><td><code>P</code> is prefix length.</td></tr>
+            <tr><td>Collect matches</td><td><code>O(M)</code></td><td><code>O(H + S)</code></td><td><code>M</code> visited nodes, <code>H</code> recursion depth, <code>S</code> results.</td></tr>
+            <tr><td>Rank by sorting</td><td><code>O(S log S)</code></td><td><code>O(S)</code></td><td>Good first implementation.</td></tr>
+            <tr><td>Rank by heap</td><td><code>O(S log k)</code></td><td><code>O(k)</code></td><td>Better when <code>k</code> is small.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Design tradeoffs</h2>
+        <ul>
+          <li><strong>HashMap children vs array children:</strong> a <code>HashMap</code> supports any character set and saves space for sparse nodes; an array can be faster for fixed lowercase English letters.</li>
+          <li><strong>Store term at terminal node:</strong> uses more memory but simplifies DFS output.</li>
+          <li><strong>Sort all matches vs heap top-k:</strong> sorting is simpler; heap is better when only a small number of suggestions is needed.</li>
+          <li><strong>Normalize input or preserve original text:</strong> normalization makes lookup consistent; preserving original text may be better for display.</li>
+          <li><strong>Recursive DFS vs iterative DFS:</strong> recursion is concise; iterative traversal avoids stack overflow for very deep tries.</li>
+        </ul>
+
+        <h2>Suggested project structure</h2>
+        <pre><code>lesson-14-autocomplete/
+  README.md
+  src/
+    Autocomplete.java
+    TrieAutocomplete.java
+    TrieNode.java
+    Main.java
+  tests/
+    AutocompleteTest.java
+  analysis/
+    complexity.md
+    design-decisions.md</code></pre>
+        <p>
+          The repository should be readable by someone who did not watch the lesson. The README should explain what the
+          project does, how to run it, and which data structures are used.
+        </p>
+
+        <h2>Homework: lesson-14-autocomplete</h2>
+        <p>
+          Build the autocomplete engine as a GitHub submission. Include source code, tests or a runnable test harness,
+          and written analysis.
+        </p>
+        <h3>Required features</h3>
+        <ul>
+          <li>Implement the <code>Autocomplete</code> interface.</li>
+          <li>Use a trie for insertion, exact lookup, and prefix search.</li>
+          <li>Use a <code>HashMap</code> to track term frequency.</li>
+          <li>Return ranked suggestions using frequency descending and lexicographic order for ties.</li>
+          <li>Respect the <code>limit</code> argument in <code>suggestions(prefix, limit)</code>.</li>
+          <li>Include at least six tests covering the edge cases listed above.</li>
+        </ul>
+        <h3>Extension options</h3>
+        <ul>
+          <li>Add <code>remove(String term)</code> and clean up unused trie nodes.</li>
+          <li>Load terms from a text file.</li>
+          <li>Implement both sorting-based ranking and heap-based top-k ranking.</li>
+          <li>Add an iterative DFS version of suggestion collection.</li>
+          <li>Support phrases with spaces, punctuation, or mixed case while keeping consistent normalization rules.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>Describe the public interface and how to run the demo.</li>
+          <li>Explain why a trie is better than scanning all words for prefix search.</li>
+          <li>Explain where <code>HashMap</code>, DFS, sorting, and <code>PriorityQueue</code> appear in the project.</li>
+          <li>Give time and space complexity for <code>add</code>, <code>contains</code>, and <code>suggestions</code>.</li>
+          <li>Discuss at least two design tradeoffs from the lesson.</li>
+        </ul>
+        <p class="checkpoint">
+          Final checkpoint: the student should be able to justify every data structure in the project by naming the
+          operation it makes cheaper.
+        </p>
+
+        <nav class="pager"><a href="lesson-13.html">&larr; Previous</a><a href="../index.html">Back to Home &rarr;</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>
