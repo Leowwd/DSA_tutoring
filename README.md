@@ -27,23 +27,3 @@ The major DSA chapters now include small interfaces, pseudo code, and Java skele
 lists, BSTs, heaps, hash maps, graphs, BFS/DFS, DP, and a trie-based autocomplete project.
 
 The writing is mostly English, with student-facing notes and checkpoints.
-
-## Local preview
-
-You can open `index.html` directly in a browser.
-
-Optional local server:
-
-```bash
-python3 -m http.server 8000
-```
-
-Then open `http://localhost:8000`.
-
-## GitHub Pages deployment
-
-1. Create a GitHub repository.
-2. Push this folder to the `main` branch.
-3. Go to repository Settings -> Pages.
-4. Source: `Deploy from a branch`.
-5. Branch: `main`, folder: `/root`.
