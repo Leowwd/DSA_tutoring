@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Assignments - Java DSA Textbook</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="index.html">Home</a><a href="lessons/lesson-01.html">Start</a><a href="#rubric">Rubric</a></nav>
+    </header>
+
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Course</h2>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a aria-current="page" href="assignments.html">Assignments</a></li>
+          <li><a href="lessons/lesson-01.html">Lesson 1</a></li>
+          <li><a href="lessons/lesson-02.html">Lesson 2</a></li>
+          <li><a href="lessons/lesson-03.html">Lesson 3</a></li>
+          <li><a href="lessons/lesson-04.html">Lesson 4</a></li>
+          <li><a href="lessons/lesson-05.html">Lesson 5</a></li>
+          <li><a href="lessons/lesson-06.html">Lesson 6</a></li>
+          <li><a href="lessons/lesson-07.html">Lesson 7</a></li>
+          <li><a href="lessons/lesson-08.html">Lesson 8</a></li>
+          <li><a href="lessons/lesson-09.html">Lesson 9</a></li>
+          <li><a href="lessons/lesson-10.html">Lesson 10</a></li>
+          <li><a href="lessons/lesson-11.html">Lesson 11</a></li>
+          <li><a href="lessons/lesson-12.html">Lesson 12</a></li>
+          <li><a href="lessons/lesson-13.html">Lesson 13</a></li>
+          <li><a href="lessons/lesson-14.html">Lesson 14</a></li>
+        </ol>
+      </aside>
+
+      <main class="content wide">
+        <p class="lesson-kicker">Course logistics</p>
+        <h1>Assignment System and GitHub Submission Guide</h1>
+        <p class="summary">
+          Homework in this course is not only about getting the right answer. Each submission should show three skills:
+          implementing Java code, testing behavior, and explaining time and space complexity clearly.
+        </p>
+
+        <h2>Submission model</h2>
+        <p>
+          Use one GitHub repository for the course, with one folder per lesson. This keeps the full learning history in
+          one place and makes it easier to compare early code with later code.
+        </p>
+        <pre><code>dsa-java-homework/
+  README.md
+  lesson-01-java-warmup/
+  lesson-02-time-complexity/
+  lesson-03-space-amortization/
+  lesson-04-arrays-patterns/
+  lesson-05-lists-stacks-queues/
+  lesson-06-recursion-backtracking/
+  lesson-07-trees-bsts/
+  lesson-08-heaps-priority-queues/
+  lesson-09-hashing/
+  lesson-10-sorting/
+  lesson-11-union-find-graphs/
+  lesson-12-graph-algorithms/
+  lesson-13-dynamic-programming/
+  lesson-14-autocomplete/</code></pre>
+        <p>
+          A single-lesson repository is also acceptable, but every assignment still needs source code, tests or a test
+          harness, and written analysis.
+        </p>
+
+        <h2>Folder structure for one lesson</h2>
+        <pre><code>lesson-10-sorting/
+  README.md
+  src/
+    Sorting.java
+    Main.java
+  tests/
+    SortingTest.java
+  analysis/
+    complexity.md
+    reflection.md</code></pre>
+        <p>
+          Small lessons may combine files, but the submission should still make the boundary between code, tests, and
+          analysis obvious.
+        </p>
+
+        <h2>README template</h2>
+        <p>
+          Every lesson folder should include a short README. The README is where the student explains the work as if a
+          new reader is opening the repository for the first time.
+        </p>
+        <pre><code># Lesson 10 - Sorting
+
+## What this assignment implements
+- Merge sort
+- Quick sort
+- Insertion sort
+- Sorting comparison demo
+
+## How to run
+```bash
+javac src/*.java
+java -cp src Main
+```
+
+## How to test
+```bash
+javac src/*.java tests/*.java
+java -cp src:tests SortingTest
+```
+
+## Key ideas
+- Merge sort divides the array and merges sorted halves.
+- Quick sort partitions around a pivot.
+- Insertion sort is useful for small or nearly sorted arrays.
+
+## Complexity summary
+See `analysis/complexity.md` for method-by-method analysis.
+
+## Known limitations
+- The quick sort implementation does not use randomized pivots yet.</code></pre>
+
+        <h2>Analysis template</h2>
+        <p>
+          Complexity analysis should define variables. Avoid writing only <code>O(n)</code>. Explain what
+          <code>n</code> means and why the bound is true.
+        </p>
+        <pre><code># Complexity Analysis
+
+## Method: mergeSort(int[] arr)
+n = arr.length
+
+Time: O(n log n)
+Reason: The array is split into two halves for about log n levels.
+At each level, merging touches each element once, so the work per level is O(n).
+
+Space: O(n)
+Reason: The merge step uses temporary arrays whose total size is proportional to n.
+
+## Method: binarySearch(int[] arr, int target)
+n = arr.length
+
+Time: O(log n)
+Reason: Each comparison removes about half of the remaining search range.
+
+Space: O(1)
+Reason: The iterative version only stores left, right, and mid.</code></pre>
+
+        <h2>Testing expectations</h2>
+        <p>
+          Tests should show that the code works on normal cases, edge cases, and likely bug cases. A simple custom test
+          harness is fine if the project does not use JUnit.
+        </p>
+        <pre><code>import java.util.*;
+
+public class SortingTest {
+    static void expectArrayEquals(int[] expected, int[] actual) {
+        if (!Arrays.equals(expected, actual)) {
+            throw new AssertionError(
+                "expected " + Arrays.toString(expected) +
+                " but got " + Arrays.toString(actual)
+            );
+        }
+    }
+
+    public static void main(String[] args) {
+        expectArrayEquals(new int[] {}, Sorting.mergeSort(new int[] {}));
+        expectArrayEquals(new int[] {1}, Sorting.mergeSort(new int[] {1}));
+        expectArrayEquals(new int[] {1, 2, 3}, Sorting.mergeSort(new int[] {3, 1, 2}));
+        expectArrayEquals(new int[] {1, 1, 2}, Sorting.mergeSort(new int[] {1, 2, 1}));
+        System.out.println("All tests passed.");
+    }
+}</code></pre>
+        <table>
+          <thead><tr><th>Test type</th><th>Examples</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td>Normal case</td><td>Several ordinary inputs</td><td>Shows the main behavior works.</td></tr>
+            <tr><td>Empty input</td><td>Empty array, empty string, empty graph</td><td>Finds boundary bugs.</td></tr>
+            <tr><td>Single item</td><td>One element array or one-node tree</td><td>Checks base cases.</td></tr>
+            <tr><td>Duplicates</td><td>Repeated values or repeated words</td><td>Finds equality-handling bugs.</td></tr>
+            <tr><td>Already sorted / reversed</td><td>Sorting, two pointers, binary search</td><td>Finds assumptions about order.</td></tr>
+            <tr><td>No solution</td><td>Missing target, disconnected graph</td><td>Checks failure behavior.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Git workflow</h2>
+        <p>
+          Each assignment should have more than one meaningful commit when possible. The goal is to show progress, not
+          only the final state.
+        </p>
+        <pre><code>git status
+git add lesson-10-sorting
+git commit -m "Implement merge sort"
+git commit -m "Add sorting edge case tests"
+git commit -m "Write sorting complexity analysis"
+git push</code></pre>
+        <p>
+          Commit messages should describe the change. Avoid messages like <code>update</code>, <code>fix</code>, or
+          <code>homework</code> when a more specific message is possible.
+        </p>
+
+        <h2>Weekly assignment map</h2>
+        <p>
+          The detailed requirements live at the bottom of each lesson. This table summarizes what each folder should
+          focus on.
+        </p>
+        <table>
+          <thead><tr><th>Lesson</th><th>Folder</th><th>Main deliverable</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><code>lesson-01-java-warmup</code></td><td>Java methods, arrays, small ADT implementation, and basic tests.</td></tr>
+            <tr><td>2</td><td><code>lesson-02-time-complexity</code></td><td>Complexity drills, growth-rate comparisons, recurrence practice.</td></tr>
+            <tr><td>3</td><td><code>lesson-03-space-amortization</code></td><td>Space analysis, dynamic array resizing, amortized explanation.</td></tr>
+            <tr><td>4</td><td><code>lesson-04-arrays-patterns</code></td><td>Binary search, two pointers, sliding window, prefix sums.</td></tr>
+            <tr><td>5</td><td><code>lesson-05-lists-stacks-queues</code></td><td>Linked list operations, stack/queue/deque problems.</td></tr>
+            <tr><td>6</td><td><code>lesson-06-recursion-backtracking</code></td><td>Recursive tracing, subsets, permutations, pruning, merge sort.</td></tr>
+            <tr><td>7</td><td><code>lesson-07-trees-bsts</code></td><td>Tree traversals, BST search/insert/delete, validation.</td></tr>
+            <tr><td>8</td><td><code>lesson-08-heaps-priority-queues</code></td><td>Heap implementation, top-k, median stream, priority queue usage.</td></tr>
+            <tr><td>9</td><td><code>lesson-09-hashing</code></td><td>HashMap/HashSet patterns, frequency maps, equals/hashCode reasoning.</td></tr>
+            <tr><td>10</td><td><code>lesson-10-sorting</code></td><td>Multiple sorting algorithms, stability discussion, lower-bound explanation.</td></tr>
+            <tr><td>11</td><td><code>lesson-11-union-find-graphs</code></td><td>DSU implementation, graph representations, connected components.</td></tr>
+            <tr><td>12</td><td><code>lesson-12-graph-algorithms</code></td><td>BFS, DFS, topological sort, Dijkstra, MST practice.</td></tr>
+            <tr><td>13</td><td><code>lesson-13-dynamic-programming</code></td><td>State/transition writeups, 1D DP, grid DP, LCS, knapsack.</td></tr>
+            <tr><td>14</td><td><code>lesson-14-autocomplete</code></td><td>Capstone autocomplete project using trie, maps, DFS, ranking, and tests.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="rubric">Rubric</h2>
+        <table>
+          <thead><tr><th>Category</th><th>Weight</th><th>Excellent submission</th></tr></thead>
+          <tbody>
+            <tr><td>Correctness</td><td>35%</td><td>Passes expected cases, handles edge cases, and produces stable output.</td></tr>
+            <tr><td>Code quality</td><td>20%</td><td>Clear names, small methods, no unnecessary cleverness, no duplicated logic where a helper would help.</td></tr>
+            <tr><td>Testing</td><td>15%</td><td>Includes normal cases, boundary cases, duplicates, and failure cases.</td></tr>
+            <tr><td>Complexity analysis</td><td>20%</td><td>Defines variables, explains time and space, and connects the explanation to the code structure.</td></tr>
+            <tr><td>GitHub hygiene</td><td>10%</td><td>Readable folder structure, useful README, meaningful commits, no generated clutter.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Code quality checklist</h2>
+        <ul>
+          <li>Use method names that describe behavior, such as <code>insert</code>, <code>contains</code>, or <code>heapify</code>.</li>
+          <li>Keep public methods small enough that their main idea is visible.</li>
+          <li>Use private helpers for repeated logic.</li>
+          <li>Prefer Java collection interfaces when appropriate, such as <code>List</code>, <code>Map</code>, and <code>Set</code>.</li>
+          <li>Do not print inside library methods unless printing is part of the method's purpose.</li>
+          <li>Validate inputs when invalid input would cause confusing behavior.</li>
+          <li>Keep test data small enough to inspect by hand, then add a few larger stress cases.</li>
+        </ul>
+
+        <h2>Common submission problems</h2>
+        <table>
+          <thead><tr><th>Problem</th><th>Why it hurts</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td>No README</td><td>The grader cannot tell how to run the project.</td><td>Add run commands and a short summary.</td></tr>
+            <tr><td>No tests</td><td>Correctness depends on manual inspection.</td><td>Add a test harness or documented test cases.</td></tr>
+            <tr><td>Only final code, no analysis</td><td>The assignment does not show DSA reasoning.</td><td>Add method-by-method complexity notes.</td></tr>
+            <tr><td>Undefined variables in Big-O</td><td><code>O(n)</code> is ambiguous.</td><td>State what <code>n</code>, <code>V</code>, <code>E</code>, or <code>k</code> means.</td></tr>
+            <tr><td>Generated files committed</td><td>The repository becomes noisy.</td><td>Avoid committing <code>.class</code>, build folders, and IDE cache files.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Suggested .gitignore</h2>
+        <pre><code>*.class
+out/
+build/
+target/
+.DS_Store
+.idea/
+.vscode/
+*.log</code></pre>
+
+        <h2>Final project expectation</h2>
+        <p>
+          The final project should read like a small engineering artifact. It should have a clear interface, a working
+          implementation, tests, and written design decisions. The best submissions explain not only what works, but
+          why the chosen data structures are appropriate.
+        </p>
+        <div class="checkpoint">
+          Submission rule: code without analysis is incomplete. Analysis without runnable code is incomplete. The
+          homework should show both programming skill and reasoning.
+        </div>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

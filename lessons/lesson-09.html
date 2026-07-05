@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 9 - HashMap, HashSet, and Hashing</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-08.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-10.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a aria-current="page" href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 9</p>
+        <h1>HashMap, HashSet, and Hashing</h1>
+        <p class="summary">
+          Hashing is one of the most important space-time tradeoffs in DSA. By using extra memory, hash tables make
+          membership, lookup, and counting operations expected O(1).
+        </p>
+
+        <h2>Example first: first repeated word</h2>
+        <p>
+          Given a list of words, return the first word that appears twice. The direct approach compares each word to all
+          previous words. A hash set remembers what we have seen.
+        </p>
+        <pre><code>static String firstRepeated(String[] words) {
+    HashSet&lt;String&gt; seen = new HashSet&lt;&gt;();
+    for (String word : words) {
+        if (seen.contains(word)) return word;
+        seen.add(word);
+    }
+    return null;
+}</code></pre>
+        <p>
+          The set uses <code>O(n)</code> extra space. In exchange, each membership check is expected <code>O(1)</code>,
+          so the full algorithm is expected <code>O(n)</code>.
+        </p>
+
+        <h2>Set and map ADTs</h2>
+        <p>
+          A set stores keys. A map stores key-value pairs. A set can be implemented as a map where only the keys matter.
+        </p>
+        <pre><code>interface SimpleSet&lt;E&gt; {
+    boolean add(E value);
+    boolean contains(E value);
+    boolean remove(E value);
+    int size();
+}
+
+interface SimpleMap&lt;K, V&gt; {
+    void put(K key, V value);
+    V get(K key);
+    boolean containsKey(K key);
+    V remove(K key);
+    int size();
+}</code></pre>
+        <p>
+          The key operation is lookup by key. If order is not important, hash tables are often the best default.
+        </p>
+
+        <h2>Hash table idea</h2>
+        <p>
+          A hash table uses an array of buckets. A hash function converts a key into an integer. That integer is mapped
+          to a bucket index.
+        </p>
+        <pre><code>bucketIndex = hash(key) mod bucketCount</code></pre>
+        <p>
+          If the key is <code>"utah"</code>, Java computes a hash code for the string. The table uses that hash code to
+          decide which bucket should contain the key.
+        </p>
+        <pre><code>buckets:
+0: []
+1: [("utah", 12)]
+2: []
+3: [("java", 7), ("data", 4)]
+4: []</code></pre>
+
+        <h2>Collisions</h2>
+        <p>
+          A collision happens when two different keys map to the same bucket. Collisions are unavoidable because there
+          are many possible keys but only a finite number of buckets.
+        </p>
+        <p>
+          Two common collision strategies are:
+        </p>
+        <table>
+          <thead><tr><th>Strategy</th><th>Idea</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Separate chaining</td><td>Each bucket stores a list of entries</td><td>Easy to understand and implement</td></tr>
+            <tr><td>Open addressing</td><td>If a bucket is occupied, probe for another bucket</td><td>More subtle deletion behavior</td></tr>
+          </tbody>
+        </table>
+        <p>
+          This lesson focuses on separate chaining because it makes the structure visible.
+        </p>
+
+        <h2>Entry and chained hash map</h2>
+        <pre><code>class Entry&lt;K, V&gt; {
+    K key;
+    V value;
+
+    Entry(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+}</code></pre>
+        <p>
+          A simple chained hash map can use an array of lists.
+        </p>
+        <pre><code>class SeparateChainingMap&lt;K, V&gt; implements SimpleMap&lt;K, V&gt; {
+    private ArrayList&lt;Entry&lt;K, V&gt;&gt;[] buckets;
+    private int size;
+
+    @SuppressWarnings("unchecked")
+    SeparateChainingMap(int capacity) {
+        buckets = new ArrayList[capacity];
+        for (int i = 0; i &lt; buckets.length; i++) {
+            buckets[i] = new ArrayList&lt;&gt;();
+        }
+    }
+}</code></pre>
+
+        <h2>Computing an index safely</h2>
+        <p>
+          Java hash codes can be negative. Use <code>Math.floorMod</code> to get a valid nonnegative bucket index.
+        </p>
+        <pre><code>private int indexFor(K key) {
+    return Math.floorMod(key.hashCode(), buckets.length);
+}</code></pre>
+        <p>
+          Real Java <code>HashMap</code> also handles null keys and uses additional bit mixing. For learning, this
+          version is enough.
+        </p>
+
+        <h2>Implementing put and get</h2>
+        <pre><code>public void put(K key, V value) {
+    int index = indexFor(key);
+    ArrayList&lt;Entry&lt;K, V&gt;&gt; bucket = buckets[index];
+
+    for (Entry&lt;K, V&gt; entry : bucket) {
+        if (entry.key.equals(key)) {
+            entry.value = value;
+            return;
+        }
+    }
+
+    bucket.add(new Entry&lt;&gt;(key, value));
+    size++;
+}
+
+public V get(K key) {
+    int index = indexFor(key);
+    for (Entry&lt;K, V&gt; entry : buckets[index]) {
+        if (entry.key.equals(key)) {
+            return entry.value;
+        }
+    }
+    return null;
+}</code></pre>
+        <p>
+          If the hash function spreads keys well and the table is not too full, each bucket is short, so operations are
+          expected O(1).
+        </p>
+
+        <h2>Load factor and resizing</h2>
+        <p>
+          The load factor measures how full the table is:
+        </p>
+        <pre><code>load factor = number of entries / number of buckets</code></pre>
+        <p>
+          If the load factor gets too high, buckets become crowded and operations slow down. The table resizes by
+          creating more buckets and rehashing entries.
+        </p>
+        <pre><code>private double loadFactor() {
+    return (double) size / buckets.length;
+}
+
+public void put(K key, V value) {
+    if (loadFactor() &gt; 0.75) resize(buckets.length * 2);
+    // then insert or update
+}</code></pre>
+        <p>
+          Resizing is expensive because every entry must be placed into a new bucket array. But it happens occasionally,
+          so hash table insertion is usually described as amortized expected O(1).
+        </p>
+
+        <h2>equals and hashCode contract</h2>
+        <p>
+          If an object is used as a key, Java needs two things:
+        </p>
+        <ul>
+          <li><code>equals</code>: decides whether two keys are logically equal.</li>
+          <li><code>hashCode</code>: decides which bucket the key belongs to.</li>
+        </ul>
+        <p>
+          Contract: if <code>a.equals(b)</code> is true, then <code>a.hashCode()</code> must equal
+          <code>b.hashCode()</code>. The reverse is not required; unequal objects may have the same hash code.
+        </p>
+        <pre><code>record Point(int row, int col) { }</code></pre>
+        <p>
+          Java records are convenient keys because they automatically implement value-based <code>equals</code> and
+          <code>hashCode</code>.
+        </p>
+        <p>
+          If you write a normal class, override both methods together.
+        </p>
+        <pre><code>class StudentId {
+    private final String value;
+
+    StudentId(String value) {
+        this.value = value;
+    }
+
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof StudentId)) return false;
+        StudentId that = (StudentId) other;
+        return value.equals(that.value);
+    }
+
+    public int hashCode() {
+        return value.hashCode();
+    }
+}</code></pre>
+
+        <h2>HashSet in Java</h2>
+        <pre><code>HashSet&lt;String&gt; courses = new HashSet&lt;&gt;();
+courses.add("Algorithms");
+courses.add("Linear Algebra");
+
+if (courses.contains("Algorithms")) {
+    System.out.println("registered");
+}</code></pre>
+        <p>
+          Use a set when you need membership, uniqueness, or duplicate detection.
+        </p>
+
+        <h2>HashMap in Java</h2>
+        <pre><code>HashMap&lt;String, Integer&gt; credits = new HashMap&lt;&gt;();
+credits.put("Algorithms", 4);
+credits.put("Linear Algebra", 4);
+
+int algorithmCredits = credits.get("Algorithms");</code></pre>
+        <p>
+          Use a map when each key has an associated value: counts, indices, metadata, distances, parent pointers, or
+          cached results.
+        </p>
+
+        <h2>Pattern 1: frequency map</h2>
+        <p>
+          Counting occurrences is one of the most common map patterns.
+        </p>
+        <pre><code>static Map&lt;Character, Integer&gt; frequencies(String s) {
+    Map&lt;Character, Integer&gt; freq = new HashMap&lt;&gt;();
+    for (char c : s.toCharArray()) {
+        freq.put(c, freq.getOrDefault(c, 0) + 1);
+    }
+    return freq;
+}</code></pre>
+        <p>
+          Time is <code>O(n)</code>. Space is <code>O(k)</code>, where k is the number of distinct characters.
+        </p>
+
+        <h2>Pattern 2: two sum on an unsorted array</h2>
+        <p>
+          For each number x, ask whether we have already seen <code>target - x</code>.
+        </p>
+        <pre><code>static int[] twoSum(int[] nums, int target) {
+    Map&lt;Integer, Integer&gt; indexByValue = new HashMap&lt;&gt;();
+    for (int i = 0; i &lt; nums.length; i++) {
+        int need = target - nums[i];
+        if (indexByValue.containsKey(need)) {
+            return new int[] {indexByValue.get(need), i};
+        }
+        indexByValue.put(nums[i], i);
+    }
+    return new int[] {-1, -1};
+}</code></pre>
+        <p>
+          This turns a pair search from <code>O(n^2)</code> into expected <code>O(n)</code> time using
+          <code>O(n)</code> space.
+        </p>
+
+        <h2>Pattern 3: group anagrams</h2>
+        <p>
+          Anagrams have the same letter counts. We need a key that represents the group.
+        </p>
+        <pre><code>static List&lt;List&lt;String&gt;&gt; groupAnagrams(String[] words) {
+    Map&lt;String, List&lt;String&gt;&gt; groups = new HashMap&lt;&gt;();
+
+    for (String word : words) {
+        int[] count = new int[26];
+        for (char c : word.toCharArray()) {
+            count[c - 'a']++;
+        }
+        String key = Arrays.toString(count);
+        groups.computeIfAbsent(key, k -&gt; new ArrayList&lt;&gt;()).add(word);
+    }
+
+    return new ArrayList&lt;&gt;(groups.values());
+}</code></pre>
+        <p>
+          Sorting each word also works, but counting can be faster when the alphabet is fixed.
+        </p>
+
+        <h2>Pattern 4: prefix sum plus HashMap</h2>
+        <p>
+          Count subarrays with sum k. If the current prefix sum is <code>S</code>, we need a previous prefix sum
+          <code>S - k</code>.
+        </p>
+        <pre><code>static int countSubarraysWithSumK(int[] nums, int k) {
+    Map&lt;Integer, Integer&gt; freq = new HashMap&lt;&gt;();
+    freq.put(0, 1);
+
+    int prefix = 0;
+    int count = 0;
+    for (int x : nums) {
+        prefix += x;
+        count += freq.getOrDefault(prefix - k, 0);
+        freq.put(prefix, freq.getOrDefault(prefix, 0) + 1);
+    }
+    return count;
+}</code></pre>
+
+        <h2>Pattern 5: longest consecutive sequence</h2>
+        <p>
+          Put all values in a set. Only start counting from numbers that do not have a predecessor.
+        </p>
+        <pre><code>static int longestConsecutive(int[] nums) {
+    Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+    for (int x : nums) set.add(x);
+
+    int best = 0;
+    for (int x : set) {
+        if (!set.contains(x - 1)) {
+            int cur = x;
+            int length = 1;
+            while (set.contains(cur + 1)) {
+                cur++;
+                length++;
+            }
+            best = Math.max(best, length);
+        }
+    }
+    return best;
+}</code></pre>
+        <p>
+          Each number is part of one counted sequence, so expected time is <code>O(n)</code>.
+        </p>
+
+        <h2>Pattern 6: caching and memoization</h2>
+        <p>
+          A map can remember expensive function results. Dynamic programming often uses this idea.
+        </p>
+        <pre><code>static int fibMemo(int n, Map&lt;Integer, Integer&gt; memo) {
+    if (n &lt;= 1) return n;
+    if (memo.containsKey(n)) return memo.get(n);
+    int ans = fibMemo(n - 1, memo) + fibMemo(n - 2, memo);
+    memo.put(n, ans);
+    return ans;
+}</code></pre>
+        <p>
+          The map changes exponential repeated recursion into linear work over the number of distinct states.
+        </p>
+
+        <h2>HashMap vs TreeMap</h2>
+        <table>
+          <thead><tr><th>Need</th><th>Use</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Fast lookup, order irrelevant</td><td><code>HashMap</code></td><td>Expected O(1)</td></tr>
+            <tr><td>Sorted keys, range operations</td><td><code>TreeMap</code></td><td>O(log n)</td></tr>
+            <tr><td>Unique values, order irrelevant</td><td><code>HashSet</code></td><td>Expected O(1)</td></tr>
+            <tr><td>Unique values in sorted order</td><td><code>TreeSet</code></td><td>O(log n)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Complexity and assumptions</h2>
+        <p>
+          Hash table operations are usually expected O(1), but this depends on reasonable hashing and resizing. Worst
+          case can be O(n) if many keys collide. In normal Java programming, <code>HashMap</code> and
+          <code>HashSet</code> are reliable defaults, but complexity explanations should still say "expected."
+        </p>
+        <table>
+          <thead><tr><th>Operation</th><th>Expected</th><th>Worst case</th></tr></thead>
+          <tbody>
+            <tr><td><code>put</code></td><td>O(1) amortized</td><td>O(n)</td></tr>
+            <tr><td><code>get</code></td><td>O(1)</td><td>O(n)</td></tr>
+            <tr><td><code>containsKey</code></td><td>O(1)</td><td>O(n)</td></tr>
+            <tr><td><code>remove</code></td><td>O(1)</td><td>O(n)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Forgetting to update a frequency count after reading it.</li>
+          <li>Using <code>get</code> without checking whether the key exists.</li>
+          <li>Overriding <code>equals</code> but not <code>hashCode</code>.</li>
+          <li>Using a mutable object as a key and then changing fields that affect equality.</li>
+          <li>Saying HashMap operations are guaranteed O(1) instead of expected O(1).</li>
+          <li>Using a HashMap when sorted order or range queries are required.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-HASHING-PROBLEM(problem):
+    1. What is the key?
+    2. What is the value, if this is a map?
+    3. How many distinct keys can appear?
+    4. Which operation becomes faster: lookup, counting, grouping, caching?
+    5. State expected time and worst-case caveat.
+    6. State auxiliary space.
+    7. If using custom keys, explain equals/hashCode.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Implement a frequency map for words in a sentence.</li>
+          <li>Implement two sum with a HashMap.</li>
+          <li>Group anagrams.</li>
+          <li>Count subarrays with sum k.</li>
+          <li>Find the longest consecutive sequence.</li>
+          <li>Create a custom <code>Point</code> class and use it as a HashSet key.</li>
+          <li>Trace separate chaining by hand for a small bucket array.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-09-hashing</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-09-hashing/
+  README.md
+  src/
+    SimpleMap.java
+    SeparateChainingMap.java
+    HashingProblems.java
+    Point.java
+    Main.java
+  analysis/
+    hashing-analysis.md</code></pre>
+        <h3>Required implementation</h3>
+        <ul>
+          <li>Implement <code>SeparateChainingMap&lt;K,V&gt;</code> with <code>put</code>, <code>get</code>, <code>containsKey</code>, <code>remove</code>, and <code>size</code>.</li>
+          <li>Resize when load factor exceeds 0.75.</li>
+          <li>Implement two sum.</li>
+          <li>Implement group anagrams.</li>
+          <li>Implement count subarrays with sum k.</li>
+          <li>Implement longest consecutive sequence.</li>
+          <li>Create a custom <code>Point</code> key with correct <code>equals</code> and <code>hashCode</code>.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>Explain hash code, bucket, collision, and load factor.</li>
+          <li>Explain why resizing is needed.</li>
+          <li>State expected time, worst-case time, and auxiliary space for each method.</li>
+          <li>Explain the <code>equals</code> / <code>hashCode</code> contract.</li>
+          <li>Include at least two tests for each required method.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Implement a simple <code>HashSet&lt;E&gt;</code> on top of your <code>SeparateChainingMap&lt;E, Boolean&gt;</code>.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to explain how hashing turns lookup into expected O(1), why collisions
+          and resizing matter, and how maps solve counting, grouping, and caching problems.
+        </div>
+        <nav class="pager"><a href="lesson-08.html">← Previous</a><a href="lesson-10.html">Next: Sorting →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

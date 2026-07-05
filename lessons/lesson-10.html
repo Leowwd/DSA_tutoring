@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 10 - Sorting Algorithms</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-09.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-11.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a aria-current="page" href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 10</p>
+        <h1>Sorting Algorithms and Sorting as a Tool</h1>
+        <p class="summary">
+          Sorting is both a family of algorithms and a problem-solving technique. After data is sorted, binary search,
+          two pointers, duplicate detection, interval merging, and many greedy algorithms become easier.
+        </p>
+
+        <h2>Example first: merging intervals</h2>
+        <p>
+          Given meeting intervals, merge all overlapping intervals. The key first step is sorting by start time.
+        </p>
+        <pre><code>static int[][] mergeIntervals(int[][] intervals) {
+    Arrays.sort(intervals, Comparator.comparingInt(a -&gt; a[0]));
+    ArrayList&lt;int[]&gt; merged = new ArrayList&lt;&gt;();
+
+    for (int[] cur : intervals) {
+        if (merged.isEmpty() || merged.get(merged.size() - 1)[1] &lt; cur[0]) {
+            merged.add(cur);
+        } else {
+            int[] last = merged.get(merged.size() - 1);
+            last[1] = Math.max(last[1], cur[1]);
+        }
+    }
+    return merged.toArray(new int[merged.size()][]);
+}</code></pre>
+        <p>
+          Sorting creates order. Once intervals are sorted, we only compare the current interval with the last merged
+          interval. The sorting cost dominates: <code>O(n log n)</code>.
+        </p>
+
+        <h2>Sorting vocabulary</h2>
+        <table>
+          <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>In-place</td><td>Uses O(1) or small auxiliary space, not counting input</td></tr>
+            <tr><td>Stable</td><td>Equal keys keep their original relative order</td></tr>
+            <tr><td>Comparison sort</td><td>Only learns order by comparing pairs</td></tr>
+            <tr><td>Adaptive</td><td>Runs faster on already-sorted or nearly-sorted data</td></tr>
+            <tr><td>Online</td><td>Can process data as it arrives</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Stability matters when records have multiple fields. If students are sorted by last name and then stably
+          sorted by graduation year, students with the same year remain ordered by last name.
+        </p>
+
+        <h2>Comparison sorting lower bound</h2>
+        <p>
+          Any comparison-based sorting algorithm has a worst-case lower bound of <code>Ω(n log n)</code>. The intuition
+          comes from decision trees. There are <code>n!</code> possible input orderings, and comparisons split the
+          possibilities into branches. A binary decision tree needs height at least <code>log2(n!)</code>.
+        </p>
+        <pre><code>log(n!) = log(1) + log(2) + ... + log(n)
+        = Θ(n log n)</code></pre>
+        <p>
+          Therefore, algorithms like merge sort and heap sort are asymptotically optimal among comparison sorts.
+          Non-comparison sorts can beat <code>n log n</code> only when they use extra assumptions about the keys.
+        </p>
+
+        <h2>Big comparison table</h2>
+        <table>
+          <thead><tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable?</th><th>Idea</th></tr></thead>
+          <tbody>
+            <tr><td>Bubble sort</td><td>O(n)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>Yes</td><td>Repeated adjacent swaps</td></tr>
+            <tr><td>Selection sort</td><td>O(n^2)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>No</td><td>Select min for each position</td></tr>
+            <tr><td>Insertion sort</td><td>O(n)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>Yes</td><td>Insert into sorted prefix</td></tr>
+            <tr><td>Merge sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>Yes</td><td>Sort halves, merge</td></tr>
+            <tr><td>Quick sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n^2)</td><td>O(log n)</td><td>No</td><td>Partition around pivot</td></tr>
+            <tr><td>Heap sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td><td>No</td><td>Repeatedly move max</td></tr>
+            <tr><td>Counting sort</td><td>O(n + k)</td><td>O(n + k)</td><td>O(n + k)</td><td>O(n + k)</td><td>Can be</td><td>Count key frequencies</td></tr>
+            <tr><td>Radix sort</td><td>O(d(n + k))</td><td>O(d(n + k))</td><td>O(d(n + k))</td><td>O(n + k)</td><td>Yes</td><td>Sort digit by digit</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Bubble sort</h2>
+        <p>
+          Bubble sort repeatedly swaps adjacent out-of-order elements. Large elements "bubble" to the end. It is mostly
+          useful for learning invariants, not for production code.
+        </p>
+        <pre><code>static void bubbleSort(int[] a) {
+    for (int end = a.length - 1; end &gt; 0; end--) {
+        boolean swapped = false;
+        for (int i = 0; i &lt; end; i++) {
+            if (a[i] &gt; a[i + 1]) {
+                swap(a, i, i + 1);
+                swapped = true;
+            }
+        }
+        if (!swapped) return;
+    }
+}</code></pre>
+        <p>
+          With the <code>swapped</code> optimization, the best case is <code>O(n)</code> for an already sorted array.
+          Worst case remains <code>O(n^2)</code>.
+        </p>
+
+        <h2>Selection sort</h2>
+        <p>
+          Selection sort repeatedly selects the smallest remaining item and places it at the next position.
+        </p>
+        <pre><code>static void selectionSort(int[] a) {
+    for (int i = 0; i &lt; a.length; i++) {
+        int min = i;
+        for (int j = i + 1; j &lt; a.length; j++) {
+            if (a[j] &lt; a[min]) min = j;
+        }
+        swap(a, i, min);
+    }
+}</code></pre>
+        <p>
+          Selection sort always does about <code>n^2 / 2</code> comparisons, even if the array is already sorted. It
+          performs at most n swaps, which can matter when writes are expensive.
+        </p>
+
+        <h2>Insertion sort</h2>
+        <p>
+          Insertion sort keeps a sorted prefix and inserts the next element into the correct place.
+        </p>
+        <pre><code>static void insertionSort(int[] a) {
+    for (int i = 1; i &lt; a.length; i++) {
+        int x = a[i];
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; a[j] &gt; x) {
+            a[j + 1] = a[j];
+            j--;
+        }
+        a[j + 1] = x;
+    }
+}</code></pre>
+        <p>
+          Insertion sort is excellent for small arrays and nearly sorted arrays. Many real library sorts use insertion
+          sort as a small-subarray optimization.
+        </p>
+
+        <h2>Merge two sorted arrays</h2>
+        <p>
+          Merge is the core operation behind merge sort.
+        </p>
+        <pre><code>static int[] merge(int[] a, int[] b) {
+    int[] out = new int[a.length + b.length];
+    int i = 0;
+    int j = 0;
+    int k = 0;
+
+    while (i &lt; a.length &amp;&amp; j &lt; b.length) {
+        if (a[i] &lt;= b[j]) out[k++] = a[i++];
+        else out[k++] = b[j++];
+    }
+    while (i &lt; a.length) out[k++] = a[i++];
+    while (j &lt; b.length) out[k++] = b[j++];
+    return out;
+}</code></pre>
+        <p>
+          The merge step is linear because each pointer only moves forward.
+        </p>
+
+        <h2>Merge sort</h2>
+        <p>
+          Merge sort splits the array, sorts both halves, then merges. It is stable and guarantees
+          <code>O(n log n)</code> time.
+        </p>
+        <pre><code>static void mergeSort(int[] a) {
+    int[] aux = new int[a.length];
+    mergeSort(a, aux, 0, a.length);
+}
+
+static void mergeSort(int[] a, int[] aux, int lo, int hi) {
+    if (hi - lo &lt;= 1) return;
+    int mid = lo + (hi - lo) / 2;
+    mergeSort(a, aux, lo, mid);
+    mergeSort(a, aux, mid, hi);
+    merge(a, aux, lo, mid, hi);
+}
+
+static void merge(int[] a, int[] aux, int lo, int mid, int hi) {
+    int i = lo;
+    int j = mid;
+    int k = lo;
+
+    while (i &lt; mid &amp;&amp; j &lt; hi) {
+        if (a[i] &lt;= a[j]) aux[k++] = a[i++];
+        else aux[k++] = a[j++];
+    }
+    while (i &lt; mid) aux[k++] = a[i++];
+    while (j &lt; hi) aux[k++] = a[j++];
+
+    for (int p = lo; p &lt; hi; p++) {
+        a[p] = aux[p];
+    }
+}</code></pre>
+        <p>
+          Recurrence: <code>T(n) = 2T(n/2) + O(n)</code>. By Master Theorem or recursion tree,
+          <code>T(n) = O(n log n)</code>.
+        </p>
+
+        <h2>Quick sort</h2>
+        <p>
+          Quick sort partitions around a pivot: smaller values go left, larger values go right. Then it recursively
+          sorts both sides.
+        </p>
+        <pre><code>static void quickSort(int[] a) {
+    Random rng = new Random();
+    quickSort(a, 0, a.length - 1, rng);
+}
+
+static void quickSort(int[] a, int lo, int hi, Random rng) {
+    if (lo >= hi) return;
+    int pivotIndex = lo + rng.nextInt(hi - lo + 1);
+    swap(a, pivotIndex, hi);
+    int p = partition(a, lo, hi);
+    quickSort(a, lo, p - 1, rng);
+    quickSort(a, p + 1, hi, rng);
+}</code></pre>
+        <pre><code>static int partition(int[] a, int lo, int hi) {
+    int pivot = a[hi];
+    int write = lo;
+    for (int read = lo; read &lt; hi; read++) {
+        if (a[read] &lt;= pivot) {
+            swap(a, write, read);
+            write++;
+        }
+    }
+    swap(a, write, hi);
+    return write;
+}</code></pre>
+        <p>
+          Randomized quick sort has expected <code>O(n log n)</code> time. Worst case is <code>O(n^2)</code> when pivots
+          are consistently terrible. Randomization makes that unlikely for ordinary use.
+        </p>
+
+        <h2>Heap sort</h2>
+        <p>
+          Heap sort builds a max-heap, then repeatedly swaps the maximum with the end of the heap.
+        </p>
+        <pre><code>static void heapSort(int[] a) {
+    for (int i = a.length / 2 - 1; i &gt;= 0; i--) {
+        sinkMax(a, i, a.length);
+    }
+
+    for (int end = a.length - 1; end &gt; 0; end--) {
+        swap(a, 0, end);
+        sinkMax(a, 0, end);
+    }
+}
+
+static void sinkMax(int[] a, int i, int size) {
+    while (true) {
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        int largest = i;
+        if (left &lt; size &amp;&amp; a[left] &gt; a[largest]) largest = left;
+        if (right &lt; size &amp;&amp; a[right] &gt; a[largest]) largest = right;
+        if (largest == i) break;
+        swap(a, i, largest);
+        i = largest;
+    }
+}</code></pre>
+        <p>
+          Heap sort guarantees <code>O(n log n)</code> time and uses <code>O(1)</code> auxiliary space, but it is not
+          stable and is often slower in practice than highly optimized library sorts.
+        </p>
+
+        <h2>Counting sort</h2>
+        <p>
+          Counting sort is not comparison-based. It works when keys are integers in a small range.
+        </p>
+        <pre><code>static int[] countingSortNonnegative(int[] a, int maxValue) {
+    int[] count = new int[maxValue + 1];
+    for (int x : a) {
+        count[x]++;
+    }
+
+    int[] out = new int[a.length];
+    int index = 0;
+    for (int value = 0; value &lt; count.length; value++) {
+        for (int c = 0; c &lt; count[value]; c++) {
+            out[index++] = value;
+        }
+    }
+    return out;
+}</code></pre>
+        <p>
+          Time is <code>O(n + k)</code>, where k is the key range. Counting sort is great when k is small; it is wasteful
+          when k is huge.
+        </p>
+
+        <h2>Stable counting sort</h2>
+        <p>
+          Stable counting sort uses prefix sums over counts to place equal keys in original order. It is a building
+          block for radix sort.
+        </p>
+        <pre><code>static int[] stableCountingSort(int[] a, int maxValue) {
+    int[] count = new int[maxValue + 1];
+    for (int x : a) count[x]++;
+
+    for (int i = 1; i &lt; count.length; i++) {
+        count[i] += count[i - 1];
+    }
+
+    int[] out = new int[a.length];
+    for (int i = a.length - 1; i &gt;= 0; i--) {
+        int x = a[i];
+        count[x]--;
+        out[count[x]] = x;
+    }
+    return out;
+}</code></pre>
+
+        <h2>Radix sort idea</h2>
+        <p>
+          Radix sort sorts integers digit by digit using a stable subroutine, usually counting sort. For base 10, sort
+          by ones digit, then tens digit, then hundreds digit, and so on.
+        </p>
+        <pre><code>RADIX-SORT(a):
+    exp = 1
+    while max(a) / exp > 0:
+        stable sort by digit (a[i] / exp) % 10
+        exp = exp * 10</code></pre>
+        <p>
+          If there are d digits and base k, runtime is <code>O(d(n + k))</code>. This can be linear when d and k are
+          treated as constants.
+        </p>
+
+        <h2>Java sorting API</h2>
+        <pre><code>int[] nums = {5, 1, 4};
+Arrays.sort(nums);
+
+String[] names = {"Ada", "Grace", "Linus"};
+Arrays.sort(names);
+
+ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;(List.of("Ada", "Grace", "Linus"));
+list.sort(Comparator.comparingInt(String::length));</code></pre>
+        <p>
+          For primitives, <code>Arrays.sort</code> uses optimized algorithms suitable for primitive arrays. For object
+          arrays and lists, Java uses stable comparison-based sorting. In normal programming, use the library. In DSA,
+          implement sorts to understand the tradeoffs.
+        </p>
+
+        <h2>Sorting as preprocessing</h2>
+        <table>
+          <thead><tr><th>Problem clue</th><th>Why sorting helps</th><th>Follow-up pattern</th></tr></thead>
+          <tbody>
+            <tr><td>Intervals</td><td>Order by start or end</td><td>Merge or greedy scan</td></tr>
+            <tr><td>Pairs with target sum</td><td>Sorted order gives direction</td><td>Two pointers</td></tr>
+            <tr><td>Duplicates</td><td>Equal values become adjacent</td><td>Single scan</td></tr>
+            <tr><td>Closest values</td><td>Nearby values become neighbors</td><td>Sliding or adjacent comparison</td></tr>
+            <tr><td>Rank or percentile</td><td>Sorted position has meaning</td><td>Index lookup or binary search</td></tr>
+          </tbody>
+        </table>
+        <p class="note">
+          Sorting rule: ask whether changing order is allowed. If original order matters, store original indices or use a
+          different approach.
+        </p>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Assuming every O(n log n) sort is stable.</li>
+          <li>Forgetting quick sort's O(n^2) worst case.</li>
+          <li>Using counting sort when the key range is too large.</li>
+          <li>Sorting and losing original indices needed for the answer.</li>
+          <li>Writing a comparator with subtraction and causing overflow.</li>
+          <li>Confusing in-place with stable; they are different properties.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-SORTING(problem):
+    1. Are we sorting numbers, objects, or keys with a small range?
+    2. Is stability required?
+    3. Is in-place sorting required?
+    4. What are best, average, and worst-case times?
+    5. What auxiliary space is used?
+    6. Does sorting destroy information such as original order?
+    7. What pattern becomes easier after sorting?</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Trace insertion sort on <code>[5, 2, 4, 1]</code>.</li>
+          <li>Implement selection sort and count comparisons.</li>
+          <li>Implement merge sort and explain its recurrence.</li>
+          <li>Implement quick sort partition by hand on one example.</li>
+          <li>Explain why heap sort is in-place but not stable.</li>
+          <li>Use sorting to merge intervals.</li>
+          <li>Use sorting plus two pointers for pair sum.</li>
+          <li>Compare counting sort and comparison sort for exam scores from 0 to 100.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-10-sorting</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-10-sorting/
+  README.md
+  src/
+    SortingAlgorithms.java
+    SortingApplications.java
+    Main.java
+  analysis/
+    sorting-analysis.md</code></pre>
+        <h3>Required implementation</h3>
+        <ul>
+          <li>Implement bubble sort, selection sort, insertion sort, merge sort, quick sort, heap sort, and counting sort.</li>
+          <li>Implement <code>mergeIntervals</code>.</li>
+          <li>Implement pair sum using sorting and two pointers.</li>
+          <li>Write a comparator example for sorting objects.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>Include the comparison table for all implemented sorts.</li>
+          <li>For every sort, state best, average, worst, space, stability, and whether it is in-place.</li>
+          <li>Explain the comparison sorting lower bound at a high level.</li>
+          <li>Explain when counting sort can beat O(n log n).</li>
+          <li>Include at least two tests for every implemented method.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Implement radix sort for nonnegative integers. Use stable counting sort as the digit-sorting subroutine.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to implement the major elementary and O(n log n) sorts, explain their
+          tradeoffs, and recognize when sorting is a useful preprocessing step for a larger problem.
+        </div>
+        <nav class="pager"><a href="lesson-09.html">← Previous</a><a href="lesson-11.html">Next: Union-Find and Graphs →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

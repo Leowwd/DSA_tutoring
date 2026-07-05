@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 8 - Heaps and Priority Queues</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-07.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-09.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a aria-current="page" href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 8</p>
+        <h1>Heaps and Priority Queues</h1>
+        <p class="summary">
+          A priority queue returns the most important item first. A binary heap is the most common way to implement it.
+          Heaps are useful when full sorting is unnecessary, but repeated minimum or maximum access is essential.
+        </p>
+
+        <h2>Example first: emergency room triage</h2>
+        <p>
+          A normal queue serves patients in arrival order. An emergency room cannot do that. A critical patient should
+          be treated before a minor injury even if they arrived later. This is a priority queue problem.
+        </p>
+        <pre><code>record Patient(String name, int severity) { }
+
+PriorityQueue&lt;Patient&gt; pq = new PriorityQueue&lt;&gt;(
+    Comparator.comparingInt(Patient::severity).reversed()
+);
+
+pq.add(new Patient("Ava", 3));
+pq.add(new Patient("Noah", 9));
+pq.add(new Patient("Mia", 5));
+
+System.out.println(pq.remove().name()); // Noah</code></pre>
+        <p>
+          The priority rule decides removal order. The data structure does not need to keep every patient fully sorted;
+          it only needs to know who should come out next.
+        </p>
+
+        <h2>ADT first: priority queue</h2>
+        <p>
+          A priority queue is an abstract data type. It defines operations, not implementation.
+        </p>
+        <pre><code>interface MinPriorityQueue&lt;E&gt; {
+    void add(E value);
+    E peekMin();
+    E removeMin();
+    int size();
+    boolean isEmpty();
+}</code></pre>
+        <table>
+          <thead><tr><th>Operation</th><th>Meaning</th><th>Binary heap cost</th></tr></thead>
+          <tbody>
+            <tr><td><code>add</code></td><td>Insert a value</td><td>O(log n)</td></tr>
+            <tr><td><code>peekMin</code></td><td>Read the smallest value</td><td>O(1)</td></tr>
+            <tr><td><code>removeMin</code></td><td>Remove and return the smallest value</td><td>O(log n)</td></tr>
+            <tr><td><code>size</code></td><td>Number of values stored</td><td>O(1)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Heap invariant</h2>
+        <p>
+          A min-heap is a complete binary tree where every parent is less than or equal to its children.
+        </p>
+        <pre><code>        2
+      /   \
+     5     3
+    / \   / \
+   9   7 8  4</code></pre>
+        <p>
+          This is not a binary search tree. A heap does not guarantee that the left child is smaller than the right
+          child, and it does not support fast search for arbitrary values. It only guarantees that the minimum is at the
+          root.
+        </p>
+        <table>
+          <thead><tr><th>Structure</th><th>Main guarantee</th><th>Good for</th></tr></thead>
+          <tbody>
+            <tr><td>BST</td><td>Left subtree &lt; node &lt; right subtree</td><td>Search, sorted order, range queries</td></tr>
+            <tr><td>Heap</td><td>Parent has higher priority than children</td><td>Repeated min/max</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Array representation</h2>
+        <p>
+          Heaps are usually stored in arrays, not node objects. The tree shape is implicit.
+        </p>
+        <pre><code>index:  0  1  2  3  4  5  6
+value: [2, 5, 3, 9, 7, 8, 4]</code></pre>
+        <table>
+          <thead><tr><th>Relationship</th><th>Formula</th></tr></thead>
+          <tbody>
+            <tr><td>Left child of i</td><td><code>2 * i + 1</code></td></tr>
+            <tr><td>Right child of i</td><td><code>2 * i + 2</code></td></tr>
+            <tr><td>Parent of i</td><td><code>(i - 1) / 2</code></td></tr>
+          </tbody>
+        </table>
+        <p>
+          A complete binary tree with n nodes has height <code>O(log n)</code>. That is why bubbling up or down is
+          logarithmic.
+        </p>
+
+        <h2>Implementation: integer min-heap</h2>
+        <p>
+          This educational implementation uses <code>ArrayList&lt;Integer&gt;</code> as the backing store. The same idea
+          works with a raw array.
+        </p>
+        <pre><code>class IntMinHeap {
+    private final ArrayList&lt;Integer&gt; data = new ArrayList&lt;&gt;();
+
+    public int size() {
+        return data.size();
+    }
+
+    public boolean isEmpty() {
+        return data.isEmpty();
+    }
+
+    public int peekMin() {
+        if (data.isEmpty()) throw new NoSuchElementException();
+        return data.get(0);
+    }
+}</code></pre>
+
+        <h2>Adding: swim upward</h2>
+        <p>
+          To add a value, place it at the end to preserve the complete-tree shape. Then repeatedly swap it with its
+          parent until the heap invariant is restored.
+        </p>
+        <pre><code>public void add(int value) {
+    data.add(value);
+    swim(data.size() - 1);
+}
+
+private void swim(int i) {
+    while (i &gt; 0) {
+        int parent = (i - 1) / 2;
+        if (data.get(parent) &lt;= data.get(i)) break;
+        swap(parent, i);
+        i = parent;
+    }
+}</code></pre>
+        <p>
+          Since the item moves up at most one tree level per swap, <code>add</code> is <code>O(log n)</code>.
+        </p>
+
+        <h2>Removing minimum: sink downward</h2>
+        <p>
+          The minimum is at index 0. To remove it, swap the last item into the root, remove the old last position, then
+          sink the root downward until the invariant is restored.
+        </p>
+        <pre><code>public int removeMin() {
+    if (data.isEmpty()) throw new NoSuchElementException();
+    int answer = data.get(0);
+    int last = data.remove(data.size() - 1);
+    if (!data.isEmpty()) {
+        data.set(0, last);
+        sink(0);
+    }
+    return answer;
+}
+
+private void sink(int i) {
+    while (true) {
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        int smallest = i;
+
+        if (left &lt; data.size() &amp;&amp; data.get(left) &lt; data.get(smallest)) {
+            smallest = left;
+        }
+        if (right &lt; data.size() &amp;&amp; data.get(right) &lt; data.get(smallest)) {
+            smallest = right;
+        }
+        if (smallest == i) break;
+        swap(i, smallest);
+        i = smallest;
+    }
+}</code></pre>
+        <pre><code>private void swap(int i, int j) {
+    int tmp = data.get(i);
+    data.set(i, data.get(j));
+    data.set(j, tmp);
+}</code></pre>
+
+        <h2>Build heap: heapify</h2>
+        <p>
+          If we insert n items one by one, building a heap costs <code>O(n log n)</code>. But if all values are already
+          in an array, we can heapify bottom-up in <code>O(n)</code>.
+        </p>
+        <pre><code>static void heapify(int[] a) {
+    for (int i = a.length / 2 - 1; i &gt;= 0; i--) {
+        sink(a, i, a.length);
+    }
+}</code></pre>
+        <p>
+          The proof is subtle: most nodes are near the leaves and can sink only a short distance. The total work across
+          all nodes is linear.
+        </p>
+
+        <h2>Heap sort preview</h2>
+        <p>
+          Heap sort uses a heap to repeatedly remove the max or min. It sorts in <code>O(n log n)</code> time and can be
+          implemented in-place, but it is not stable.
+        </p>
+        <pre><code>HEAP-SORT(a):
+    build a max-heap from a
+    repeatedly swap max with the end
+    shrink heap size
+    sink the new root</code></pre>
+        <p>
+          Sorting will be covered in more detail in Lesson 10.
+        </p>
+
+        <h2>Java PriorityQueue</h2>
+        <p>
+          Java's <code>PriorityQueue</code> is a min-heap by default.
+        </p>
+        <pre><code>PriorityQueue&lt;Integer&gt; minHeap = new PriorityQueue&lt;&gt;();
+minHeap.add(5);
+minHeap.add(2);
+minHeap.add(9);
+System.out.println(minHeap.peek());   // 2
+System.out.println(minHeap.remove()); // 2</code></pre>
+        <p>
+          For a max-heap, reverse the comparator.
+        </p>
+        <pre><code>PriorityQueue&lt;Integer&gt; maxHeap =
+    new PriorityQueue&lt;&gt;((a, b) -&gt; Integer.compare(b, a));</code></pre>
+        <p>
+          Do not write <code>(a, b) -> b - a</code> for general integers; subtraction can overflow. Use
+          <code>Integer.compare</code>.
+        </p>
+
+        <h2>Custom object priorities</h2>
+        <p>
+          Priority queues are often used with objects. Define the priority explicitly with a comparator.
+        </p>
+        <pre><code>record Task(String name, int priority, int duration) { }
+
+PriorityQueue&lt;Task&gt; tasks = new PriorityQueue&lt;&gt;(
+    Comparator.comparingInt(Task::priority).reversed()
+              .thenComparingInt(Task::duration)
+);
+
+tasks.add(new Task("write report", 4, 60));
+tasks.add(new Task("fix bug", 9, 15));
+tasks.add(new Task("email", 4, 5));</code></pre>
+        <p>
+          This comparator sorts by higher priority first, then shorter duration when priorities tie.
+        </p>
+
+        <h2>Application 1: Top K largest</h2>
+        <p>
+          To find the k largest values, keep a min-heap of size k. The smallest value in the heap is the cutoff.
+        </p>
+        <pre><code>static List&lt;Integer&gt; topKLargest(int[] nums, int k) {
+    PriorityQueue&lt;Integer&gt; heap = new PriorityQueue&lt;&gt;();
+    for (int x : nums) {
+        heap.add(x);
+        if (heap.size() &gt; k) {
+            heap.remove();
+        }
+    }
+    return new ArrayList&lt;&gt;(heap);
+}</code></pre>
+        <p>
+          Time is <code>O(n log k)</code>. Space is <code>O(k)</code>. Sorting everything would cost
+          <code>O(n log n)</code>.
+        </p>
+
+        <h2>Application 2: Top K frequent elements</h2>
+        <p>
+          Count frequencies with a HashMap, then keep the k most frequent items in a min-heap by frequency.
+        </p>
+        <pre><code>static List&lt;Integer&gt; topKFrequent(int[] nums, int k) {
+    Map&lt;Integer, Integer&gt; freq = new HashMap&lt;&gt;();
+    for (int x : nums) {
+        freq.put(x, freq.getOrDefault(x, 0) + 1);
+    }
+
+    PriorityQueue&lt;Integer&gt; heap = new PriorityQueue&lt;&gt;(
+        Comparator.comparingInt(freq::get)
+    );
+
+    for (int x : freq.keySet()) {
+        heap.add(x);
+        if (heap.size() &gt; k) heap.remove();
+    }
+    return new ArrayList&lt;&gt;(heap);
+}</code></pre>
+        <p>
+          If there are m distinct values, heap work is <code>O(m log k)</code>, plus <code>O(n)</code> for counting.
+        </p>
+
+        <h2>Application 3: merge k sorted lists</h2>
+        <p>
+          A heap can repeatedly choose the smallest current head among k sorted lists.
+        </p>
+        <pre><code>record Entry(int value, int listIndex, int elementIndex) { }
+
+static List&lt;Integer&gt; mergeSortedLists(List&lt;List&lt;Integer&gt;&gt; lists) {
+    PriorityQueue&lt;Entry&gt; heap = new PriorityQueue&lt;&gt;(
+        Comparator.comparingInt(Entry::value)
+    );
+
+    for (int i = 0; i &lt; lists.size(); i++) {
+        if (!lists.get(i).isEmpty()) {
+            heap.add(new Entry(lists.get(i).get(0), i, 0));
+        }
+    }
+
+    List&lt;Integer&gt; out = new ArrayList&lt;&gt;();
+    while (!heap.isEmpty()) {
+        Entry cur = heap.remove();
+        out.add(cur.value());
+        int nextIndex = cur.elementIndex() + 1;
+        List&lt;Integer&gt; list = lists.get(cur.listIndex());
+        if (nextIndex &lt; list.size()) {
+            heap.add(new Entry(list.get(nextIndex), cur.listIndex(), nextIndex));
+        }
+    }
+    return out;
+}</code></pre>
+        <p>
+          If there are N total elements and k lists, time is <code>O(N log k)</code>, and heap space is
+          <code>O(k)</code>.
+        </p>
+
+        <h2>Application 4: median from a stream</h2>
+        <p>
+          Keep the smaller half in a max-heap and the larger half in a min-heap. Balance sizes so they differ by at most
+          one.
+        </p>
+        <pre><code>class MedianFinder {
+    private PriorityQueue&lt;Integer&gt; small =
+        new PriorityQueue&lt;&gt;((a, b) -&gt; Integer.compare(b, a));
+    private PriorityQueue&lt;Integer&gt; large = new PriorityQueue&lt;&gt;();
+
+    public void addNum(int num) {
+        if (small.isEmpty() || num &lt;= small.peek()) small.add(num);
+        else large.add(num);
+
+        if (small.size() &gt; large.size() + 1) large.add(small.remove());
+        if (large.size() &gt; small.size()) small.add(large.remove());
+    }
+
+    public double findMedian() {
+        if (small.size() == large.size()) {
+            return (small.peek() + large.peek()) / 2.0;
+        }
+        return small.peek();
+    }
+}</code></pre>
+        <p>
+          Each insertion costs <code>O(log n)</code>. Reading the median costs <code>O(1)</code>.
+        </p>
+
+        <h2>Application 5: Dijkstra preview</h2>
+        <p>
+          Dijkstra's shortest path algorithm uses a priority queue to repeatedly expand the currently closest known
+          vertex. We will study the full algorithm in the graph lesson.
+        </p>
+        <pre><code>record State(int node, int dist) { }
+
+PriorityQueue&lt;State&gt; pq = new PriorityQueue&lt;&gt;(
+    Comparator.comparingInt(State::dist)
+);</code></pre>
+        <p>
+          This is the same idea as BFS, except the "next" item is chosen by smallest distance, not arrival order.
+        </p>
+
+        <h2>Choosing heap vs sorting</h2>
+        <table>
+          <thead><tr><th>Need</th><th>Use</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>Need all items sorted once</td><td>Sort</td><td>Simple and complete ordering</td></tr>
+            <tr><td>Need only k largest/smallest</td><td>Heap of size k</td><td>O(n log k)</td></tr>
+            <tr><td>Need repeated min/max over changing data</td><td>Priority queue</td><td>O(log n) update, O(1) peek</td></tr>
+            <tr><td>Need fast arbitrary search</td><td>HashMap or TreeMap</td><td>Heap does not support this well</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Thinking a heap is fully sorted. It is not.</li>
+          <li>Confusing heap invariant with BST invariant.</li>
+          <li>Using a heap when all items need to be sorted; sorting may be simpler.</li>
+          <li>Using subtraction in a comparator and risking integer overflow.</li>
+          <li>Forgetting that Java <code>PriorityQueue</code> is a min-heap by default.</li>
+          <li>Expecting fast search or removal of arbitrary elements from a heap.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-HEAP-PROBLEM(problem):
+    1. What priority decides the next item?
+    2. Do we need min, max, or custom priority?
+    3. How large can the heap get?
+    4. Count add/remove operations: each is O(log heapSize).
+    5. Count peek operations: each is O(1).
+    6. Compare against sorting.
+    7. State time and auxiliary space.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Given an array representation, identify parent and child indices.</li>
+          <li>Trace <code>add</code> and <code>removeMin</code> by hand.</li>
+          <li>Implement <code>IntMinHeap</code> with <code>swim</code> and <code>sink</code>.</li>
+          <li>Find top k largest values.</li>
+          <li>Find top k frequent values.</li>
+          <li>Merge k sorted lists.</li>
+          <li>Maintain median from a stream using two heaps.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create a folder named <code>lesson-08-heaps</code> in the course homework repository.
+        </p>
+        <pre><code>lesson-08-heaps/
+  README.md
+  src/
+    MinPriorityQueue.java
+    IntMinHeap.java
+    HeapProblems.java
+    MedianFinder.java
+    Main.java
+  analysis/
+    heap-analysis.md</code></pre>
+        <h3>Required implementation</h3>
+        <ul>
+          <li>Implement <code>IntMinHeap</code> with <code>add</code>, <code>peekMin</code>, <code>removeMin</code>, <code>size</code>, and <code>isEmpty</code>.</li>
+          <li>Implement <code>topKLargest</code>.</li>
+          <li>Implement <code>topKFrequent</code>.</li>
+          <li>Implement <code>mergeSortedLists</code>.</li>
+          <li>Implement <code>MedianFinder</code>.</li>
+        </ul>
+        <h3>README requirements</h3>
+        <ul>
+          <li>Explain the difference between a priority queue and a heap.</li>
+          <li>Explain the heap invariant.</li>
+          <li>Explain array parent/child index formulas.</li>
+          <li>State time and auxiliary space for every method.</li>
+          <li>Include at least two tests for each required method.</li>
+        </ul>
+        <h3>Optional challenge</h3>
+        <p>
+          Implement heap sort using an in-place max-heap. Explain why it is O(n log n), O(1) auxiliary space, and not
+          stable.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to explain the priority queue ADT, implement a binary heap with swim
+          and sink, and choose between heap-based partial ordering and full sorting.
+        </div>
+        <nav class="pager"><a href="lesson-07.html">← Previous</a><a href="lesson-09.html">Next: Hashing →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

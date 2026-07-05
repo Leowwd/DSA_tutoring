@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 1 - How to Think About DSA in Java</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="../index.html">Home</a><a href="../assignments.html">Assignments</a><a href="lesson-02.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a aria-current="page" href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+      <main class="content">
+        <p class="lesson-kicker">Lesson 1</p>
+        <h1>How to Think About DSA in Java</h1>
+        <p class="summary">
+          Data structures and algorithms are not a list of tricks. They are a way to design software around operations:
+          what do we need to store, what questions do we need to answer, and which operations must be fast?
+        </p>
+
+        <h2>Example first: a student scorebook</h2>
+        <p>
+          Imagine we are building a small scorebook for a tutoring class. We want to store quiz scores, add a new score,
+          compute the average, find the highest score, and check whether a score exists.
+        </p>
+        <pre><code>int[] scores = {88, 91, 76, 100, 95};</code></pre>
+        <p>
+          With only this one line, many design questions appear. How do we add another score if the array is already
+          full? How expensive is it to search for a score? What if we want student names too? What if we want the top
+          3 scores quickly?
+        </p>
+        <p>
+          This is the reason DSA exists. Real programs are full of collections of data. Different collections make
+          different operations cheap.
+        </p>
+
+        <h2>The operation-first mindset</h2>
+        <p>
+          Before choosing a data structure, list the operations. A data structure is useful only because it supports
+          certain operations well.
+        </p>
+        <table>
+          <thead><tr><th>Need</th><th>Possible structure</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Fast index access</td><td>Array or ArrayList</td><td><code>get(i)</code> is O(1)</td></tr>
+            <tr><td>Fast add/remove at front</td><td>Linked list or deque</td><td>No shifting required</td></tr>
+            <tr><td>Fast membership test</td><td>HashSet</td><td>Expected O(1) lookup</td></tr>
+            <tr><td>Keep items sorted</td><td>TreeSet or balanced BST</td><td>Search, insert, min, max are logarithmic</td></tr>
+            <tr><td>Repeated min/max</td><td>Heap / PriorityQueue</td><td>Remove priority item in O(log n)</td></tr>
+            <tr><td>Relationships</td><td>Graph</td><td>Models networks, maps, dependencies</td></tr>
+          </tbody>
+        </table>
+        <p>
+          In this course, every new structure will be introduced through an interface first. The interface describes
+          what the structure does. The implementation explains how it does it.
+        </p>
+
+        <h2>Interface first: a tiny scorebook ADT</h2>
+        <p>
+          An ADT, or abstract data type, describes behavior without exposing implementation details. Here is a possible
+          scorebook interface:
+        </p>
+        <pre><code>interface ScoreBook {
+    void addScore(int score);
+    int size();
+    int max();
+    double average();
+    boolean contains(int score);
+}</code></pre>
+        <p>
+          This interface does not say whether scores are stored in an array, linked list, tree, or database. That is the
+          point. First decide what operations the user needs. Then choose the representation.
+        </p>
+
+        <h2>Implementation 1: array-backed scorebook</h2>
+        <p>
+          A simple implementation can use a resizable array. We keep two pieces of state: the physical array and the
+          logical number of scores currently stored.
+        </p>
+        <pre><code>class ArrayScoreBook implements ScoreBook {
+    private int[] data = new int[4];
+    private int size = 0;
+
+    public void addScore(int score) {
+        if (size == data.length) {
+            resize(data.length * 2);
+        }
+        data[size] = score;
+        size++;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public int max() {
+        if (size == 0) throw new IllegalStateException("empty scorebook");
+        int best = data[0];
+        for (int i = 1; i &lt; size; i++) {
+            if (data[i] &gt; best) best = data[i];
+        }
+        return best;
+    }
+
+    public double average() {
+        if (size == 0) throw new IllegalStateException("empty scorebook");
+        int total = 0;
+        for (int i = 0; i &lt; size; i++) {
+            total += data[i];
+        }
+        return (double) total / size;
+    }
+
+    public boolean contains(int score) {
+        for (int i = 0; i &lt; size; i++) {
+            if (data[i] == score) return true;
+        }
+        return false;
+    }
+
+    private void resize(int capacity) {
+        int[] next = new int[capacity];
+        for (int i = 0; i &lt; size; i++) {
+            next[i] = data[i];
+        }
+        data = next;
+    }
+}</code></pre>
+        <p>
+          This implementation is intentionally small. It already introduces the main pattern behind Java's
+          <code>ArrayList</code>: a backing array, a logical size, and occasional resizing.
+        </p>
+
+        <h2>What state does the algorithm need?</h2>
+        <p>
+          A strong DSA student learns to identify state. In <code>max</code>, the state is <code>best</code>. In
+          <code>average</code>, the state is <code>total</code>. In <code>contains</code>, the state is the current index
+          and whether we have already found the target.
+        </p>
+        <pre><code>MAX-SCORE(data, size):
+    best = data[0]
+    for i from 1 to size - 1:
+        if data[i] &gt; best:
+            best = data[i]
+    return best</code></pre>
+        <p>
+          Pseudo code is useful because it strips away syntax. If the pseudo code is confused, the Java code will also
+          be confused.
+        </p>
+
+        <h2>Java details that matter for DSA</h2>
+        <h3>Primitive values vs references</h3>
+        <p>
+          Java has primitive values such as <code>int</code>, <code>boolean</code>, and <code>double</code>. It also has
+          references to objects, such as arrays, strings, lists, maps, and custom nodes.
+        </p>
+        <pre><code>static void changeFirst(int[] nums) {
+    nums[0] = 999;
+}
+
+public static void main(String[] args) {
+    int[] values = {1, 2, 3};
+    changeFirst(values);
+    System.out.println(values[0]); // 999
+}</code></pre>
+        <p>
+          The method receives a copy of the reference, but both references point to the same array object. This idea is
+          essential for linked lists, trees, graphs, and any object-based data structure.
+        </p>
+
+        <h3>Static methods vs objects</h3>
+        <p>
+          Many early algorithm problems can be written as static methods because they do not need long-term object
+          state.
+        </p>
+        <pre><code>static int sum(int[] nums) {
+    int total = 0;
+    for (int x : nums) total += x;
+    return total;
+}</code></pre>
+        <p>
+          Data structures usually need objects because they store state across many operations.
+        </p>
+        <pre><code>ArrayScoreBook book = new ArrayScoreBook();
+book.addScore(88);
+book.addScore(91);
+System.out.println(book.max());</code></pre>
+
+        <h2>Testing habit</h2>
+        <p>
+          Every assignment in this course should include tests. A test is a precise claim about behavior. For a method,
+          test a normal case, an edge case, and a case likely to expose a bug.
+        </p>
+        <pre><code>static void checkMax() {
+    ArrayScoreBook book = new ArrayScoreBook();
+    book.addScore(5);
+    assert book.max() == 5;
+
+    book.addScore(-2);
+    book.addScore(10);
+    assert book.max() == 10;
+    assert book.contains(-2);
+}</code></pre>
+        <p>
+          Java assertions are often disabled unless the program is run with <code>-ea</code>. For small assignments, that
+          is fine. Later, we can move to JUnit.
+        </p>
+
+        <h2>Why this matters beyond coding exercises</h2>
+        <p>
+          Technical work often involves arrays, tables, maps, graphs, and large datasets. DSA helps answer practical
+          questions:
+        </p>
+        <ul>
+          <li>If a dataset has one million rows, will this code finish?</li>
+          <li>Should we sort first, build a map, or scan once?</li>
+          <li>How much memory does this preprocessing step require?</li>
+          <li>Can we model this data as a graph, such as users connected by interactions?</li>
+        </ul>
+        <p>
+          The goal is not only to pass coding interviews. The goal is to reason about computational cost when data gets
+          large.
+        </p>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Extend <code>ScoreBook</code> with <code>min()</code>. Write pseudo code before Java.</li>
+          <li>Add <code>countAbove(int threshold)</code>. Identify the state used by the algorithm.</li>
+          <li>Write three tests for <code>average()</code>, including an empty scorebook case.</li>
+          <li>Explain which operations are fast and which operations scan the whole scorebook.</li>
+        </ol>
+
+        <div class="checkpoint">
+          Checkpoint: Given a small problem, the student should be able to define an interface, choose state, write
+          pseudo code, write Java, and create tests.
+        </div>
+        <nav class="pager"><a href="../index.html">← Home</a><a href="lesson-02.html">Next: Time Complexity →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

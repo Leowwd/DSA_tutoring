@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 2 - Time Complexity and Asymptotic Bounds</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-01.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-03.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a aria-current="page" href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+      <main class="content">
+        <p class="lesson-kicker">Lesson 2</p>
+        <h1>Time Complexity and Asymptotic Bounds</h1>
+        <p class="summary">
+          This lesson builds algorithm analysis from the math side: functions, growth rates, upper bounds, lower bounds,
+          and tight bounds. The point is to predict scalability before running code.
+        </p>
+
+        <h2>Example first: duplicate detection</h2>
+        <p>
+          Given an integer array, return whether any value appears at least twice. Here are two correct solutions.
+        </p>
+        <pre><code>static boolean hasDuplicateSlow(int[] nums) {
+    for (int i = 0; i &lt; nums.length; i++) {
+        for (int j = i + 1; j &lt; nums.length; j++) {
+            if (nums[i] == nums[j]) return true;
+        }
+    }
+    return false;
+}</code></pre>
+        <pre><code>static boolean hasDuplicateFast(int[] nums) {
+    HashSet&lt;Integer&gt; seen = new HashSet&lt;&gt;();
+    for (int x : nums) {
+        if (seen.contains(x)) return true;
+        seen.add(x);
+    }
+    return false;
+}</code></pre>
+        <p>
+          Both are logically correct. The difference is growth. The slow method compares pairs. The fast method scans
+          once and uses a set for membership.
+        </p>
+
+        <h2>From code to a cost function</h2>
+        <p>
+          Time complexity starts by turning code into a function. Let <code>n</code> be the input length. For the nested
+          loop version, the number of comparisons is:
+        </p>
+        <pre><code>(n - 1) + (n - 2) + ... + 2 + 1
+= n(n - 1) / 2
+= 0.5n^2 - 0.5n</code></pre>
+        <p>
+          We do not usually care about the exact constants. We care that the dominant term is quadratic. That tells us
+          what happens as n grows.
+        </p>
+
+        <h2>Asymptotic notation</h2>
+        <p>
+          Asymptotic notation describes growth for large inputs. It deliberately ignores machine speed, programming
+          language overhead, and small constants.
+        </p>
+        <table>
+          <thead><tr><th>Notation</th><th>Meaning</th><th>Informal reading</th></tr></thead>
+          <tbody>
+            <tr><td>O(g(n))</td><td>Asymptotic upper bound</td><td>The function grows no faster than g(n), up to constants.</td></tr>
+            <tr><td>&Omega;(g(n))</td><td>Asymptotic lower bound</td><td>The function grows at least as fast as g(n), up to constants.</td></tr>
+            <tr><td>&Theta;(g(n))</td><td>Tight bound</td><td>The function grows like g(n), up to constants.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Many classes teach Big-O first because it is the most common in everyday programming. But Big-O alone is only
+          an upper bound. Saying a method is O(n^2) does not prove it is not also O(n^3). For precision, we often want
+          <code>&Theta;</code>.
+        </p>
+
+        <h2>Formal intuition without overloading the math</h2>
+        <p>
+          We say <code>f(n)</code> is <code>O(g(n))</code> if there are positive constants <code>c</code> and
+          <code>n0</code> such that for every <code>n >= n0</code>, <code>f(n) <= c * g(n)</code>.
+        </p>
+        <p>
+          In plain English: after some point, <code>g(n)</code> times a constant is always above <code>f(n)</code>.
+        </p>
+        <div class="concept-grid">
+          <section class="concept-card">
+            <span class="mini-label">Upper bound</span>
+            <p><code>3n + 10</code> is O(n), because <code>3n + 10 <= 4n</code> for all <code>n >= 10</code>.</p>
+          </section>
+          <section class="concept-card">
+            <span class="mini-label">Tight bound</span>
+            <p><code>3n + 10</code> is also &Theta;(n), because it is both O(n) and &Omega;(n).</p>
+          </section>
+        </div>
+
+        <h2>Growth-rate hierarchy</h2>
+        <p>
+          The following order appears constantly in algorithms:
+        </p>
+        <pre><code>1 &lt; log n &lt; sqrt(n) &lt; n &lt; n log n &lt; n^2 &lt; n^3 &lt; 2^n &lt; n!</code></pre>
+        <table>
+          <thead><tr><th>Class</th><th>Typical source</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>O(1)</td><td>Direct access</td><td><code>a[i]</code>, stack push</td></tr>
+            <tr><td>O(log n)</td><td>Repeated halving</td><td>Binary search</td></tr>
+            <tr><td>O(n)</td><td>Single scan</td><td>Find max in an array</td></tr>
+            <tr><td>O(n log n)</td><td>Divide and conquer with linear combine</td><td>Merge sort</td></tr>
+            <tr><td>O(n^2)</td><td>All pairs</td><td>Compare every pair</td></tr>
+            <tr><td>O(2^n)</td><td>All subsets</td><td>Backtracking subset generation</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Why lower bounds matter</h2>
+        <p>
+          A lower bound tells us that no algorithm in a certain model can do better than a given amount of work. For
+          example, finding the maximum value in an unsorted array has a lower bound of &Omega;(n). Why? In the worst
+          case, if the algorithm never looks at one element, that unseen element could be the maximum.
+        </p>
+        <p>
+          Therefore, the simple scan is not just O(n). It is &Theta;(n), and it is optimal for an unsorted array.
+        </p>
+        <pre><code>static int max(int[] a) {
+    int best = a[0];
+    for (int i = 1; i &lt; a.length; i++) {
+        if (a[i] &gt; best) best = a[i];
+    }
+    return best;
+}</code></pre>
+
+        <h2>Loop analysis patterns</h2>
+        <h3>Separate loops add</h3>
+        <pre><code>for (int i = 0; i &lt; n; i++) workA();
+for (int j = 0; j &lt; n; j++) workB();</code></pre>
+        <p>The cost is <code>n + n = 2n</code>, so the complexity is &Theta;(n).</p>
+
+        <h3>Nested loops multiply</h3>
+        <pre><code>for (int i = 0; i &lt; n; i++) {
+    for (int j = 0; j &lt; n; j++) {
+        work();
+    }
+}</code></pre>
+        <p>The cost is <code>n * n</code>, so the complexity is &Theta;(n^2).</p>
+
+        <h3>Triangular loops use sums</h3>
+        <pre><code>for (int i = 0; i &lt; n; i++) {
+    for (int j = i + 1; j &lt; n; j++) {
+        work();
+    }
+}</code></pre>
+        <p>
+          The work is <code>(n - 1) + (n - 2) + ... + 1</code>, which is <code>n(n - 1)/2</code>. The complexity is
+          &Theta;(n^2), even though the inner loop does not always run n times.
+        </p>
+
+        <h3>Halving loops are logarithmic</h3>
+        <pre><code>int x = n;
+while (x &gt; 1) {
+    x = x / 2;
+}</code></pre>
+        <p>
+          After k iterations, <code>x</code> is roughly <code>n / 2^k</code>. The loop stops when
+          <code>n / 2^k <= 1</code>, so <code>k >= log2(n)</code>. Complexity: &Theta;(log n).
+        </p>
+
+        <h2>Best case, worst case, average case</h2>
+        <p>
+          Complexity can describe different scenarios. For <code>contains</code> on an array:
+        </p>
+        <pre><code>static boolean contains(int[] a, int target) {
+    for (int x : a) {
+        if (x == target) return true;
+    }
+    return false;
+}</code></pre>
+        <table>
+          <thead><tr><th>Case</th><th>When</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Best case</td><td>Target is first</td><td>&Theta;(1)</td></tr>
+            <tr><td>Worst case</td><td>Target is last or missing</td><td>&Theta;(n)</td></tr>
+            <tr><td>Average case</td><td>Assume target position is random</td><td>&Theta;(n)</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Unless otherwise stated, algorithm courses usually care about worst-case complexity because it gives a
+          guarantee.
+        </p>
+
+        <h2>Calculus idea: using integrals to estimate sums</h2>
+        <p>
+          Many algorithms produce sums that are not as simple as <code>1 + 2 + ... + n</code>. When a sum is hard to
+          evaluate exactly, we can often compare it to an integral. This is one reason calculus is useful in algorithm
+          analysis.
+        </p>
+        <p>
+          For an increasing positive function <code>f(x)</code>, the sum <code>f(1) + f(2) + ... + f(n)</code> is often
+          close to the area under the curve <code>f(x)</code>. We do not need the exact value; we need the growth rate.
+        </p>
+        <pre><code>sum from i = 1 to n of log(i)
+≈ integral from 1 to n of log(x) dx
+= n log(n) - n + 1
+= Θ(n log n)</code></pre>
+        <p>
+          This means <code>log(1) + log(2) + ... + log(n)</code> grows like <code>n log n</code>. This sum appears when
+          analyzing products, factorials, heap operations over many inserted elements, and some sorting arguments.
+        </p>
+        <div class="concept-grid">
+          <section class="concept-card">
+            <span class="mini-label">Harmonic sum</span>
+            <p><code>1 + 1/2 + 1/3 + ... + 1/n = Θ(log n)</code>. The integral of <code>1/x</code> is <code>log x</code>.</p>
+          </section>
+          <section class="concept-card">
+            <span class="mini-label">Log sum</span>
+            <p><code>log(1) + ... + log(n) = Θ(n log n)</code>. This is also <code>log(n!)</code>.</p>
+          </section>
+        </div>
+        <p>
+          If you remembered something like <code>O(n log n)</code> being "the same as" another expression, it may have
+          been one of these facts: <code>log(n!) = Θ(n log n)</code>, or <code>Σ log i = Θ(n log n)</code>. These are
+          not equal as exact functions, but they have the same asymptotic growth.
+        </p>
+
+        <h2>Recurrences: algorithms that call themselves</h2>
+        <p>
+          Recursive algorithms often lead to recurrence relations. A recurrence describes the cost of solving a problem
+          in terms of smaller problems.
+        </p>
+        <p>
+          Merge sort is the classic example. It splits the array into two halves, recursively sorts both halves, then
+          merges them in linear time.
+        </p>
+        <pre><code>MERGE-SORT(a):
+    if a has length 0 or 1:
+        return a
+    split a into left and right
+    sortedLeft = MERGE-SORT(left)
+    sortedRight = MERGE-SORT(right)
+    return MERGE(sortedLeft, sortedRight)</code></pre>
+        <pre><code>T(n) = 2T(n/2) + Θ(n)</code></pre>
+        <p>
+          The <code>2T(n/2)</code> term means two recursive calls on half-size inputs. The <code>Θ(n)</code> term is the
+          merge work done after recursion.
+        </p>
+
+        <h2>Recursion tree method</h2>
+        <p>
+          Before using formulas, draw the work by levels. For merge sort:
+        </p>
+        <pre><code>Level 0:        n
+Level 1:     n/2 + n/2              = n
+Level 2:  n/4 + n/4 + n/4 + n/4     = n
+...
+Number of levels: log2(n)
+Total work: n per level * log n levels = Θ(n log n)</code></pre>
+        <p>
+          This method is often more intuitive than memorizing a theorem. It also helps students understand where
+          <code>n log n</code> actually comes from.
+        </p>
+
+        <h2>Master Theorem</h2>
+        <p>
+          The Master Theorem is a shortcut for many divide-and-conquer recurrences of this form:
+        </p>
+        <pre><code>T(n) = aT(n/b) + f(n)</code></pre>
+        <p>
+          Here, <code>a</code> is the number of subproblems, <code>n/b</code> is the size of each subproblem, and
+          <code>f(n)</code> is the non-recursive work done at each call.
+        </p>
+        <table>
+          <thead><tr><th>Comparison</th><th>Result</th><th>Intuition</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>f(n)</code> is smaller than <code>n^(log_b a)</code></td>
+              <td><code>T(n) = Θ(n^(log_b a))</code></td>
+              <td>Leaves dominate</td>
+            </tr>
+            <tr>
+              <td><code>f(n) = Θ(n^(log_b a))</code></td>
+              <td><code>T(n) = Θ(n^(log_b a) log n)</code></td>
+              <td>Every level contributes about the same</td>
+            </tr>
+            <tr>
+              <td><code>f(n)</code> is larger than <code>n^(log_b a)</code></td>
+              <td><code>T(n) = Θ(f(n))</code></td>
+              <td>Root work dominates, with a regularity condition</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>Examples</h3>
+        <table>
+          <thead><tr><th>Recurrence</th><th>Analysis</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td><code>T(n)=2T(n/2)+n</code></td><td><code>n^(log_2 2)=n</code>, equal case</td><td><code>Θ(n log n)</code></td></tr>
+            <tr><td><code>T(n)=T(n/2)+1</code></td><td><code>n^(log_2 1)=1</code>, equal case</td><td><code>Θ(log n)</code></td></tr>
+            <tr><td><code>T(n)=2T(n/2)+1</code></td><td><code>n^(log_2 2)=n</code>, leaves dominate</td><td><code>Θ(n)</code></td></tr>
+            <tr><td><code>T(n)=3T(n/2)+n</code></td><td><code>n^(log_2 3) ≈ n^1.585</code>, leaves dominate</td><td><code>Θ(n^1.585)</code></td></tr>
+            <tr><td><code>T(n)=T(n/2)+n</code></td><td><code>n^(log_2 1)=1</code>, root dominates</td><td><code>Θ(n)</code></td></tr>
+          </tbody>
+        </table>
+        <p>
+          The theorem is useful, but it is not magic. If the recurrence does not match the form, use recursion trees,
+          substitution, or another method.
+        </p>
+
+        <h2>Probability idea: expected runtime</h2>
+        <p>
+          Some algorithms use randomness. For these, worst-case analysis may be too pessimistic, while expected analysis
+          captures what happens on average over the algorithm's random choices.
+        </p>
+        <p>
+          Expected value is a weighted average:
+        </p>
+        <pre><code>E[X] = sum over outcomes of probability(outcome) * value(outcome)</code></pre>
+        <p>
+          A powerful rule is linearity of expectation: <code>E[X + Y] = E[X] + E[Y]</code>, even when X and Y are not
+          independent. This rule makes randomized quicksort analysis surprisingly elegant.
+        </p>
+
+        <h2>Randomized quicksort: why the expected time is O(n log n)</h2>
+        <p>
+          Quicksort chooses a pivot, partitions the array into smaller and larger elements, then recursively sorts both
+          sides.
+        </p>
+        <pre><code>QUICKSORT(a, lo, hi):
+    if lo >= hi:
+        return
+    pivotIndex = random index between lo and hi
+    move pivot to the end
+    p = PARTITION(a, lo, hi)
+    QUICKSORT(a, lo, p - 1)
+    QUICKSORT(a, p + 1, hi)</code></pre>
+        <p>
+          Worst case is <code>Θ(n^2)</code>, such as repeatedly choosing the smallest or largest pivot. But if the pivot
+          is chosen uniformly at random, the expected time is <code>Θ(n log n)</code>.
+        </p>
+        <h3>High-level recurrence intuition</h3>
+        <p>
+          A "good" pivot splits the array reasonably, for example between the 25th and 75th percentile. A random pivot
+          has constant probability of being good. We expect to get enough good splits to keep recursion depth
+          logarithmic, while each level still does linear partitioning work.
+        </p>
+        <h3>Pairwise comparison intuition</h3>
+        <p>
+          Another beautiful analysis counts expected comparisons. Consider two sorted-order elements <code>x_i</code>
+          and <code>x_j</code>. They are compared only if one of them is chosen as the first pivot among the elements
+          between them. The probability of that is:
+        </p>
+        <pre><code>Pr[x_i and x_j are compared] = 2 / (j - i + 1)</code></pre>
+        <p>
+          Summing this probability over all pairs gives:
+        </p>
+        <pre><code>Expected comparisons
+= sum over all i &lt; j of 2 / (j - i + 1)
+= Θ(n log n)</code></pre>
+        <p>
+          This is an advanced result, but the lesson is simple: randomness can protect an algorithm from consistently
+          bad structure in the input.
+        </p>
+
+        <h2>Java example: randomized pivot</h2>
+        <pre><code>static void quickSort(int[] a) {
+    Random rng = new Random();
+    quickSort(a, 0, a.length - 1, rng);
+}
+
+static void quickSort(int[] a, int lo, int hi, Random rng) {
+    if (lo >= hi) return;
+    int pivotIndex = lo + rng.nextInt(hi - lo + 1);
+    swap(a, pivotIndex, hi);
+    int p = partition(a, lo, hi);
+    quickSort(a, lo, p - 1, rng);
+    quickSort(a, p + 1, hi, rng);
+}</code></pre>
+        <p>
+          The implementation details of <code>partition</code> will be covered in the sorting lesson. Here the key point
+          is analytical: randomized pivot choice changes the expected behavior.
+        </p>
+
+        <h2>From math to Java: choosing a better data structure</h2>
+        <p>
+          If we perform one membership query, scanning an array may be fine. If we perform many membership queries, we
+          can preprocess the data into a set.
+        </p>
+        <pre><code>static int countMatches(int[] values, int[] queries) {
+    HashSet&lt;Integer&gt; set = new HashSet&lt;&gt;();
+    for (int x : values) set.add(x);
+
+    int count = 0;
+    for (int q : queries) {
+        if (set.contains(q)) count++;
+    }
+    return count;
+}</code></pre>
+        <p>
+          If <code>values.length = n</code> and <code>queries.length = m</code>, the expected time is
+          <code>O(n + m)</code>. Without the set, the naive nested search would be <code>O(nm)</code>.
+        </p>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE(code):
+    1. Define input sizes, such as n, m, V, or E.
+    2. Identify the basic operation: comparison, lookup, insertion, edge visit.
+    3. Count how many times the operation runs.
+    4. Convert sums or products into a growth function.
+    5. If recursion appears, write a recurrence.
+    6. Use a recursion tree, Master Theorem, or substitution.
+    7. State upper bound O(...).
+    8. If possible, state lower bound &Omega;(...).
+    9. If they match, state tight bound &Theta;(...).
+    10. Mention assumptions, such as expected O(1) HashSet operations.</code></pre>
+
+        <h2>Practice examples</h2>
+        <ol>
+          <li>Prove that scanning an unsorted array to find max is &Theta;(n).</li>
+          <li>Analyze a loop where <code>i</code> doubles each time.</li>
+          <li>Compare duplicate detection using nested loops vs <code>HashSet</code>.</li>
+          <li>Write the cost function for a triangular nested loop.</li>
+          <li>Explain why sorting with comparison-based algorithms has an &Omega;(n log n) lower bound at a high level.</li>
+          <li>Use an integral to explain why <code>1 + 1/2 + ... + 1/n = Θ(log n)</code>.</li>
+          <li>Solve <code>T(n) = 2T(n/2) + n</code> using a recursion tree.</li>
+          <li>Use the Master Theorem on <code>T(n) = 3T(n/2) + n</code>.</li>
+          <li>Explain why randomized quicksort has bad worst-case time but good expected time.</li>
+        </ol>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to distinguish O, &Omega;, and &Theta;, derive loop costs from sums,
+          and explain why a lower bound is a statement about necessary work.
+        </div>
+        <nav class="pager"><a href="lesson-01.html">← Previous</a><a href="lesson-03.html">Next: Space and Amortization →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

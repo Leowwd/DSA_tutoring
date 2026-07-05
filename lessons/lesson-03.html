@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 3 - Space Complexity and Amortized Analysis</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-02.html">Previous</a><a href="../assignments.html">Assignments</a><a href="lesson-04.html">Next</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a aria-current="page" href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 3</p>
+        <h1>Space Complexity and Amortized Analysis</h1>
+        <p class="summary">
+          Fast code can still fail if it uses too much memory. This lesson teaches how to count memory carefully and how
+          to reason about operations that are occasionally expensive but cheap on average.
+        </p>
+
+        <h2>Example first: two ways to reverse data</h2>
+        <p>
+          Suppose we have an array and want the elements in reverse order. The first solution creates a new array.
+        </p>
+        <pre><code>static int[] reversedCopy(int[] a) {
+    int[] out = new int[a.length];
+    for (int i = 0; i &lt; a.length; i++) {
+        out[i] = a[a.length - 1 - i];
+    }
+    return out;
+}</code></pre>
+        <p>
+          This method uses <code>O(n)</code> extra space because it allocates a new array of length n. The second version
+          reverses the input array in place.
+        </p>
+        <pre><code>static void reverseInPlace(int[] a) {
+    int left = 0;
+    int right = a.length - 1;
+    while (left &lt; right) {
+        int tmp = a[left];
+        a[left] = a[right];
+        a[right] = tmp;
+        left++;
+        right--;
+    }
+}</code></pre>
+        <p>
+          This method uses <code>O(1)</code> auxiliary space because the number of extra variables does not grow with n.
+          It modifies the input, which may or may not be allowed by the problem.
+        </p>
+
+        <h2>Principle: input space vs auxiliary space</h2>
+        <p>
+          When analyzing space complexity, be clear about what you are counting. Two common conventions appear in
+          algorithm classes:
+        </p>
+        <table>
+          <thead><tr><th>Term</th><th>Meaning</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Input space</td>
+              <td>Memory required to store the input itself</td>
+              <td>The given array of n integers</td>
+            </tr>
+            <tr>
+              <td>Auxiliary space</td>
+              <td>Extra memory allocated by the algorithm</td>
+              <td>A new array, HashMap, queue, recursion stack</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          In most DSA homework, "space complexity" means auxiliary space unless the problem says otherwise. If a method
+          receives an array, we usually do not count the input array. If the method creates another array of the same
+          size, we do count that.
+        </p>
+
+        <h2>Java memory model: stack and heap</h2>
+        <p>
+          A simplified Java memory model is enough for DSA:
+        </p>
+        <div class="concept-grid">
+          <section class="concept-card">
+            <span class="mini-label">Call stack</span>
+            <p>Stores active method calls and local variables. Recursive calls create more stack frames.</p>
+          </section>
+          <section class="concept-card">
+            <span class="mini-label">Heap</span>
+            <p>Stores objects and arrays created with <code>new</code>. References point to objects on the heap.</p>
+          </section>
+        </div>
+        <pre><code>static void example() {
+    int x = 7;              // local primitive value
+    int[] a = new int[3];   // reference is local; array object is on heap
+    a[0] = x;
+}</code></pre>
+        <p>
+          This distinction matters because many data structures are object graphs on the heap: linked list nodes, tree
+          nodes, graph adjacency lists, hash table buckets, and trie nodes.
+        </p>
+
+        <h2>Counting common memory patterns</h2>
+        <table>
+          <thead><tr><th>Pattern</th><th>Auxiliary space</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>A few local variables</td><td>O(1)</td><td>Constant number of variables</td></tr>
+            <tr><td>New array of length n</td><td>O(n)</td><td>One slot per input element</td></tr>
+            <tr><td>HashSet containing up to n values</td><td>O(n)</td><td>Stores up to n keys</td></tr>
+            <tr><td>Queue for BFS over n nodes</td><td>O(n)</td><td>Frontier can hold many nodes</td></tr>
+            <tr><td>Recursive depth h</td><td>O(h)</td><td>One stack frame per active call</td></tr>
+            <tr><td>2D DP table n by m</td><td>O(nm)</td><td>One cell per state</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Example: recursion stack space</h2>
+        <p>
+          Recursive methods use memory even when they do not allocate arrays or maps. Each unfinished method call stays
+          on the call stack.
+        </p>
+        <pre><code>static int factorial(int n) {
+    if (n == 0) return 1;
+    return n * factorial(n - 1);
+}</code></pre>
+        <p>
+          The time is <code>O(n)</code>. The auxiliary space is also <code>O(n)</code> because the recursion depth is n.
+        </p>
+        <pre><code>factorial(4)
+  waits for factorial(3)
+    waits for factorial(2)
+      waits for factorial(1)
+        waits for factorial(0)</code></pre>
+        <p>
+          Compare that with an iterative version:
+        </p>
+        <pre><code>static int factorialIterative(int n) {
+    int ans = 1;
+    for (int i = 2; i &lt;= n; i++) {
+        ans *= i;
+    }
+    return ans;
+}</code></pre>
+        <p>
+          The iterative version still takes <code>O(n)</code> time, but uses <code>O(1)</code> auxiliary space.
+        </p>
+
+        <h2>Example: copying vs aliasing</h2>
+        <p>
+          In Java, assigning one array variable to another does not copy the array. It copies the reference.
+        </p>
+        <pre><code>int[] a = {1, 2, 3};
+int[] b = a;
+b[0] = 99;
+System.out.println(a[0]); // 99</code></pre>
+        <p>
+          If you need an actual copy, allocate new memory:
+        </p>
+        <pre><code>int[] copy = Arrays.copyOf(a, a.length);</code></pre>
+        <p>
+          This takes <code>O(n)</code> time and <code>O(n)</code> auxiliary space. The ability to distinguish aliasing
+          from copying prevents many bugs in arrays, lists, and object-based structures.
+        </p>
+
+        <h2>Dynamic arrays: why ArrayList exists</h2>
+        <p>
+          A normal Java array has fixed length. But many programs need a list that can grow. The usual solution is a
+          dynamic array: keep an internal array, track the logical size, and resize when the array becomes full.
+        </p>
+        <pre><code>interface SimpleList&lt;E&gt; {
+    int size();
+    boolean isEmpty();
+    E get(int index);
+    void addLast(E value);
+    E removeLast();
+}</code></pre>
+        <p>
+          The key invariant is:
+        </p>
+        <pre><code>0 &lt;= size &lt;= data.length
+Only data[0], data[1], ..., data[size - 1] are real elements.
+data.length is capacity, not logical size.</code></pre>
+
+        <h2>Java implementation: generic dynamic array</h2>
+        <p>
+          Java does not allow direct creation of generic arrays in the cleanest way, so this educational version stores
+          an <code>Object[]</code> internally and casts when returning values.
+        </p>
+        <pre><code>class SimpleArrayList&lt;E&gt; implements SimpleList&lt;E&gt; {
+    private Object[] data = new Object[4];
+    private int size = 0;
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @SuppressWarnings("unchecked")
+    public E get(int index) {
+        checkIndex(index);
+        return (E) data[index];
+    }
+
+    public void addLast(E value) {
+        if (size == data.length) {
+            resize(data.length * 2);
+        }
+        data[size] = value;
+        size++;
+    }
+
+    @SuppressWarnings("unchecked")
+    public E removeLast() {
+        if (size == 0) throw new NoSuchElementException();
+        E value = (E) data[size - 1];
+        data[size - 1] = null; // avoid keeping an unnecessary reference
+        size--;
+        return value;
+    }
+
+    private void resize(int capacity) {
+        Object[] next = new Object[capacity];
+        for (int i = 0; i &lt; size; i++) {
+            next[i] = data[i];
+        }
+        data = next;
+    }
+
+    private void checkIndex(int index) {
+        if (index &lt; 0 || index &gt;= size) {
+            throw new IndexOutOfBoundsException(index);
+        }
+    }
+}</code></pre>
+        <p>
+          The line <code>data[size - 1] = null</code> matters. If the removed element is an object, keeping the reference
+          would prevent garbage collection from reclaiming it.
+        </p>
+
+        <h2>Pseudo code: append to a dynamic array</h2>
+        <pre><code>ADD-LAST(x):
+    if size == capacity:
+        create new array with capacity * 2
+        copy old elements into new array
+        data = new array
+    data[size] = x
+    size = size + 1</code></pre>
+        <p>
+          A single append can cost <code>O(n)</code> if it triggers resize. But most appends do not trigger resize.
+          Amortized analysis explains why a sequence of many appends is still efficient.
+        </p>
+
+        <h2>Amortized analysis: the main idea</h2>
+        <p>
+          Amortized analysis studies the average cost per operation over a worst-case sequence of operations. It is not
+          the same as average-case analysis. There is no probability assumption. We are not saying "usually fast" based
+          on random inputs. We are saying that across any long sequence, expensive operations are rare enough that the
+          average cost is small.
+        </p>
+        <table>
+          <thead><tr><th>Analysis type</th><th>Question</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Worst-case per operation</td><td>How bad can one operation be?</td><td>One resize append costs O(n)</td></tr>
+            <tr><td>Average-case</td><td>Expected over random inputs or choices?</td><td>Randomized quicksort</td></tr>
+            <tr><td>Amortized</td><td>Average over a sequence, without probability?</td><td>ArrayList append is amortized O(1)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Aggregate method: total cost over many appends</h2>
+        <p>
+          Suppose the dynamic array starts with capacity 1 and doubles whenever full. Consider n calls to
+          <code>addLast</code>.
+        </p>
+        <pre><code>Normal write cost: n
+Resize copy costs: 1 + 2 + 4 + 8 + ... + largest power of 2 below n
+Total resize copy cost &lt; 2n
+Total cost &lt; 3n
+Amortized cost per addLast &lt; 3n / n = O(1)</code></pre>
+        <p>
+          The geometric series is the key. Even though some individual operations are expensive, the total cost of all
+          resizing copies is linear over n insertions.
+        </p>
+
+        <h2>Accounting method: each cheap operation pays a tax</h2>
+        <p>
+          Another way to explain amortization is to charge each append a little more than it actually costs. The extra
+          charge is saved as credit to pay for future resizing.
+        </p>
+        <pre><code>Charge each addLast 3 credits:
+    1 credit pays for writing the new item now.
+    2 credits are saved to help pay for future copying during resize.</code></pre>
+        <p>
+          When the array doubles, the saved credits from previous insertions can pay for copying old elements. This is
+          less formal than the potential method, but it is intuitive and useful.
+        </p>
+
+        <h2>Potential method: stored energy</h2>
+        <p>
+          The potential method defines a function that measures stored "energy" in the data structure. For a dynamic
+          array, a common intuition is that a half-empty region gives us room for future cheap appends.
+        </p>
+        <p>
+          We will not use heavy formalism in this course, but the idea is important:
+        </p>
+        <pre><code>amortized cost = actual cost + change in potential</code></pre>
+        <p>
+          Cheap operations can increase potential. Expensive resize operations spend potential. Over a long sequence,
+          potential keeps the total under control.
+        </p>
+
+        <h2>What if we grow by +1 instead of doubling?</h2>
+        <p>
+          Suppose the array increases capacity by only one slot whenever full. Then every append after the first few
+          operations copies almost the entire array.
+        </p>
+        <pre><code>Copy costs:
+1 + 2 + 3 + ... + (n - 1)
+= n(n - 1) / 2
+= Θ(n^2)</code></pre>
+        <p>
+          Across n appends, total cost is <code>Θ(n^2)</code>, so amortized cost per append is <code>Θ(n)</code>. This
+          is why real dynamic arrays grow geometrically, not by one slot at a time.
+        </p>
+
+        <h2>Shrinking arrays</h2>
+        <p>
+          If we remove many elements, should the dynamic array shrink? Yes, but not too aggressively. If we shrink as
+          soon as <code>size == capacity / 2</code>, repeated add/remove operations near the boundary may resize over and
+          over.
+        </p>
+        <p>
+          A common strategy is:
+        </p>
+        <pre><code>Grow when size == capacity.
+Shrink when size &lt;= capacity / 4.
+When shrinking, resize to capacity / 2.</code></pre>
+        <p>
+          This gap between grow and shrink thresholds is called hysteresis. It prevents resize thrashing.
+        </p>
+
+        <h2>Space-time tradeoffs</h2>
+        <p>
+          Many algorithmic choices intentionally spend memory to save time.
+        </p>
+        <table>
+          <thead><tr><th>Technique</th><th>Extra space</th><th>Time benefit</th></tr></thead>
+          <tbody>
+            <tr><td>HashSet for membership</td><td>O(n)</td><td>Expected O(1) lookup instead of O(n) scan</td></tr>
+            <tr><td>Prefix sum array</td><td>O(n)</td><td>O(1) range sum after preprocessing</td></tr>
+            <tr><td>Memoization</td><td>Number of states</td><td>Avoids recomputing subproblems</td></tr>
+            <tr><td>BFS visited set</td><td>O(V)</td><td>Prevents infinite loops and repeated work</td></tr>
+            <tr><td>Merge sort auxiliary array</td><td>O(n)</td><td>Stable O(n log n) sorting</td></tr>
+          </tbody>
+        </table>
+        <p>
+          A strong answer does not simply say "this uses more memory." It explains what operation becomes faster because
+          of that memory.
+        </p>
+
+        <h2>Example: prefix sums as a space-time tradeoff</h2>
+        <p>
+          Suppose we need to answer many range-sum queries over the same array.
+        </p>
+        <pre><code>static int[] buildPrefix(int[] a) {
+    int[] prefix = new int[a.length + 1];
+    for (int i = 0; i &lt; a.length; i++) {
+        prefix[i + 1] = prefix[i] + a[i];
+    }
+    return prefix;
+}
+
+static int rangeSum(int[] prefix, int left, int rightExclusive) {
+    return prefix[rightExclusive] - prefix[left];
+}</code></pre>
+        <p>
+          Building the prefix array costs <code>O(n)</code> time and <code>O(n)</code> space. Each query then costs
+          <code>O(1)</code>. This is a classic computing pattern: preprocess once, answer many queries quickly.
+        </p>
+
+        <h2>Common mistakes in space analysis</h2>
+        <ul>
+          <li>Forgetting recursion stack space.</li>
+          <li>Counting input space when the question asks for auxiliary space.</li>
+          <li>Assuming <code>ArrayList</code> size and capacity are the same.</li>
+          <li>Forgetting that a <code>HashMap</code> stores keys, values, buckets, and entries.</li>
+          <li>Calling an algorithm O(1) space when it creates a result array of length n.</li>
+          <li>Ignoring whether the solution is allowed to modify the input.</li>
+        </ul>
+
+        <h2>Analysis routine</h2>
+        <pre><code>ANALYZE-SPACE(solution):
+    1. Define input size variables, such as n, m, V, and E.
+    2. Identify whether the problem asks for total space or auxiliary space.
+    3. List every created data structure.
+    4. Count the maximum size of each structure.
+    5. Include recursion depth as stack space.
+    6. Keep the dominant term.
+    7. State whether the input is modified.
+    8. For dynamic structures, mention amortized behavior if relevant.</code></pre>
+
+        <h2>In-class exercises</h2>
+        <ol>
+          <li>Analyze time and space for <code>reversedCopy</code> and <code>reverseInPlace</code>.</li>
+          <li>Trace the call stack for <code>factorial(5)</code>.</li>
+          <li>Implement <code>SimpleArrayList.addFirst</code>. What is its time complexity?</li>
+          <li>Explain why doubling capacity gives amortized O(1) append.</li>
+          <li>Explain why increasing capacity by 1 gives amortized O(n) append.</li>
+          <li>Design a method that uses O(n) extra space to make many queries faster.</li>
+        </ol>
+
+        <h2>Homework: GitHub submission</h2>
+        <p>
+          Create or update a GitHub repository for this course. Add a folder named <code>lesson-03-space</code>.
+        </p>
+        <pre><code>lesson-03-space/
+  README.md
+  src/
+    SimpleList.java
+    SimpleArrayList.java
+    Main.java
+  analysis/
+    space-analysis.md</code></pre>
+        <h3>Required tasks</h3>
+        <ol>
+          <li>Implement <code>SimpleList&lt;E&gt;</code> and <code>SimpleArrayList&lt;E&gt;</code>.</li>
+          <li>Add <code>addLast</code>, <code>removeLast</code>, <code>get</code>, <code>size</code>, and <code>isEmpty</code>.</li>
+          <li>Write a small <code>Main</code> program that demonstrates resizing.</li>
+          <li>In <code>space-analysis.md</code>, explain time and space for every public method.</li>
+          <li>Explain why <code>addLast</code> is worst-case O(n) but amortized O(1).</li>
+          <li>Include at least five tests or test cases in the README.</li>
+        </ol>
+        <h3>Optional challenge</h3>
+        <p>
+          Add shrinking when the array is at most one-quarter full. Explain why shrinking at one-half full can cause
+          resize thrashing.
+        </p>
+
+        <div class="checkpoint">
+          Checkpoint: The student should be able to distinguish auxiliary space from input space, count recursion stack
+          memory, explain dynamic array resizing, and prove amortized O(1) append using a geometric-series argument.
+        </div>
+        <nav class="pager"><a href="lesson-02.html">← Previous</a><a href="lesson-04.html">Next: Arrays and Patterns →</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>
