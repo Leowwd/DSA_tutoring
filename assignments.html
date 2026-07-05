@@ -190,16 +190,50 @@ public class SortingTest {
           Each assignment should have more than one meaningful commit when possible. The goal is to show progress, not
           only the final state.
         </p>
+
+        <h3>Semantic commit messages</h3>
+        <p>
+          All commits in this course should follow the
+          <a href="https://www.conventionalcommits.org/" target="_blank" rel="noopener">Conventional Commits</a>
+          format. This keeps the project history scannable and makes it easy to see what each change does at a glance.
+        </p>
+        <p>The format is:</p>
+        <pre><code>&lt;type&gt;: &lt;short description&gt;</code></pre>
+        <p>Use one of the following types:</p>
+        <table>
+          <thead><tr><th>Type</th><th>When to use</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>feat</code></td><td>Add new functionality or implement an algorithm</td><td><code>feat: implement merge sort</code></td></tr>
+            <tr><td><code>fix</code></td><td>Fix a bug or correct wrong output</td><td><code>fix: handle empty array in quick sort</code></td></tr>
+            <tr><td><code>docs</code></td><td>Add or update documentation, README, or analysis</td><td><code>docs: write sorting complexity analysis</code></td></tr>
+            <tr><td><code>test</code></td><td>Add or update test cases</td><td><code>test: add edge case tests for merge sort</code></td></tr>
+            <tr><td><code>refactor</code></td><td>Restructure code without changing behavior</td><td><code>refactor: extract partition helper for quick sort</code></td></tr>
+            <tr><td><code>style</code></td><td>Code formatting, naming, whitespace only</td><td><code>style: rename variables for clarity</code></td></tr>
+            <tr><td><code>chore</code></td><td>Build config, .gitignore, project setup</td><td><code>chore: add .gitignore for Java class files</code></td></tr>
+          </tbody>
+        </table>
+        <p>
+          A scope is optional but can help when working on multiple features:
+          <code>feat(heap): implement sift-down operation</code>.
+        </p>
+
+        <h3>Example workflow</h3>
         <pre><code>git status
 git add lesson-10-sorting
-git commit -m "Implement merge sort"
-git commit -m "Add sorting edge case tests"
-git commit -m "Write sorting complexity analysis"
+git commit -m "feat: implement merge sort"
+git commit -m "test: add sorting edge case tests"
+git commit -m "docs: write sorting complexity analysis"
 git push</code></pre>
         <p>
-          Commit messages should describe the change. Avoid messages like <code>update</code>, <code>fix</code>, or
-          <code>homework</code> when a more specific message is possible.
+          Commit messages should describe the change. Avoid messages like <code>update</code>, <code>fix stuff</code>, or
+          <code>homework</code> when a more specific message is possible. The type prefix already classifies the change,
+          so focus the description on <em>what</em> was done.
         </p>
+        <div class="checkpoint">
+          Commit convention: every commit message must start with a semantic type prefix.
+          Submissions with generic messages like <code>"update"</code> or <code>"changes"</code> will lose
+          points under the GitHub hygiene category.
+        </div>
 
         <h2>Weekly assignment map</h2>
         <p>
