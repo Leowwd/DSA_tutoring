@@ -57,7 +57,7 @@ public class Lesson09Hashing {
     record Point(int x, int y) { }
 
     public static void main(String[] args) {
-        Checks.eq(2, wordFrequency("to be or not to be").get("to"));
+        Checks.eq(Integer.valueOf(2), wordFrequency("to be or not to be").get("to"));
         Checks.arr(new int[] {0, 1}, twoSum(new int[] {2, 7, 11}, 9));
         Checks.eq(2, groupAnagrams(new String[] {"eat", "tea", "bat"}).size());
         Checks.eq(2, countSubarraysWithSumK(new int[] {1, 1, 1}, 2));
