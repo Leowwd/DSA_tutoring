@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DSA Roadmap - Java DSA Textbook</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="index.html">Home</a><a href="selection-guide.html">Selection</a><a href="invariants.html">Invariants</a><a href="resources.html">Resources</a></nav>
+    </header>
+
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Course</h2>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a aria-current="page" href="roadmap.html">DSA Roadmap</a></li>
+          <li><a href="resources.html">Resources</a></li>
+          <li><a href="assignments.html">Assignments</a></li>
+          <li><a href="selection-guide.html">Selection Guide</a></li>
+          <li><a href="invariants.html">Invariants</a></li>
+          <li><a href="debugging-checklist.html">Debugging Checklist</a></li>
+          <li><a href="real-systems.html">Real Systems</a></li>
+          <li><a href="content-audit.html">Content Audit</a></li>
+          <li><a href="lessons/lesson-01.html">Lesson 1</a></li>
+          <li><a href="lessons/lesson-02.html">Lesson 2</a></li>
+          <li><a href="lessons/lesson-03.html">Lesson 3</a></li>
+          <li><a href="lessons/lesson-04.html">Lesson 4</a></li>
+          <li><a href="lessons/lesson-05.html">Lesson 5</a></li>
+          <li><a href="lessons/lesson-06.html">Lesson 6</a></li>
+          <li><a href="lessons/lesson-07.html">Lesson 7</a></li>
+          <li><a href="lessons/lesson-08.html">Lesson 8</a></li>
+          <li><a href="lessons/lesson-09.html">Lesson 9</a></li>
+          <li><a href="lessons/lesson-10.html">Lesson 10</a></li>
+          <li><a href="lessons/lesson-11.html">Lesson 11</a></li>
+          <li><a href="lessons/lesson-12.html">Lesson 12</a></li>
+          <li><a href="lessons/lesson-13.html">Lesson 13</a></li>
+          <li><a href="lessons/lesson-14.html">Lesson 14</a></li>
+        </ol>
+      </aside>
+
+      <main class="content wide">
+        <p class="lesson-kicker">Course map</p>
+        <h1>DSA Roadmap: What to Use, When, and Why</h1>
+        <p class="summary">
+          This page is the missing bridge between individual lessons. If a student can read a problem and use this page
+          to choose a structure, pattern, and complexity argument, the course is starting to work.
+        </p>
+
+        <h2>The one question behind DSA</h2>
+        <p>
+          Data structures and algorithms are about making the right operation cheap. Before choosing a tool, ask:
+        </p>
+        <pre><code>What data must I store?
+What question must I answer?
+Which operation happens most often?
+What constraints make a simple solution too slow?
+What invariant can I maintain?</code></pre>
+
+        <h2>Data structure decision table</h2>
+        <table>
+          <thead><tr><th>If the problem needs...</th><th>Think about...</th><th>Why</th><th>Java tool</th></tr></thead>
+          <tbody>
+            <tr><td>Fast access by index</td><td>Array / dynamic array</td><td>Random access is O(1).</td><td><code>int[]</code>, <code>ArrayList</code></td></tr>
+            <tr><td>Fast membership test</td><td>Hash set</td><td>Expected O(1) contains.</td><td><code>HashSet</code></td></tr>
+            <tr><td>Count or group by key</td><td>Hash map</td><td>Expected O(1) key lookup.</td><td><code>HashMap</code></td></tr>
+            <tr><td>Remove most recent item</td><td>Stack</td><td>LIFO matches nested structure.</td><td><code>ArrayDeque</code></td></tr>
+            <tr><td>Process in arrival order</td><td>Queue</td><td>FIFO matches BFS and scheduling.</td><td><code>ArrayDeque</code></td></tr>
+            <tr><td>Repeated min or max</td><td>Heap / priority queue</td><td>Top item is cheap to remove.</td><td><code>PriorityQueue</code></td></tr>
+            <tr><td>Sorted search and ordered traversal</td><td>Balanced BST</td><td>Search, insert, min, max are logarithmic.</td><td><code>TreeSet</code>, <code>TreeMap</code></td></tr>
+            <tr><td>Prefix search</td><td>Trie</td><td>Lookup follows characters instead of scanning all words.</td><td>Custom class</td></tr>
+            <tr><td>Connectivity under added edges</td><td>Union-Find</td><td>Fast component membership.</td><td>Custom DSU</td></tr>
+            <tr><td>Relationships or paths</td><td>Graph</td><td>Vertices and edges model connections.</td><td>Adjacency list</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Algorithm pattern decision table</h2>
+        <table>
+          <thead><tr><th>If you notice...</th><th>Try...</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>Sorted data and a target</td><td>Binary search</td><td>Each comparison removes half the search space.</td></tr>
+            <tr><td>Pair or range in sorted data</td><td>Two pointers</td><td>Move boundaries based on comparison.</td></tr>
+            <tr><td>Contiguous subarray or substring</td><td>Sliding window</td><td>Maintain a changing window instead of recomputing.</td></tr>
+            <tr><td>Many range sum queries</td><td>Prefix sums</td><td>Precompute once, answer ranges quickly.</td></tr>
+            <tr><td>Nested choices</td><td>Backtracking</td><td>Choose, recurse, undo.</td></tr>
+            <tr><td>Split into independent halves</td><td>Divide and conquer</td><td>Solve smaller pieces and combine.</td></tr>
+            <tr><td>Reachability or components</td><td>DFS / BFS</td><td>Explore graph or tree structure.</td></tr>
+            <tr><td>Shortest path with equal edge costs</td><td>BFS</td><td>Layer order gives shortest number of edges.</td></tr>
+            <tr><td>Shortest path with nonnegative weights</td><td>Dijkstra</td><td>Greedily finalizes closest unseen vertex.</td></tr>
+            <tr><td>Directed prerequisites</td><td>Topological sort</td><td>Orders a DAG by dependency.</td></tr>
+            <tr><td>Cheapest connection of all nodes</td><td>MST</td><td>Kruskal or Prim chooses safe edges.</td></tr>
+            <tr><td>Local choice seems safe and can be proved</td><td>Greedy</td><td>Commit to a choice only after an exchange or stays-ahead argument.</td></tr>
+            <tr><td>Repeated overlapping subproblems</td><td>Dynamic programming</td><td>Store states instead of recomputing them.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Common confusions</h2>
+        <table>
+          <thead><tr><th>Confusion</th><th>How to separate them</th></tr></thead>
+          <tbody>
+            <tr><td>ADT vs implementation</td><td>An ADT says what operations exist. An implementation decides how those operations work internally.</td></tr>
+            <tr><td>Array vs ArrayList</td><td>An array has fixed length. An ArrayList grows by managing a backing array.</td></tr>
+            <tr><td>Stack vs recursion</td><td>Recursion uses the call stack. An explicit stack is a data structure you control.</td></tr>
+            <tr><td>BFS vs DFS</td><td>BFS is layer-by-layer and good for unweighted shortest path. DFS goes deep and is good for structure exploration.</td></tr>
+            <tr><td>HashMap vs TreeMap</td><td>HashMap is expected O(1) but unordered. TreeMap is O(log n) and ordered.</td></tr>
+            <tr><td>Heap vs BST</td><td>A heap gives fast priority removal but not full ordered search. A BST supports ordered search and traversal.</td></tr>
+            <tr><td>Greedy vs DP</td><td>Greedy commits to a local choice. DP stores many possible subproblem answers.</td></tr>
+            <tr><td>DP vs graph shortest path</td><td>DP usually has an acyclic dependency order. Graph shortest path handles more general connectivity and weights.</td></tr>
+            <tr><td>Subarray vs subsequence</td><td>A subarray is contiguous. A subsequence preserves order but may skip elements.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Real-world case studies</h2>
+        <table>
+          <thead><tr><th>Situation</th><th>DSA idea</th><th>Why it fits</th></tr></thead>
+          <tbody>
+            <tr><td>SQL database index for equality and range queries</td><td>B-tree / B+tree family</td><td>Maintains ordered keys and reduces expensive page reads.</td></tr>
+            <tr><td>Autocomplete suggestions</td><td>Trie + DFS + ranking heap</td><td>Prefix lookup follows characters, then ranks matches.</td></tr>
+            <tr><td>Task scheduler</td><td>PriorityQueue</td><td>Repeatedly selects the highest-priority next task.</td></tr>
+            <tr><td>Network reachability</td><td>Graph traversal or Union-Find</td><td>Edges model relationships; the right tool depends on whether paths or only connectivity are needed.</td></tr>
+            <tr><td>Leaderboard top 10</td><td>Heap top-k</td><td>Avoids sorting every player when only the best few matter.</td></tr>
+            <tr><td>Repeated route cost updates</td><td>Shortest-path algorithms</td><td>Weighted graph model plus edge relaxation.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Java collection quick guide</h2>
+        <table>
+          <thead><tr><th>Class</th><th>Use when</th><th>Avoid when</th></tr></thead>
+          <tbody>
+            <tr><td><code>ArrayList&lt;E&gt;</code></td><td>You need indexed access and append.</td><td>You need many front insertions/removals.</td></tr>
+            <tr><td><code>ArrayDeque&lt;E&gt;</code></td><td>You need stack or queue behavior.</td><td>You need random access by index.</td></tr>
+            <tr><td><code>HashSet&lt;E&gt;</code></td><td>You need membership only.</td><td>You need counts or order.</td></tr>
+            <tr><td><code>HashMap&lt;K,V&gt;</code></td><td>You need key-to-value lookup, counts, or grouping.</td><td>You need sorted keys.</td></tr>
+            <tr><td><code>PriorityQueue&lt;E&gt;</code></td><td>You repeatedly need the smallest or highest-priority item.</td><td>You need to search arbitrary items quickly.</td></tr>
+            <tr><td><code>TreeSet&lt;E&gt;</code></td><td>You need unique sorted values.</td><td>Expected O(1) lookup is more important than order.</td></tr>
+            <tr><td><code>TreeMap&lt;K,V&gt;</code></td><td>You need sorted keys or nearest-key operations.</td><td>You only need ordinary key lookup.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Problem-solving workflow</h2>
+        <ol>
+          <li><strong>Restate the problem.</strong> Say the input, output, and constraints in your own words.</li>
+          <li><strong>Try the brute force solution.</strong> It reveals the operation that is too expensive.</li>
+          <li><strong>Name the expensive operation.</strong> Search, insert, delete, min/max, range query, connectivity, or repeated subproblem.</li>
+          <li><strong>Choose a structure or pattern.</strong> Use the tables above, then justify the choice.</li>
+          <li><strong>Define the invariant.</strong> Examples: window is valid, heap parent is smaller, BST left is smaller, DP state means a specific subproblem.</li>
+          <li><strong>Write pseudocode.</strong> Keep it language-light before Java syntax gets in the way.</li>
+          <li><strong>Implement in Java.</strong> Use clear helper methods and test small cases.</li>
+          <li><strong>Analyze complexity.</strong> Define variables and explain where the bound comes from.</li>
+        </ol>
+
+        <h2>Complexity quick reference</h2>
+        <table>
+          <thead><tr><th>Complexity</th><th>Typical source</th><th>Signal</th></tr></thead>
+          <tbody>
+            <tr><td><code>O(1)</code></td><td>Constant number of operations</td><td>No loop depending on input size.</td></tr>
+            <tr><td><code>O(log n)</code></td><td>Halving search space</td><td>Binary search, balanced tree height.</td></tr>
+            <tr><td><code>O(n)</code></td><td>One pass</td><td>Each element processed a constant number of times.</td></tr>
+            <tr><td><code>O(n log n)</code></td><td>Log levels, linear work per level</td><td>Merge sort, average quicksort, many comparison sorts.</td></tr>
+            <tr><td><code>O(n^2)</code></td><td>All pairs</td><td>Nested loops over the same input.</td></tr>
+            <tr><td><code>O(2^n)</code></td><td>Include/exclude choices</td><td>Subsets and many backtracking trees.</td></tr>
+            <tr><td><code>O(V + E)</code></td><td>Graph traversal</td><td>Visit each vertex and edge once.</td></tr>
+            <tr><td><code>O(states * work)</code></td><td>Dynamic programming</td><td>Count table entries and work per entry.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>What "understanding" should feel like</h2>
+        <p>
+          A student understands a topic when they can do four things without copying a template:
+        </p>
+        <ul>
+          <li>Explain why the structure or algorithm exists.</li>
+          <li>Trace a small example by hand.</li>
+          <li>Implement the core operation in Java.</li>
+          <li>Analyze time and space complexity with defined variables.</li>
+        </ul>
+        <p class="checkpoint">
+          If a solution feels like memorization, go back to the operation. DSA becomes clearer when every tool is tied
+          to the operation it makes cheaper.
+        </p>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

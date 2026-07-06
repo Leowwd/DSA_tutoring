@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How to Think in Invariants</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="index.html">Home</a><a href="roadmap.html">Roadmap</a><a href="resources.html">Resources</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Bridge Pages</h2>
+        <ol>
+          <li><a href="selection-guide.html">Selection Guide</a></li>
+          <li><a aria-current="page" href="invariants.html">Invariants</a></li>
+          <li><a href="debugging-checklist.html">Debugging Checklist</a></li>
+          <li><a href="real-systems.html">Real Systems</a></li>
+          <li><a href="roadmap.html">DSA Roadmap</a></li>
+        </ol>
+      </aside>
+      <main class="content wide">
+        <p class="lesson-kicker">Bridge</p>
+        <h1>How to Think in Invariants</h1>
+        <p class="summary">
+          An invariant is a fact that stays true while an algorithm runs. Templates are easier to remember when you know
+          the invariant they protect.
+        </p>
+
+        <h2>The invariant pattern</h2>
+        <pre><code>Before the loop or recursion:
+    What is true?
+During each step:
+    What action preserves that truth?
+After the loop or recursion:
+    How does that truth imply the answer?</code></pre>
+
+        <h2>Core DSA invariants</h2>
+        <table>
+          <thead><tr><th>Topic</th><th>Invariant</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td>Binary search</td><td>If the target exists, it is inside <code>[lo, hi]</code>.</td><td>Each comparison safely discards half.</td></tr>
+            <tr><td>Sliding window</td><td>The window represents the current valid or nearly valid range.</td><td>Move left/right without recomputing from scratch.</td></tr>
+            <tr><td>Monotonic stack</td><td>Stack values stay increasing or decreasing.</td><td>Elements that can never be answers are removed.</td></tr>
+            <tr><td>Heap</td><td>Every parent has priority over its children.</td><td>The root is always the next item to remove.</td></tr>
+            <tr><td>BST</td><td>Every subtree has a valid low/high range.</td><td>Search and validation use ordering safely.</td></tr>
+            <tr><td>Union-Find</td><td>Each node points toward a representative.</td><td>Find returns component identity.</td></tr>
+            <tr><td>Dijkstra</td><td>Finalized distances are already optimal.</td><td>Requires nonnegative edge weights.</td></tr>
+            <tr><td>DP</td><td>Every filled state has the meaning stated by the state definition.</td><td>Transitions can rely on previous states.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Example: binary search</h2>
+        <pre><code>static int binarySearch(int[] a, int target) {
+    int lo = 0;
+    int hi = a.length - 1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] == target) return mid;
+        if (a[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}</code></pre>
+        <p>
+          Invariant: if <code>target</code> is present, it is in the current range <code>[lo, hi]</code>. When
+          <code>a[mid] &lt; target</code>, every index at or left of <code>mid</code> is too small, so moving
+          <code>lo</code> to <code>mid + 1</code> preserves the invariant.
+        </p>
+
+        <h2>Example: DP state invariant</h2>
+        <p>
+          In DP, the invariant is the state sentence. For house robber:
+        </p>
+        <pre><code>dp[i] = the maximum money using the first i houses</code></pre>
+        <p>
+          Every transition must preserve that meaning. If the code accidentally uses <code>dp[i]</code> to mean "best
+          ending exactly at house i" in one line and "best up to i" in another, the solution becomes inconsistent.
+        </p>
+
+        <h2>Practice</h2>
+        <ul>
+          <li>Write the invariant for a stack-based valid-parentheses solution.</li>
+          <li>Write the invariant for BFS distance in an unweighted graph.</li>
+          <li>Write the invariant for a min-heap after <code>sink</code>.</li>
+          <li>Write the invariant for a sliding window with at most k distinct characters.</li>
+        </ul>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

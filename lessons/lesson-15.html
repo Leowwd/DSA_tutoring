@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 15 - Greedy Algorithms</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="lesson-14.html">Previous</a><a href="../assignments.html">Assignments</a><a href="../index.html">Home</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Chapters</h2>
+        <ol>
+          <li><a href="lesson-01.html">Java Warm-up</a></li>
+          <li><a href="lesson-02.html">Time Complexity</a></li>
+          <li><a href="lesson-03.html">Space and Amortization</a></li>
+          <li><a href="lesson-04.html">Arrays and Patterns</a></li>
+          <li><a href="lesson-05.html">Linked Lists, Stacks, Queues</a></li>
+          <li><a href="lesson-06.html">Recursion and Backtracking</a></li>
+          <li><a href="lesson-07.html">Trees and BSTs</a></li>
+          <li><a href="lesson-08.html">Heaps and Priority Queues</a></li>
+          <li><a href="lesson-09.html">Hashing</a></li>
+          <li><a href="lesson-10.html">Sorting</a></li>
+          <li><a href="lesson-11.html">Union-Find and Graphs</a></li>
+          <li><a href="lesson-12.html">Graph Algorithms</a></li>
+          <li><a href="lesson-13.html">Dynamic Programming</a></li>
+          <li><a href="lesson-14.html">Integration Project</a></li>
+          <li><a aria-current="page" href="lesson-15.html">Greedy Algorithms</a></li>
+        </ol>
+      </aside>
+
+      <main class="content">
+        <p class="lesson-kicker">Lesson 15</p>
+        <h1>Greedy Algorithms: Local Choices and Proofs</h1>
+        <p class="summary">
+          A greedy algorithm repeatedly makes the locally best choice and never goes back. Greedy is powerful when it is
+          correct, but dangerous when the local choice does not lead to a global optimum.
+        </p>
+
+        <h2>Example first: interval scheduling</h2>
+        <p>
+          Given intervals with start and end times, choose the maximum number of non-overlapping intervals. The greedy
+          rule is: always pick the interval that ends earliest.
+        </p>
+        <pre><code>record Interval(int start, int end) { }
+
+static int maxNonOverlapping(List&lt;Interval&gt; intervals) {
+    intervals.sort(Comparator.comparingInt(Interval::end));
+
+    int count = 0;
+    int currentEnd = Integer.MIN_VALUE;
+    for (Interval interval : intervals) {
+        if (interval.start() &gt;= currentEnd) {
+            count++;
+            currentEnd = interval.end();
+        }
+    }
+    return count;
+}</code></pre>
+        <p>
+          Why earliest end time? It leaves as much room as possible for future intervals. Choosing the shortest interval
+          or earliest start time can fail.
+        </p>
+
+        <h2>When greedy is plausible</h2>
+        <table>
+          <thead><tr><th>Signal</th><th>What to ask</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Repeated local choice</td><td>Can I decide one item now and never regret it?</td><td>Pick earliest-ending interval.</td></tr>
+            <tr><td>Sorting helps</td><td>Does one order expose the safe choice?</td><td>Sort by end time, deadline, or weight.</td></tr>
+            <tr><td>Priority changes over time</td><td>Do I need the current best item repeatedly?</td><td>Use a heap for scheduling.</td></tr>
+            <tr><td>Cut or component choice</td><td>Can I safely add the cheapest edge crossing a boundary?</td><td>MST algorithms.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Greedy vs dynamic programming</h2>
+        <p>
+          Greedy commits to one choice. DP keeps many possible subproblem answers. If you can prove the local choice is
+          always part of some optimal solution, greedy may work. If choices interact in complicated ways, DP is safer.
+        </p>
+        <table>
+          <thead><tr><th>Question</th><th>Greedy answer</th><th>DP answer</th></tr></thead>
+          <tbody>
+            <tr><td>Do we keep alternatives?</td><td>No.</td><td>Yes, in states.</td></tr>
+            <tr><td>Proof style</td><td>Exchange argument or stays-ahead.</td><td>Induction on state recurrence.</td></tr>
+            <tr><td>Common bug</td><td>Local choice is not globally safe.</td><td>State is incomplete or transition misses a case.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Proof pattern 1: exchange argument</h2>
+        <p>
+          An exchange argument says: take an optimal solution. If it does not use the greedy choice, replace part of it
+          with the greedy choice without making the solution worse. Therefore, there exists an optimal solution that
+          starts with the greedy choice.
+        </p>
+        <pre><code>EXCHANGE-PROOF:
+    Let G be the greedy first choice.
+    Let OPT be an optimal solution.
+    If OPT already contains G, we are fine.
+    Otherwise, swap OPT's first conflicting choice with G.
+    Show the new solution is still valid and no worse.
+    Repeat on the remaining subproblem.</code></pre>
+
+        <h2>Proof pattern 2: stays-ahead</h2>
+        <p>
+          A stays-ahead proof compares the greedy solution to any other solution after each step. For interval
+          scheduling, after choosing k intervals, greedy's kth end time is no later than any other valid schedule's kth
+          end time. That means greedy always leaves at least as much room for the future.
+        </p>
+
+        <h2>Case study: meeting rooms</h2>
+        <p>
+          Given meeting intervals, find the minimum number of rooms required. Sort by start time and use a min-heap of
+          current end times. The heap stores rooms currently in use.
+        </p>
+        <pre><code>static int minMeetingRooms(int[][] intervals) {
+    Arrays.sort(intervals, Comparator.comparingInt(a -&gt; a[0]));
+    PriorityQueue&lt;Integer&gt; ends = new PriorityQueue&lt;&gt;();
+
+    int best = 0;
+    for (int[] meeting : intervals) {
+        while (!ends.isEmpty() &amp;&amp; ends.peek() &lt;= meeting[0]) {
+            ends.remove();
+        }
+        ends.add(meeting[1]);
+        best = Math.max(best, ends.size());
+    }
+    return best;
+}</code></pre>
+        <p>
+          Time is <code>O(n log n)</code>: sorting plus heap operations. Space is <code>O(n)</code> in the worst case.
+        </p>
+
+        <h2>Case study: jump game</h2>
+        <p>
+          Given <code>nums[i]</code> as the maximum jump length from index <code>i</code>, can we reach the end? Keep
+          the farthest reachable index.
+        </p>
+        <pre><code>static boolean canJump(int[] nums) {
+    int farthest = 0;
+    for (int i = 0; i &lt; nums.length; i++) {
+        if (i &gt; farthest) return false;
+        farthest = Math.max(farthest, i + nums[i]);
+    }
+    return true;
+}</code></pre>
+        <p>
+          Invariant: after processing index <code>i</code>, <code>farthest</code> is the farthest position reachable
+          using jumps from indices we could reach so far.
+        </p>
+
+        <h2>Greedy counterexample habit</h2>
+        <p>
+          Before trusting greedy, try to break it. For coin change, choosing the largest coin first works for many real
+          coin systems, but not all systems.
+        </p>
+        <pre><code>coins = [1, 3, 4]
+amount = 6
+
+Greedy: 4 + 1 + 1 = 3 coins
+Optimal: 3 + 3 = 2 coins</code></pre>
+        <p>
+          This is why coin change is usually taught as DP unless the coin system has special structure.
+        </p>
+
+        <h2>Homework: lesson-15-greedy</h2>
+        <ul>
+          <li>Implement interval scheduling and explain the earliest-end-time rule.</li>
+          <li>Implement meeting rooms with a priority queue.</li>
+          <li>Implement jump game and state the invariant.</li>
+          <li>Find a counterexample for one incorrect greedy rule.</li>
+          <li>Write one exchange argument or stays-ahead proof in plain English.</li>
+        </ul>
+        <div class="checkpoint">
+          Checkpoint: do not say "greedy works because it seems best." Say what the greedy choice preserves, and why no
+          optimal solution is lost by making that choice.
+        </div>
+        <nav class="pager"><a href="lesson-14.html">&larr; Previous</a><a href="../index.html">Back to Home &rarr;</a></nav>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>
