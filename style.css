@@ -283,6 +283,138 @@ p {
   margin: 4px 0 6px;
 }
 
+.visual {
+  margin: 24px 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.visual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.visual figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.resource-card {
+  display: block;
+  min-height: 132px;
+  padding: 16px;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  text-decoration: none;
+}
+
+.resource-card:hover {
+  border-color: var(--link);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.1);
+}
+
+.resource-card strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.resource-card span {
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.study-panel {
+  margin: 26px 0 34px;
+  padding: 22px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #f8fbff;
+}
+
+.study-panel h2 {
+  margin: 0 0 8px;
+  padding-top: 0;
+  border-top: 0;
+  font-size: 1.35rem;
+}
+
+.study-intro {
+  margin: 0 0 18px;
+  color: var(--muted);
+}
+
+.study-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.study-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.study-card h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.study-card ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.study-card li {
+  margin: 6px 0;
+}
+
+.study-card p {
+  margin: 0;
+}
+
+.misunderstanding-card {
+  border-color: #fed7aa;
+  background: #fffaf0;
+}
+
+.misunderstanding-card h3 {
+  color: #9a3412;
+}
+
+.check-row {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  margin: 9px 0;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.check-row input {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  accent-color: var(--link);
+}
+
 pre {
   overflow-x: auto;
   margin: 18px 0;
@@ -445,6 +577,14 @@ th {
   }
 
   .concept-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resource-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .study-grid {
     grid-template-columns: 1fr;
   }
 }

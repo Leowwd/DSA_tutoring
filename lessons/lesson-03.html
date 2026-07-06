@@ -30,6 +30,7 @@
           <li><a href="lesson-12.html">Graph Algorithms</a></li>
           <li><a href="lesson-13.html">Dynamic Programming</a></li>
           <li><a href="lesson-14.html">Integration Project</a></li>
+          <li><a href="lesson-15.html">Greedy Algorithms</a></li>
         </ol>
       </aside>
 
@@ -40,6 +41,10 @@
           Fast code can still fail if it uses too much memory. This lesson teaches how to count memory carefully and how
           to reason about operations that are occasionally expensive but cheap on average.
         </p>
+        <figure class="visual">
+          <img src="../assets/diagrams/memory-amortized.svg" alt="Diagram showing call stack frames, heap objects, and dynamic array capacity doubling." />
+          <figcaption>Space analysis counts stack frames and heap allocations; amortized analysis explains why occasional resizing can still average to constant time.</figcaption>
+        </figure>
 
         <h2>Example first: two ways to reverse data</h2>
         <p>

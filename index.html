@@ -15,6 +15,8 @@
         <a href="lessons/lesson-01.html">Start</a>
         <a href="#chapters">Chapters</a>
         <a href="#schedule">Schedule</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="resources.html">Resources</a>
         <a href="assignments.html">Assignments</a>
       </nav>
     </header>
@@ -37,6 +39,14 @@
           <li><a href="lessons/lesson-12.html">Graph Algorithms</a></li>
           <li><a href="lessons/lesson-13.html">Dynamic Programming</a></li>
           <li><a href="lessons/lesson-14.html">Integration Project</a></li>
+          <li><a href="lessons/lesson-15.html">Greedy Algorithms</a></li>
+          <li><a href="roadmap.html">DSA Roadmap</a></li>
+          <li><a href="selection-guide.html">Selection Guide</a></li>
+          <li><a href="invariants.html">Invariants</a></li>
+          <li><a href="debugging-checklist.html">Debugging Checklist</a></li>
+          <li><a href="real-systems.html">Real Systems</a></li>
+          <li><a href="content-audit.html">Content Audit</a></li>
+          <li><a href="resources.html">Resources</a></li>
           <li><a href="assignments.html">Assignment Spec</a></li>
         </ol>
       </aside>
@@ -60,6 +70,47 @@
           Each week is planned for a two-hour tutoring session. The target is not to "cover slides." The target is for
           the student to leave with a working mental model, runnable Java code, and written complexity analysis.
         </p>
+        <p>
+          Each lesson includes a study guide with learning outcomes, active recall questions, a practice loop, and a
+          browser-saved progress checklist. Use it to turn reading into retrieval practice.
+        </p>
+        <p>
+          The <a href="roadmap.html">DSA Roadmap</a> is the high-level map for deciding what to use when a new problem
+          appears. Students should revisit it whenever the lessons start to feel like isolated topics.
+        </p>
+
+        <h2>How to use this textbook</h2>
+        <table>
+          <thead><tr><th>When you are...</th><th>Use this</th><th>Goal</th></tr></thead>
+          <tbody>
+            <tr><td>Starting a new topic</td><td>The lesson page</td><td>Learn from example, principle, implementation, and analysis.</td></tr>
+            <tr><td>Unsure which structure to use</td><td><a href="selection-guide.html">Data Structure Selection Guide</a></td><td>Choose by operation instead of by memorized topic name.</td></tr>
+            <tr><td>Unsure why code is correct</td><td><a href="invariants.html">Invariants</a></td><td>State what remains true during the algorithm.</td></tr>
+            <tr><td>Stuck debugging</td><td><a href="debugging-checklist.html">Debugging Checklist</a></td><td>Check edge cases, invariants, and Java-specific mistakes.</td></tr>
+            <tr><td>Wondering where DSA appears in real systems</td><td><a href="real-systems.html">DSA in Real Systems</a></td><td>Connect textbook ideas to databases, caches, routing, search, and compilers.</td></tr>
+            <tr><td>Reviewing the whole course</td><td><a href="roadmap.html">DSA Roadmap</a></td><td>Turn isolated lessons into a decision framework.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Visual demos</h2>
+        <p>
+          These external tools are useful for live demonstrations. Use them after reading the lesson, not as a substitute
+          for writing and tracing Java code by hand.
+        </p>
+        <div class="resource-grid">
+          <a class="resource-card" href="https://visualgo.net/en" target="_blank" rel="noopener">
+            <strong>VisuAlgo</strong>
+            <span>Interactive animations for arrays, sorting, linked lists, heaps, hash tables, BSTs, union-find, graph traversal, MST, shortest paths, recursion, and DP.</span>
+          </a>
+          <a class="resource-card" href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html" target="_blank" rel="noopener">
+            <strong>Data Structure Visualizations</strong>
+            <span>Classic visual demos for stacks, queues, lists, trees, heaps, hashing, graphs, and sorting.</span>
+          </a>
+          <a class="resource-card" href="https://algorithm-visualizer.org/" target="_blank" rel="noopener">
+            <strong>Algorithm Visualizer</strong>
+            <span>Code-oriented algorithm animations that can help connect implementation steps with visual state changes.</span>
+          </a>
+        </div>
 
         <h2 id="chapters">Chapters</h2>
         <div class="toc-grid">
@@ -77,6 +128,14 @@
           <a class="chapter-card" href="lessons/lesson-12.html"><span>Lesson 12</span><strong>Graph Algorithms</strong>BFS, DFS, grid graphs, topological sort, Dijkstra, Kruskal, Prim, and MST.</a>
           <a class="chapter-card" href="lessons/lesson-13.html"><span>Lesson 13</span><strong>Dynamic Programming</strong>States, transitions, memoization, tabulation, 1D DP, grid DP, LCS, and knapsack.</a>
           <a class="chapter-card" href="lessons/lesson-14.html"><span>Lesson 14</span><strong>Integration Project</strong>Build an autocomplete engine with tries, maps, DFS, ranking, heaps, tests, and analysis.</a>
+          <a class="chapter-card" href="lessons/lesson-15.html"><span>Lesson 15</span><strong>Greedy Algorithms</strong>Local choices, interval scheduling, meeting rooms, jump game, counterexamples, and proof patterns.</a>
+          <a class="chapter-card" href="roadmap.html"><span>Course Map</span><strong>DSA Roadmap</strong>Decision tables, Java collection guide, common confusions, workflow, and complexity reference.</a>
+          <a class="chapter-card" href="selection-guide.html"><span>Bridge</span><strong>Data Structure Selection</strong>Choose ArrayList, HashMap, TreeMap, PriorityQueue, trie, graph, or DSU by operation.</a>
+          <a class="chapter-card" href="invariants.html"><span>Bridge</span><strong>Invariants</strong>Understand why binary search, windows, heaps, BSTs, DSU, Dijkstra, and DP are correct.</a>
+          <a class="chapter-card" href="debugging-checklist.html"><span>Bridge</span><strong>Debugging Checklist</strong>Edge cases, common bug patterns, Java mistakes, and tracing routine.</a>
+          <a class="chapter-card" href="real-systems.html"><span>Bridge</span><strong>DSA in Real Systems</strong>Database indexes, LRU cache, schedulers, routing, search, compilers, and file systems.</a>
+          <a class="chapter-card" href="content-audit.html"><span>Audit</span><strong>Content Coverage</strong>Chapter-by-chapter coverage map and remaining optional extensions.</a>
+          <a class="chapter-card" href="resources.html"><span>Reference</span><strong>Resources</strong>Visual demos, Java API links, practice directions, and debugging references.</a>
           <a class="chapter-card" href="assignments.html"><span>Spec</span><strong>GitHub Assignment Submission</strong>Repository structure, README, tests, commits, and complexity writeups.</a>
         </div>
 
@@ -96,8 +155,8 @@
             <tr><td>8</td><td>Lesson 11</td><td>Union-Find and graph modeling exercises.</td></tr>
             <tr><td>9</td><td>Lesson 12</td><td>BFS/DFS, shortest path, topological ordering.</td></tr>
             <tr><td>10</td><td>Lesson 13</td><td>DP state-transition practice.</td></tr>
-            <tr><td>11</td><td>Lesson 14</td><td>Project implementation.</td></tr>
-            <tr><td>12</td><td>Review</td><td>Mock interview and project cleanup.</td></tr>
+            <tr><td>11</td><td>Lessons 14-15</td><td>Project implementation and greedy practice.</td></tr>
+            <tr><td>12</td><td>Bridge review</td><td>Selection guide, invariants, debugging checklist, and mock interview.</td></tr>
           </tbody>
         </table>
         <p class="footer">Course note: every lesson should end with time complexity, space complexity, and a short explanation of why.</p>

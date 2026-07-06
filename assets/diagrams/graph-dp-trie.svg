@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">Graph algorithms dynamic programming and trie</title>
+  <desc id="desc">Three visual models: BFS layers, a DP table, and a trie for autocomplete.</desc>
+  <rect width="920" height="420" rx="18" fill="#f8fafc"/>
+  <text x="56" y="54" fill="#0f172a" font-family="Arial" font-size="24" font-weight="700">Algorithm Mental Models</text>
+  <g transform="translate(58 96)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">BFS layers</text>
+    <circle cx="48" cy="90" r="24" fill="#2563eb"/>
+    <circle cx="138" cy="52" r="22" fill="#dbeafe" stroke="#2563eb"/>
+    <circle cx="138" cy="128" r="22" fill="#dbeafe" stroke="#2563eb"/>
+    <circle cx="228" cy="52" r="22" fill="#dcfce7" stroke="#16a34a"/>
+    <circle cx="228" cy="128" r="22" fill="#dcfce7" stroke="#16a34a"/>
+    <line x1="72" y1="80" x2="116" y2="60" stroke="#94a3b8" stroke-width="3"/>
+    <line x1="72" y1="100" x2="116" y2="120" stroke="#94a3b8" stroke-width="3"/>
+    <line x1="160" y1="52" x2="206" y2="52" stroke="#94a3b8" stroke-width="3"/>
+    <line x1="160" y1="128" x2="206" y2="128" stroke="#94a3b8" stroke-width="3"/>
+    <text x="43" y="96" fill="#fff" font-family="Arial" font-size="16" font-weight="700">0</text>
+    <text x="133" y="58" font-family="Arial" font-size="16">1</text>
+    <text x="133" y="134" font-family="Arial" font-size="16">1</text>
+    <text x="223" y="58" font-family="Arial" font-size="16">2</text>
+    <text x="223" y="134" font-family="Arial" font-size="16">2</text>
+    <text x="22" y="190" fill="#475569" font-family="Arial" font-size="15">queue processes distance layers</text>
+  </g>
+  <g transform="translate(352 96)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">DP table</text>
+    <g font-family="Arial" font-size="15" text-anchor="middle">
+      <rect x="0" y="32" width="54" height="42" fill="#ffffff" stroke="#cbd5e1"/>
+      <rect x="54" y="32" width="54" height="42" fill="#ffffff" stroke="#cbd5e1"/>
+      <rect x="108" y="32" width="54" height="42" fill="#ffffff" stroke="#cbd5e1"/>
+      <rect x="162" y="32" width="54" height="42" fill="#ffffff" stroke="#cbd5e1"/>
+      <rect x="0" y="74" width="54" height="42" fill="#ffffff" stroke="#cbd5e1"/>
+      <rect x="54" y="74" width="54" height="42" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="108" y="74" width="54" height="42" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="162" y="74" width="54" height="42" fill="#ffffff" stroke="#cbd5e1"/>
+      <rect x="0" y="116" width="54" height="42" fill="#ffffff" stroke="#cbd5e1"/>
+      <rect x="54" y="116" width="54" height="42" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="108" y="116" width="54" height="42" fill="#fef3c7" stroke="#f59e0b"/>
+      <rect x="162" y="116" width="54" height="42" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="27" y="58">0</text>
+      <text x="81" y="58">1</text>
+      <text x="135" y="58">2</text>
+      <text x="189" y="58">3</text>
+      <text x="27" y="100">1</text>
+      <text x="81" y="100">2</text>
+      <text x="135" y="100">3</text>
+      <text x="189" y="100">4</text>
+      <text x="27" y="142">2</text>
+      <text x="81" y="142">3</text>
+      <text x="135" y="142">5</text>
+      <text x="189" y="142">8</text>
+    </g>
+    <text x="0" y="190" fill="#475569" font-family="Arial" font-size="15">state + transition + base case</text>
+  </g>
+  <g transform="translate(650 96)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">Trie</text>
+    <g font-family="Arial" font-size="15" text-anchor="middle">
+      <circle cx="100" cy="40" r="22" fill="#ffffff" stroke="#94a3b8"/>
+      <circle cx="55" cy="105" r="22" fill="#dbeafe" stroke="#2563eb"/>
+      <circle cx="145" cy="105" r="22" fill="#dbeafe" stroke="#2563eb"/>
+      <circle cx="55" cy="170" r="22" fill="#dcfce7" stroke="#16a34a"/>
+      <circle cx="145" cy="170" r="22" fill="#dcfce7" stroke="#16a34a"/>
+      <line x1="90" y1="60" x2="65" y2="86" stroke="#94a3b8" stroke-width="3"/>
+      <line x1="110" y1="60" x2="135" y2="86" stroke="#94a3b8" stroke-width="3"/>
+      <line x1="55" y1="127" x2="55" y2="148" stroke="#94a3b8" stroke-width="3"/>
+      <line x1="145" y1="127" x2="145" y2="148" stroke="#94a3b8" stroke-width="3"/>
+      <text x="55" y="110">a</text>
+      <text x="145" y="110">b</text>
+      <text x="55" y="175">p</text>
+      <text x="145" y="175">e</text>
+    </g>
+    <text x="24" y="225" fill="#475569" font-family="Arial" font-size="15">shared prefixes make search cheaper</text>
+  </g>
+</svg>

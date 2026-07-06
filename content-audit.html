@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Content Audit - Java DSA Textbook</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="index.html">Home</a><a href="roadmap.html">Roadmap</a><a href="assignments.html">Assignments</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Course</h2>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a aria-current="page" href="content-audit.html">Content Audit</a></li>
+          <li><a href="roadmap.html">DSA Roadmap</a></li>
+          <li><a href="selection-guide.html">Selection Guide</a></li>
+          <li><a href="invariants.html">Invariants</a></li>
+          <li><a href="debugging-checklist.html">Debugging Checklist</a></li>
+          <li><a href="real-systems.html">Real Systems</a></li>
+        </ol>
+      </aside>
+      <main class="content wide">
+        <p class="lesson-kicker">Course maintenance</p>
+        <h1>Content Audit: What Is Covered and Why</h1>
+        <p class="summary">
+          This page checks the course chapter by chapter against the requested goals: deep lessons, Java code, examples,
+          homework, visuals, bridge content, case studies, and real-world motivation.
+        </p>
+
+        <h2>Chapter audit</h2>
+        <table>
+          <thead><tr><th>Chapter</th><th>Covered</th><th>Bridge / gap handled</th></tr></thead>
+          <tbody>
+            <tr><td>Lesson 1</td><td>Java warm-up, ADT, references, operation-first thinking.</td><td>Reference/ADT visual added.</td></tr>
+            <tr><td>Lesson 2</td><td>Big-O, lower bounds, recurrences, Master Theorem, randomized quicksort analysis.</td><td>Growth-rate visual added.</td></tr>
+            <tr><td>Lesson 3</td><td>Space, stack/heap memory, dynamic array amortization.</td><td>Memory/amortization visual added.</td></tr>
+            <tr><td>Lesson 4</td><td>Arrays, binary search, two pointers, sliding window, prefix sums.</td><td>Array pattern visual added.</td></tr>
+            <tr><td>Lesson 5</td><td>Linked lists, stacks, queues, deques, monotonic stack.</td><td>Structure-selection bridge added separately.</td></tr>
+            <tr><td>Lesson 6</td><td>Recursion, backtracking, divide and conquer.</td><td>Backtracking visual and invariants bridge added.</td></tr>
+            <tr><td>Lesson 7</td><td>Trees, BSTs, traversal, balance, TreeMap/TreeSet.</td><td>Database B-tree case study added.</td></tr>
+            <tr><td>Lesson 8</td><td>Heaps, priority queues, top-k, median stream.</td><td>Top-k vs sorting bridge added in Lesson 10 and selection guide.</td></tr>
+            <tr><td>Lesson 9</td><td>Hashing, HashMap/HashSet, collisions, map patterns.</td><td>HashMap vs TreeMap and map-choice bridge added.</td></tr>
+            <tr><td>Lesson 10</td><td>Sorting algorithms, lower bound, Java API, preprocessing.</td><td>Sorting decision guide and case studies added.</td></tr>
+            <tr><td>Lesson 11</td><td>Union-Find and graph modeling.</td><td>Connectivity vs path distinction added in roadmap/debugging.</td></tr>
+            <tr><td>Lesson 12</td><td>BFS, DFS, topological sort, Dijkstra, MST.</td><td>Algorithm decision table and real-system routing case added.</td></tr>
+            <tr><td>Lesson 13</td><td>Dynamic programming patterns and state-transition thinking.</td><td>DP vs greedy and invariant bridge added.</td></tr>
+            <tr><td>Lesson 14</td><td>Autocomplete capstone project.</td><td>Real-system trie/ranking connection added.</td></tr>
+            <tr><td>Lesson 15</td><td>Greedy algorithms and proof patterns.</td><td>New lesson added to close the major algorithm gap.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Bridge pages added</h2>
+        <ul>
+          <li><a href="selection-guide.html">Data Structure Selection Guide</a>: when to use which Java structure.</li>
+          <li><a href="invariants.html">How to Think in Invariants</a>: why templates are correct.</li>
+          <li><a href="debugging-checklist.html">DSA Debugging Checklist</a>: edge cases and common bugs.</li>
+          <li><a href="real-systems.html">DSA in Real Systems</a>: database indexes, caches, routing, autocomplete, compilers.</li>
+          <li><a href="roadmap.html">DSA Roadmap</a>: high-level decision tables and workflow.</li>
+        </ul>
+
+        <h2>Remaining optional extensions</h2>
+        <p>
+          The current course is complete for a strong introductory Java DSA sequence. Optional future extensions could
+          include advanced graph algorithms, string matching, tries in more depth, balanced tree rotations, and more
+          formal proof practice.
+        </p>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

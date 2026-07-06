@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Structure Selection Guide</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="index.html">Home</a><a href="roadmap.html">Roadmap</a><a href="resources.html">Resources</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Bridge Pages</h2>
+        <ol>
+          <li><a aria-current="page" href="selection-guide.html">Selection Guide</a></li>
+          <li><a href="invariants.html">Invariants</a></li>
+          <li><a href="debugging-checklist.html">Debugging Checklist</a></li>
+          <li><a href="real-systems.html">Real Systems</a></li>
+          <li><a href="roadmap.html">DSA Roadmap</a></li>
+        </ol>
+      </aside>
+      <main class="content wide">
+        <p class="lesson-kicker">Bridge</p>
+        <h1>Data Structure Selection Guide</h1>
+        <p class="summary">
+          This page answers the question students ask most often: "How do I know which structure to use?" Start from the
+          operation, then choose the structure.
+        </p>
+
+        <h2>Operation-first table</h2>
+        <table>
+          <thead><tr><th>Most important operation</th><th>Use</th><th>Why</th><th>Watch out</th></tr></thead>
+          <tbody>
+            <tr><td>Get by index</td><td><code>ArrayList</code> or array</td><td>O(1) random access.</td><td>Middle insert/delete shifts elements.</td></tr>
+            <tr><td>Add/remove at both ends</td><td><code>ArrayDeque</code></td><td>Clean stack/queue/deque operations.</td><td>No index access.</td></tr>
+            <tr><td>Membership only</td><td><code>HashSet</code></td><td>Expected O(1) contains.</td><td>No order, no counts.</td></tr>
+            <tr><td>Count or group</td><td><code>HashMap</code></td><td>Key maps to frequency/list/state.</td><td>Key equality and hashCode matter.</td></tr>
+            <tr><td>Smallest/largest repeatedly</td><td><code>PriorityQueue</code></td><td>O(log n) add/remove top.</td><td>Not good for arbitrary search.</td></tr>
+            <tr><td>Sorted keys or nearest key</td><td><code>TreeMap</code>, <code>TreeSet</code></td><td>Ordered operations in O(log n).</td><td>Slower than hash lookup when order is irrelevant.</td></tr>
+            <tr><td>Prefix lookup</td><td>Trie</td><td>Follows characters of prefix.</td><td>More memory than a flat set.</td></tr>
+            <tr><td>Connectivity under union operations</td><td>Union-Find</td><td>Very fast component checks.</td><td>Does not return the actual path.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Common pairwise decisions</h2>
+        <h3>HashMap vs TreeMap</h3>
+        <p>
+          Use <code>HashMap</code> when order does not matter and expected O(1) lookup is enough. Use
+          <code>TreeMap</code> when sorted keys, range views, floor/ceiling, or ordered iteration are part of the answer.
+        </p>
+        <h3>PriorityQueue vs sorting</h3>
+        <p>
+          Sort when you need the full order. Use a priority queue when you repeatedly need only the current best item or
+          only the top k items.
+        </p>
+        <h3>ArrayList vs LinkedList</h3>
+        <p>
+          In Java, <code>ArrayList</code> is usually the default list because indexing and iteration are efficient.
+          <code>LinkedList</code> is rarely the first choice for DSA practice; for stack/queue/deque behavior,
+          <code>ArrayDeque</code> is normally cleaner.
+        </p>
+        <h3>HashSet vs boolean array</h3>
+        <p>
+          Use a boolean array when keys are small nonnegative integers with a known range. Use <code>HashSet</code> when
+          keys are sparse, large, strings, objects, or unknown in advance.
+        </p>
+
+        <h2>Mini case studies</h2>
+        <table>
+          <thead><tr><th>Problem</th><th>Good choice</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>First repeated word</td><td><code>HashSet&lt;String&gt;</code></td><td>Need membership of seen words.</td></tr>
+            <tr><td>Top 10 scores from a stream</td><td><code>PriorityQueue</code></td><td>Need only k best items, not full order.</td></tr>
+            <tr><td>Autocomplete prefix suggestions</td><td>Trie</td><td>Prefix lookup should not scan every word.</td></tr>
+            <tr><td>Course prerequisites</td><td>Directed graph</td><td>Edges represent dependency order.</td></tr>
+            <tr><td>Dynamic friend groups</td><td>Union-Find</td><td>Only connected/same group questions matter.</td></tr>
+          </tbody>
+        </table>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

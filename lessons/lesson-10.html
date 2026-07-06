@@ -30,6 +30,7 @@
           <li><a href="lesson-12.html">Graph Algorithms</a></li>
           <li><a href="lesson-13.html">Dynamic Programming</a></li>
           <li><a href="lesson-14.html">Integration Project</a></li>
+          <li><a href="lesson-15.html">Greedy Algorithms</a></li>
         </ol>
       </aside>
 
@@ -40,6 +41,10 @@
           Sorting is both a family of algorithms and a problem-solving technique. After data is sorted, binary search,
           two pointers, duplicate detection, interval merging, and many greedy algorithms become easier.
         </p>
+        <figure class="visual">
+          <img src="../assets/diagrams/sorting-methods.svg" alt="Diagram comparing insertion sort, merge sort, quick sort, and heap sort." />
+          <figcaption>Sorting algorithms differ by mental model: insert into a prefix, split and merge, partition around a pivot, or repeatedly remove from a heap.</figcaption>
+        </figure>
 
         <h2>Example first: merging intervals</h2>
         <p>
@@ -107,6 +112,68 @@
             <tr><td>Radix sort</td><td>O(d(n + k))</td><td>O(d(n + k))</td><td>O(d(n + k))</td><td>O(n + k)</td><td>Yes</td><td>Sort digit by digit</td></tr>
           </tbody>
         </table>
+
+        <h2>How to choose a sorting algorithm</h2>
+        <p>
+          In real work, choosing a sort starts with the data, not with the algorithm name. Ask what is known about the
+          input and what the output must preserve.
+        </p>
+        <table>
+          <thead><tr><th>Data situation</th><th>Good choice</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>General Java objects</td><td>Library sort</td><td>Correct, optimized, stable for object arrays/lists, and easier to maintain.</td></tr>
+            <tr><td>Primitive numbers in normal code</td><td><code>Arrays.sort</code></td><td>Fast library implementation with no handwritten bugs.</td></tr>
+            <tr><td>Small arrays</td><td>Insertion sort or library sort</td><td>Low overhead; insertion sort is simple and often used inside hybrid sorts.</td></tr>
+            <tr><td>Nearly sorted data</td><td>Insertion sort or adaptive library sort</td><td>Few inversions means few shifts.</td></tr>
+            <tr><td>Need stable ordering of records</td><td>Merge sort style or Java object/list sort</td><td>Equal keys keep their previous relative order.</td></tr>
+            <tr><td>Need guaranteed worst-case O(n log n)</td><td>Merge sort or heap sort</td><td>Quick sort has an O(n^2) worst case if pivots are bad.</td></tr>
+            <tr><td>Memory is very tight</td><td>Heap sort or in-place quick sort</td><td>Merge sort needs O(n) auxiliary space.</td></tr>
+            <tr><td>Integer keys in a small range</td><td>Counting sort</td><td>Can run in O(n + k), beating comparison sorting when k is small.</td></tr>
+            <tr><td>Fixed-width integer/string-like keys</td><td>Radix sort</td><td>Sorts by digits/characters using a stable subroutine.</td></tr>
+            <tr><td>Need only top k items</td><td>Heap, not full sort</td><td>Full sorting may waste work when only a few largest/smallest items are needed.</td></tr>
+          </tbody>
+        </table>
+        <p class="note">
+          Practical rule: in application code, use the library unless the lesson is specifically about implementing
+          sorting. In algorithm problems, name the property that makes a custom strategy useful: stability, small key
+          range, limited memory, nearly sorted input, or top-k output.
+        </p>
+
+        <h2>Case studies: choosing the right sort</h2>
+        <h3>Case 1: exam scores from 0 to 100</h3>
+        <p>
+          If one million scores are all integers from 0 to 100, counting sort is natural. The range
+          <code>k = 101</code> is tiny compared with <code>n</code>, so <code>O(n + k)</code> is basically linear.
+        </p>
+        <pre><code>// Good fit:
+// n = 1,000,000 scores
+// k = 101 possible values
+// counting sort uses a small count array</code></pre>
+
+        <h3>Case 2: transaction records sorted by date, then by amount</h3>
+        <p>
+          Stability matters. If records are already sorted by date and then we stably sort by amount, records with the
+          same amount keep their date order. An unstable sort may scramble that previous ordering.
+        </p>
+        <pre><code>records.sort(Comparator.comparing(Transaction::date));
+records.sort(Comparator.comparing(Transaction::amount)); // stable List sort keeps date order inside equal amounts</code></pre>
+
+        <h3>Case 3: live leaderboard top 10</h3>
+        <p>
+          If the program only needs the top 10 players, sorting every player is unnecessary. A priority queue of size
+          <code>k</code> gives <code>O(n log k)</code> instead of <code>O(n log n)</code>.
+        </p>
+        <pre><code>PriorityQueue&lt;Player&gt; top = new PriorityQueue&lt;&gt;(Comparator.comparingInt(Player::score));
+for (Player p : players) {
+    top.add(p);
+    if (top.size() &gt; 10) top.remove();
+}</code></pre>
+
+        <h3>Case 4: data is already almost sorted</h3>
+        <p>
+          Insertion sort can be excellent when most items are already close to their final positions. It shifts only
+          while local order is wrong. This is one reason hybrid library sorts often use insertion sort on small pieces.
+        </p>
 
         <h2>Bubble sort</h2>
         <p>
@@ -371,6 +438,20 @@ list.sort(Comparator.comparingInt(String::length));</code></pre>
           arrays and lists, Java uses stable comparison-based sorting. In normal programming, use the library. In DSA,
           implement sorts to understand the tradeoffs.
         </p>
+        <table>
+          <thead><tr><th>Java call</th><th>Typical use</th><th>Important detail</th></tr></thead>
+          <tbody>
+            <tr><td><code>Arrays.sort(int[])</code></td><td>Primitive numeric arrays</td><td>Fast, in-place for primitives, but stability is irrelevant because primitive values have no attached record identity.</td></tr>
+            <tr><td><code>Arrays.sort(T[])</code></td><td>Object arrays</td><td>Stable, so equal keys keep original relative order.</td></tr>
+            <tr><td><code>list.sort(comparator)</code></td><td><code>ArrayList</code> or other lists</td><td>Stable and convenient for object records.</td></tr>
+            <tr><td><code>Collections.sort(list)</code></td><td>Older style list sorting</td><td>Delegates to list sorting behavior in modern Java.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          A useful habit: write comparators with <code>Integer.compare(a, b)</code> or
+          <code>Comparator.comparingInt(...)</code>. Avoid subtracting two integers in a comparator because overflow can
+          produce the wrong order.
+        </p>
 
         <h2>Sorting as preprocessing</h2>
         <table>
@@ -437,14 +518,17 @@ list.sort(Comparator.comparingInt(String::length));</code></pre>
           <li>Implement bubble sort, selection sort, insertion sort, merge sort, quick sort, heap sort, and counting sort.</li>
           <li>Implement <code>mergeIntervals</code>.</li>
           <li>Implement pair sum using sorting and two pointers.</li>
+          <li>Implement a top-k method using <code>PriorityQueue</code> and compare it with full sorting.</li>
           <li>Write a comparator example for sorting objects.</li>
         </ul>
         <h3>README requirements</h3>
         <ul>
           <li>Include the comparison table for all implemented sorts.</li>
           <li>For every sort, state best, average, worst, space, stability, and whether it is in-place.</li>
+          <li>Include a "Which sort should I use?" section with at least four realistic scenarios.</li>
           <li>Explain the comparison sorting lower bound at a high level.</li>
           <li>Explain when counting sort can beat O(n log n).</li>
+          <li>Explain why top-k can use a heap instead of sorting everything.</li>
           <li>Include at least two tests for every implemented method.</li>
         </ul>
         <h3>Optional challenge</h3>
