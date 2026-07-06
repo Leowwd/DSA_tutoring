@@ -67,7 +67,7 @@ public class Lesson13DynamicProgramming {
         Checks.eq(6, uniquePaths(3, 3));
         Checks.eq(7, minPathSum(new int[][] {{1, 3, 1}, {1, 5, 1}, {4, 2, 1}}));
         Checks.eq(3, lcs("abcde", "ace"));
-        Checks.eq(7, knapsack(new int[] {2, 3, 4}, new int[] {4, 5, 6}, 5));
+        Checks.eq(9, knapsack(new int[] {2, 3, 4}, new int[] {4, 5, 6}, 5));
         System.out.println("Lesson 13 checks passed.");
     }
 }
