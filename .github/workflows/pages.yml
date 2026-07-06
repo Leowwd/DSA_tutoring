@@ -20,9 +20,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare static site
+        run: |
+          mkdir -p _site
+          cp index.html assignments.html roadmap.html resources.html selection-guide.html invariants.html debugging-checklist.html real-systems.html content-audit.html style.css script.js README.md .nojekyll _site/
+          cp -R lessons assets _site/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: _site
           publish_branch: gh-pages

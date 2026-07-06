@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DSA Debugging Checklist</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="index.html">Home</a><a href="roadmap.html">Roadmap</a><a href="resources.html">Resources</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Bridge Pages</h2>
+        <ol>
+          <li><a href="selection-guide.html">Selection Guide</a></li>
+          <li><a href="invariants.html">Invariants</a></li>
+          <li><a aria-current="page" href="debugging-checklist.html">Debugging Checklist</a></li>
+          <li><a href="real-systems.html">Real Systems</a></li>
+          <li><a href="roadmap.html">DSA Roadmap</a></li>
+        </ol>
+      </aside>
+      <main class="content wide">
+        <p class="lesson-kicker">Bridge</p>
+        <h1>DSA Debugging Checklist</h1>
+        <p class="summary">
+          Most DSA bugs are not mysterious. They come from boundaries, missing base cases, wrong invariants, or using the
+          wrong structure for the operation.
+        </p>
+
+        <h2>Universal edge cases</h2>
+        <table>
+          <thead><tr><th>Input type</th><th>Always test</th></tr></thead>
+          <tbody>
+            <tr><td>Array / List</td><td>Empty, one item, duplicates, already sorted, reversed, negative values.</td></tr>
+            <tr><td>String</td><td>Empty, one character, repeated characters, spaces, case sensitivity.</td></tr>
+            <tr><td>Linked list</td><td>Empty head, one node, removing head/tail, cycle if relevant.</td></tr>
+            <tr><td>Tree</td><td>Null root, one node, skewed tree, duplicate policy, invalid BST.</td></tr>
+            <tr><td>Graph</td><td>Disconnected graph, cycle, self-loop, isolated vertex, directed vs undirected.</td></tr>
+            <tr><td>DP</td><td>Smallest input, impossible state, repeated state, overflow in counting.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Bug patterns by topic</h2>
+        <table>
+          <thead><tr><th>Topic</th><th>Likely bug</th><th>Debug question</th></tr></thead>
+          <tbody>
+            <tr><td>Binary search</td><td>Infinite loop or missed answer</td><td>Does the range shrink every iteration?</td></tr>
+            <tr><td>Two pointers</td><td>Wrong pointer moves</td><td>Which move preserves the invariant?</td></tr>
+            <tr><td>Sliding window</td><td>Window not valid when answer updates</td><td>Do I update answer before or after shrinking?</td></tr>
+            <tr><td>Recursion</td><td>Stack overflow</td><td>Is there a base case and progress toward it?</td></tr>
+            <tr><td>Backtracking</td><td>Missing or duplicate answers</td><td>Did I undo every choice?</td></tr>
+            <tr><td>Heap</td><td>Wrong priority removed</td><td>Is the comparator defining min-first or max-first?</td></tr>
+            <tr><td>HashMap</td><td>Wrong counts</td><td>When do I increment, decrement, or remove keys?</td></tr>
+            <tr><td>Graph</td><td>Repeated visits or missed nodes</td><td>When do I mark a node as seen?</td></tr>
+            <tr><td>DP</td><td>Wrong table values</td><td>Does every transition match the state definition?</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Trace before changing code</h2>
+        <pre><code>DEBUGGING ROUTINE:
+    1. Pick the smallest failing input.
+    2. Write the expected output by hand.
+    3. Trace variables after every loop or recursive call.
+    4. Compare the trace to the invariant.
+    5. Fix the first line where the invariant breaks.</code></pre>
+
+        <h2>Java-specific mistakes</h2>
+        <ul>
+          <li>Using <code>==</code> for string equality instead of <code>equals</code>.</li>
+          <li>Writing a comparator as subtraction and causing integer overflow.</li>
+          <li>Modifying a collection while iterating with a for-each loop.</li>
+          <li>Forgetting that arrays are mutable and passed by reference value.</li>
+          <li>Assuming <code>HashMap</code> iteration order is stable.</li>
+          <li>Forgetting generic type parameters and falling back to raw types.</li>
+        </ul>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

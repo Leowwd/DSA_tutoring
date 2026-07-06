@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DSA in Real Systems</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">Java DSA Textbook</a>
+      <button class="menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="top-links"><a href="index.html">Home</a><a href="roadmap.html">Roadmap</a><a href="resources.html">Resources</a></nav>
+    </header>
+    <div class="page">
+      <aside class="sidebar">
+        <h2>Bridge Pages</h2>
+        <ol>
+          <li><a href="selection-guide.html">Selection Guide</a></li>
+          <li><a href="invariants.html">Invariants</a></li>
+          <li><a href="debugging-checklist.html">Debugging Checklist</a></li>
+          <li><a aria-current="page" href="real-systems.html">Real Systems</a></li>
+          <li><a href="roadmap.html">DSA Roadmap</a></li>
+        </ol>
+      </aside>
+      <main class="content wide">
+        <p class="lesson-kicker">Bridge</p>
+        <h1>DSA in Real Systems</h1>
+        <p class="summary">
+          DSA is not only for interviews. The same structures appear inside databases, compilers, search systems,
+          schedulers, caches, and routing systems.
+        </p>
+
+        <h2>Case study map</h2>
+        <table>
+          <thead><tr><th>System</th><th>DSA idea</th><th>Why it appears</th></tr></thead>
+          <tbody>
+            <tr><td>SQL database index</td><td>B-tree / B+tree family</td><td>Ordered lookup and range scan with fewer page reads.</td></tr>
+            <tr><td>Autocomplete</td><td>Trie + DFS + ranking</td><td>Prefix search followed by suggestion collection.</td></tr>
+            <tr><td>LRU cache</td><td>HashMap + doubly linked list</td><td>O(1) lookup plus O(1) move-to-front/evict-tail.</td></tr>
+            <tr><td>Task scheduler</td><td>PriorityQueue</td><td>Repeatedly choose the next highest-priority task.</td></tr>
+            <tr><td>Social network</td><td>Graph</td><td>Users and relationships are vertices and edges.</td></tr>
+            <tr><td>Maps and routing</td><td>Dijkstra / A*</td><td>Weighted shortest path over a road graph.</td></tr>
+            <tr><td>Compiler parser</td><td>Stack and syntax tree</td><td>Nested structure and hierarchical representation.</td></tr>
+            <tr><td>Search engine indexing</td><td>Hash maps, heaps, graphs</td><td>Term lookup, ranking, and link analysis.</td></tr>
+            <tr><td>File system</td><td>Tree</td><td>Folders contain files and subfolders recursively.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Example: LRU cache design</h2>
+        <p>
+          A least-recently-used cache needs fast lookup and fast recency updates. A hash map gives O(1) key lookup. A
+          doubly linked list gives O(1) remove and add-to-front when we already have the node.
+        </p>
+        <pre><code>class LRUCacheDesign {
+    Map&lt;Integer, Node&gt; map; // key -&gt; node
+    Node head;              // most recent side
+    Node tail;              // least recent side
+}</code></pre>
+        <p>
+          This is a strong example of operation-first design: neither structure is enough alone, but together they match
+          the required operations.
+        </p>
+
+        <h2>Example: database index intuition</h2>
+        <p>
+          A balanced binary tree has logarithmic height, but each node has only two children. A B-tree-style index stores
+          many keys per page and many children per node. That reduces the number of page reads, which is often the real
+          bottleneck in storage systems.
+        </p>
+
+        <h2>Reflection questions</h2>
+        <ul>
+          <li>Which operation is the system trying to make cheap?</li>
+          <li>Is the bottleneck CPU comparisons, memory, disk/page reads, or network calls?</li>
+          <li>Does the system need exact answers, approximate answers, ranking, or ordering?</li>
+          <li>Which DSA topic from the course gives the closest mental model?</li>
+        </ul>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">Hash table and graph representations</title>
+  <desc id="desc">A hash table with buckets and a graph shown as an adjacency list.</desc>
+  <rect width="920" height="420" rx="18" fill="#f8fafc"/>
+  <text x="56" y="54" fill="#0f172a" font-family="Arial" font-size="24" font-weight="700">Maps and Graphs</text>
+  <g transform="translate(64 96)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">Hash table</text>
+    <g font-family="Arial" font-size="15">
+      <rect x="0" y="32" width="96" height="42" fill="#e0f2fe" stroke="#38bdf8"/>
+      <rect x="0" y="74" width="96" height="42" fill="#e0f2fe" stroke="#38bdf8"/>
+      <rect x="0" y="116" width="96" height="42" fill="#e0f2fe" stroke="#38bdf8"/>
+      <rect x="0" y="158" width="96" height="42" fill="#e0f2fe" stroke="#38bdf8"/>
+      <text x="28" y="58">0</text>
+      <text x="28" y="100">1</text>
+      <text x="28" y="142">2</text>
+      <text x="28" y="184">3</text>
+      <rect x="145" y="40" width="100" height="28" rx="6" fill="#fff" stroke="#94a3b8"/>
+      <rect x="145" y="124" width="100" height="28" rx="6" fill="#fff" stroke="#94a3b8"/>
+      <rect x="270" y="124" width="100" height="28" rx="6" fill="#fff" stroke="#94a3b8"/>
+      <line x1="96" y1="53" x2="145" y2="53" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+      <line x1="96" y1="137" x2="145" y2="137" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+      <line x1="245" y1="137" x2="270" y2="137" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+      <text x="166" y="59">cat: 2</text>
+      <text x="166" y="143">dog: 4</text>
+      <text x="288" y="143">day: 1</text>
+      <text x="112" y="232" fill="#475569">collisions are handled inside a bucket</text>
+    </g>
+  </g>
+  <g transform="translate(535 96)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">Adjacency list</text>
+    <g font-family="Arial" font-size="15">
+      <circle cx="70" cy="72" r="24" fill="#dbeafe" stroke="#2563eb"/>
+      <circle cx="170" cy="72" r="24" fill="#dcfce7" stroke="#16a34a"/>
+      <circle cx="70" cy="174" r="24" fill="#fef3c7" stroke="#f59e0b"/>
+      <circle cx="170" cy="174" r="24" fill="#fee2e2" stroke="#dc2626"/>
+      <line x1="94" y1="72" x2="146" y2="72" stroke="#64748b" stroke-width="3"/>
+      <line x1="70" y1="96" x2="70" y2="150" stroke="#64748b" stroke-width="3"/>
+      <line x1="88" y1="90" x2="152" y2="156" stroke="#64748b" stroke-width="3"/>
+      <text x="65" y="78">A</text>
+      <text x="165" y="78">B</text>
+      <text x="65" y="180">C</text>
+      <text x="165" y="180">D</text>
+      <text x="245" y="72">A: B, C, D</text>
+      <text x="245" y="106">B: A</text>
+      <text x="245" y="140">C: A</text>
+      <text x="245" y="174">D: A</text>
+    </g>
+  </g>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2563eb"/>
+    </marker>
+  </defs>
+</svg>

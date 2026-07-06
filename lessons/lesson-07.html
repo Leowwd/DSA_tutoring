@@ -30,6 +30,7 @@
           <li><a href="lesson-12.html">Graph Algorithms</a></li>
           <li><a href="lesson-13.html">Dynamic Programming</a></li>
           <li><a href="lesson-14.html">Integration Project</a></li>
+          <li><a href="lesson-15.html">Greedy Algorithms</a></li>
         </ol>
       </aside>
 
@@ -40,6 +41,10 @@
           Trees are recursive data structures. Each node can be treated as the root of a smaller tree. This lesson uses
           the recursive contract from Lesson 6 to understand traversal, tree properties, and binary search trees.
         </p>
+        <figure class="visual">
+          <img src="../assets/diagrams/tree-heap.svg" alt="Diagram comparing a binary search tree invariant and a min heap with array representation." />
+          <figcaption>A BST uses ordering for search; a heap uses parent-child priority for repeated min or max access.</figcaption>
+        </figure>
 
         <h2>Example first: a file system</h2>
         <p>
@@ -384,6 +389,32 @@ static boolean valid(TreeNode node, long low, long high) {
           Search becomes <code>O(n)</code>. Balanced search trees, such as AVL trees, red-black trees, and B-trees, add
           rules to keep height <code>O(log n)</code>. Java's <code>TreeSet</code> and <code>TreeMap</code> are backed by
           balanced red-black trees.
+        </p>
+
+        <h2>Case study: why databases use B-tree-style indexes</h2>
+        <p>
+          A plain BST is a good learning model, but it is not the usual shape for database indexes. Many SQL databases
+          use B-tree or B+tree-style indexes because database data often lives on disk or in pages. Reading one disk page
+          is much more expensive than comparing a few keys inside that page, so a tree with many children per node can
+          reduce the number of page reads.
+        </p>
+        <p>
+          PostgreSQL's default <code>CREATE INDEX</code> index type is B-tree, and its documentation describes B-tree
+          indexes as fitting equality and range comparisons. MySQL's InnoDB storage engine also organizes primary-key
+          access around clustered indexes. The exact implementation varies by database, so the safe statement is:
+          <strong>database indexes commonly use B-tree/B+tree-family structures for ordered lookup and range queries.</strong>
+        </p>
+        <table>
+          <thead><tr><th>Question</th><th>Why a B-tree-style index helps</th></tr></thead>
+          <tbody>
+            <tr><td><code>WHERE id = 42</code></td><td>Search follows the ordered index instead of scanning every row.</td></tr>
+            <tr><td><code>WHERE price BETWEEN 10 AND 20</code></td><td>Range queries can find the first matching key, then scan nearby ordered entries.</td></tr>
+            <tr><td><code>ORDER BY created_at</code></td><td>If an index matches the order, the database may avoid a separate sort.</td></tr>
+          </tbody>
+        </table>
+        <p class="note">
+          This is the same DSA idea at a systems level: choose a structure that makes the common operation cheap. For
+          databases, the expensive operation is often reading many pages, not doing one comparison.
         </p>
 
         <h2>Java library connection</h2>
