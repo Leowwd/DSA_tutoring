@@ -43,7 +43,8 @@ a {
   z-index: 10;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 18px;
   min-height: 60px;
   padding: 0 28px;
   background: rgba(255, 255, 255, 0.88);
@@ -75,6 +76,7 @@ a {
 .top-links {
   display: flex;
   gap: 18px;
+  margin-left: auto;
   font-size: 0.95rem;
 }
 
@@ -95,6 +97,36 @@ a {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
+}
+
+.language-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+}
+
+.language-toggle button {
+  min-width: 42px;
+  height: 30px;
+  padding: 0 10px;
+  color: var(--muted);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.language-toggle button.active {
+  color: #fff;
+  background: var(--text);
 }
 
 .page {
@@ -156,6 +188,7 @@ a {
   border: 1px solid var(--line);
   border-radius: 14px;
   box-shadow: var(--shadow);
+  overflow-wrap: break-word;
 }
 
 .content.wide {
@@ -484,6 +517,15 @@ table {
   border-radius: 10px;
 }
 
+html:lang(zh-Hant) body {
+  line-height: 1.78;
+}
+
+html:lang(zh-Hant) .lesson-kicker,
+html:lang(zh-Hant) .sidebar h2 {
+  letter-spacing: 0.04em;
+}
+
 th,
 td {
   padding: 10px 12px;
@@ -532,14 +574,24 @@ th {
 @media (max-width: 860px) {
   .site-header {
     padding: 0 16px;
+    gap: 10px;
+  }
+
+  .brand {
+    margin-right: auto;
   }
 
   .menu-button {
     display: inline-block;
+    order: 3;
   }
 
   .top-links {
     display: none;
+  }
+
+  .language-toggle {
+    order: 2;
   }
 
   .page {
@@ -586,5 +638,13 @@ th {
 
   .study-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
