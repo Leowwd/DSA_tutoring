@@ -19,6 +19,7 @@ The site is intentionally built without GitBook or a JavaScript framework. Each 
 - `assets/diagrams/`: self-contained SVG diagrams used by lessons.
 - `style.css`: GitBook-like textbook layout and code styling.
 - `script.js`: mobile navigation, code highlighting, and lesson study-guide injection.
+- `problem-translations.js`: Traditional Chinese copy for the structured lesson problem statements.
 - `.nojekyll`: tells GitHub Pages to serve files as-is.
 
 ## Instructor-Only Material

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">排序方法比較</title>
+  <desc id="desc">以圖像比較插入排序、合併排序、快速排序與堆積排序。</desc>
+  <rect width="920" height="420" rx="18" fill="#f8fafc"/>
+  <text x="56" y="54" fill="#0f172a" font-family="Arial" font-size="24" font-weight="700">排序思考模型</text>
+  <g transform="translate(62 100)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">插入排序</text>
+    <rect x="0" y="36" width="38" height="110" fill="#dbeafe" stroke="#2563eb"/>
+    <rect x="46" y="72" width="38" height="74" fill="#dbeafe" stroke="#2563eb"/>
+    <rect x="92" y="20" width="38" height="126" fill="#fef3c7" stroke="#f59e0b"/>
+    <rect x="138" y="94" width="38" height="52" fill="#e2e8f0" stroke="#94a3b8"/>
+    <text x="0" y="184" fill="#475569" font-family="Arial" font-size="15">逐步擴大已排序前綴</text>
+  </g>
+  <g transform="translate(292 100)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">合併排序</text>
+    <rect x="0" y="26" width="180" height="34" fill="#e0f2fe" stroke="#38bdf8"/>
+    <rect x="0" y="86" width="82" height="34" fill="#dcfce7" stroke="#16a34a"/>
+    <rect x="98" y="86" width="82" height="34" fill="#dcfce7" stroke="#16a34a"/>
+    <line x1="90" y1="60" x2="41" y2="86" stroke="#64748b" stroke-width="3"/>
+    <line x1="90" y1="60" x2="139" y2="86" stroke="#64748b" stroke-width="3"/>
+    <text x="10" y="184" fill="#475569" font-family="Arial" font-size="15">切分、排序、合併</text>
+  </g>
+  <g transform="translate(520 100)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">快速排序</text>
+    <rect x="0" y="44" width="52" height="58" fill="#dcfce7" stroke="#16a34a"/>
+    <rect x="60" y="44" width="52" height="58" fill="#fef3c7" stroke="#f59e0b"/>
+    <rect x="120" y="44" width="52" height="58" fill="#fee2e2" stroke="#dc2626"/>
+    <text x="14" y="78" font-family="Arial" font-size="15">&lt; p</text>
+    <text x="75" y="78" font-family="Arial" font-size="15">p</text>
+    <text x="132" y="78" font-family="Arial" font-size="15">&gt; p</text>
+    <text x="6" y="184" fill="#475569" font-family="Arial" font-size="15">依樞紐值分割</text>
+  </g>
+  <g transform="translate(724 100)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">堆積排序</text>
+    <circle cx="88" cy="48" r="24" fill="#fef3c7" stroke="#f59e0b"/>
+    <circle cx="42" cy="112" r="22" fill="#fff" stroke="#94a3b8"/>
+    <circle cx="134" cy="112" r="22" fill="#fff" stroke="#94a3b8"/>
+    <line x1="76" y1="68" x2="54" y2="94" stroke="#94a3b8" stroke-width="3"/>
+    <line x1="100" y1="68" x2="122" y2="94" stroke="#94a3b8" stroke-width="3"/>
+    <text x="80" y="54" font-family="Arial" font-size="15">最大值</text>
+    <text x="0" y="184" fill="#475569" font-family="Arial" font-size="15">反覆移除根節點</text>
+  </g>
+  <text x="56" y="350" fill="#334155" font-family="Arial" font-size="18" font-weight="700">取捨角度</text>
+  <text x="154" y="350" fill="#475569" font-family="Arial" font-size="17">穩定性、最壞時間、額外空間與常數因子，決定哪種排序適合。</text>
+</svg>

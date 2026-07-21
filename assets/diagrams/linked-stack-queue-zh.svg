@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">鏈結串列、堆疊與佇列操作</title>
+  <desc id="desc">以參照連接的節點，以及堆疊與佇列的操作方向。</desc>
+  <rect width="920" height="420" rx="18" fill="#f8fafc"/>
+  <text x="56" y="54" fill="#0f172a" font-family="Arial" font-size="24" font-weight="700">鏈結式資料結構</text>
+  <g transform="translate(70 98)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">單向鏈結串列</text>
+    <g transform="translate(0 30)" font-family="Arial">
+      <rect x="0" y="0" width="94" height="54" rx="8" fill="#ffffff" stroke="#94a3b8"/>
+      <rect x="160" y="0" width="94" height="54" rx="8" fill="#ffffff" stroke="#94a3b8"/>
+      <rect x="320" y="0" width="94" height="54" rx="8" fill="#ffffff" stroke="#94a3b8"/>
+      <text x="35" y="33" font-size="17">10</text>
+      <text x="195" y="33" font-size="17">20</text>
+      <text x="355" y="33" font-size="17">30</text>
+      <line x1="94" y1="27" x2="160" y2="27" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+      <line x1="254" y1="27" x2="320" y2="27" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+      <text x="8" y="84" fill="#64748b" font-size="15">每個節點保存資料與下一個節點的參照</text>
+    </g>
+  </g>
+  <g transform="translate(70 254)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">堆疊</text>
+    <rect x="40" y="30" width="110" height="38" fill="#dbeafe" stroke="#2563eb"/>
+    <rect x="40" y="68" width="110" height="38" fill="#dbeafe" stroke="#2563eb"/>
+    <rect x="40" y="106" width="110" height="38" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="75" y="54" font-family="Arial" font-size="16">push</text>
+    <text x="75" y="92" font-family="Arial" font-size="16">pop</text>
+    <text x="72" y="130" font-family="Arial" font-size="16">peek</text>
+    <text x="190" y="82" fill="#475569" font-family="Arial" font-size="15">後進先出：最後加入，最先移除</text>
+  </g>
+  <g transform="translate(510 254)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">佇列</text>
+    <rect x="0" y="50" width="250" height="52" rx="8" fill="#ffffff" stroke="#94a3b8"/>
+    <circle cx="42" cy="76" r="18" fill="#0f766e"/>
+    <circle cx="124" cy="76" r="18" fill="#0f766e"/>
+    <circle cx="206" cy="76" r="18" fill="#0f766e"/>
+    <text x="16" y="130" fill="#475569" font-family="Arial" font-size="15">從前端移除</text>
+    <text x="164" y="130" fill="#475569" font-family="Arial" font-size="15">從後端加入</text>
+  </g>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2563eb"/>
+    </marker>
+  </defs>
+</svg>

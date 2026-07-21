@@ -43,7 +43,7 @@
           enable.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/array-patterns.svg" alt="Diagram of binary search, two pointers, sliding window, and prefix sums on arrays." />
+          <img src="../assets/diagrams/array-patterns.svg" data-zh-src="../assets/diagrams/array-patterns-zh.svg" alt="Diagram of binary search, two pointers, sliding window, and prefix sums on arrays." data-zh-alt="陣列上的二分搜尋、雙指標、滑動視窗與前綴和示意圖。" />
           <figcaption>Array patterns are mostly about controlling indices: searching, moving boundaries, maintaining a window, or precomputing range information.</figcaption>
         </figure>
 
@@ -141,6 +141,16 @@ nums.set(1, 99);</code></pre>
         <p>
           The simplest array pattern is scanning once while maintaining a small amount of state.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Maximum Array Value.</strong> Given a non-empty integer array <code>a</code>, find its largest value.</p>
+          <ul>
+            <li><strong>Input:</strong> A non-empty integer array.</li>
+            <li><strong>Output:</strong> Return the largest integer in the array.</li>
+            <li><strong>Constraints:</strong> Do not modify the input array.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[4, -2, 9, 3]</code> returns <code>9</code>.</p>
+        </section>
         <pre><code>static int max(int[] a) {
     int best = a[0];
     for (int i = 1; i &lt; a.length; i++) {
@@ -158,6 +168,18 @@ nums.set(1, 99);</code></pre>
           If an array is sorted, we can repeatedly cut the search range in half. This changes search from O(n) to
           O(log n).
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Binary Search.</strong> Given an integer array <code>a</code> sorted in ascending order and a
+            <code>target</code>, find an index containing the target.</p>
+          <ul>
+            <li><strong>Input:</strong> An ascending integer array and one target value.</li>
+            <li><strong>Output:</strong> Return a matching index, or <code>-1</code> if the target is absent.</li>
+            <li><strong>Constraints:</strong> When duplicates exist, any matching index is acceptable.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = [1, 4, 6, 9]</code> and
+            <code>target = 6</code> return <code>2</code>.</p>
+        </section>
         <pre><code>static int binarySearch(int[] a, int target) {
     int lo = 0;
     int hi = a.length - 1;
@@ -177,6 +199,18 @@ nums.set(1, 99);</code></pre>
         <p>
           Many real problems ask for the first position where a condition becomes true.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Lower Bound.</strong> Given an integer array <code>a</code> sorted in ascending order, find the first
+            index whose value is at least <code>target</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> An ascending integer array and one target value.</li>
+            <li><strong>Output:</strong> Return the first qualifying index.</li>
+            <li><strong>Constraints:</strong> Return <code>a.length</code> when no such position exists.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = [1, 3, 3, 8]</code> and
+            <code>target = 3</code> return <code>1</code>.</p>
+        </section>
         <pre><code>static int lowerBound(int[] a, int target) {
     int lo = 0;
     int hi = a.length; // answer may be a.length
@@ -197,6 +231,18 @@ nums.set(1, 99);</code></pre>
           Two pointers are useful when sorted order gives direction. Consider finding two values in a sorted array that
           sum to a target.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Two Sum in a Sorted Array.</strong> Given an ascending integer array <code>a</code>, find two
+            different indices whose values add to <code>target</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> An ascending integer array and one target sum.</li>
+            <li><strong>Output:</strong> Return <code>[left, right]</code> with <code>left &lt; right</code>.</li>
+            <li><strong>Constraints:</strong> Return <code>[-1, -1]</code> when no pair exists.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = [1, 2, 4, 7, 11]</code> and
+            <code>target = 9</code> return <code>[1, 3]</code>.</p>
+        </section>
         <pre><code>static int[] twoSumSorted(int[] a, int target) {
     int left = 0;
     int right = a.length - 1;
@@ -222,6 +268,18 @@ nums.set(1, 99);</code></pre>
         <p>
           Slow/fast pointers appear in arrays and linked lists. In arrays, they are often used to compact data in place.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Remove Duplicates from a Sorted Array.</strong> Compact an ascending integer array in place so each
+            distinct value appears once at the front.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array sorted in ascending order.</li>
+            <li><strong>Output:</strong> Return the number <code>k</code> of distinct values.</li>
+            <li><strong>Constraints:</strong> Only the first <code>k</code> positions are part of the result.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[1, 1, 2, 2, 5]</code> returns <code>3</code>, with
+            the first three positions equal to <code>[1, 2, 5]</code>.</p>
+        </section>
         <pre><code>static int removeDuplicatesSorted(int[] a) {
     if (a.length == 0) return 0;
     int write = 1;
@@ -243,6 +301,18 @@ nums.set(1, 99);</code></pre>
           A sliding window is useful for contiguous subarrays or substrings. If the window size is fixed, update the
           answer by adding the new right value and removing the old left value.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Maximum Sum of a Length-K Subarray.</strong> Given an integer array <code>a</code> and a window length
+            <code>k</code>, find the largest sum among all contiguous subarrays of length <code>k</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array and a window length <code>k</code>.</li>
+            <li><strong>Output:</strong> Return the maximum window sum.</li>
+            <li><strong>Constraints:</strong> <code>1 &lt;= k &lt;= a.length</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = [2, -1, 5, 1, 3]</code> and
+            <code>k = 3</code> return <code>9</code> from <code>[5, 1, 3]</code>.</p>
+        </section>
         <pre><code>static int maxSumLengthK(int[] a, int k) {
     int window = 0;
     for (int i = 0; i &lt; k; i++) {
@@ -269,6 +339,18 @@ nums.set(1, 99);</code></pre>
         <p>
           Example: find the shortest subarray with sum at least target, assuming all numbers are positive.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Minimum-Size Subarray Sum.</strong> Given an array <code>a</code> of positive integers and a positive
+            <code>target</code>, find the shortest non-empty contiguous subarray whose sum is at least the target.</p>
+          <ul>
+            <li><strong>Input:</strong> A positive integer array and a positive target.</li>
+            <li><strong>Output:</strong> Return the minimum qualifying length, or <code>0</code> if none exists.</li>
+            <li><strong>Constraints:</strong> Every array value is positive.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = [2, 3, 1, 2, 4, 3]</code> and
+            <code>target = 7</code> return <code>2</code>.</p>
+        </section>
         <pre><code>static int minLengthAtLeastTarget(int[] a, int target) {
     int left = 0;
     int sum = 0;
@@ -293,6 +375,18 @@ nums.set(1, 99);</code></pre>
         <p>
           Prefix sums trade O(n) preprocessing space for O(1) range sum queries.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Range Sum Queries.</strong> Preprocess an integer array and answer the sum of a half-open range
+            <code>[left, rightExclusive)</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array followed by valid range bounds.</li>
+            <li><strong>Output:</strong> Build a prefix array, then return each requested range sum.</li>
+            <li><strong>Constraints:</strong> A range includes <code>left</code> but excludes <code>rightExclusive</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> For <code>a = [5, -2, 4, 1]</code>, range
+            <code>[1, 3)</code> has sum <code>2</code>.</p>
+        </section>
         <pre><code>static int[] buildPrefix(int[] a) {
     int[] prefix = new int[a.length + 1];
     for (int i = 0; i &lt; a.length; i++) {
@@ -314,6 +408,18 @@ static int rangeSum(int[] prefix, int left, int rightExclusive) {
           Prefix sums become more powerful when combined with hashing. Count the number of subarrays whose sum equals
           <code>k</code>.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Subarray Sum Equals K.</strong> Given an integer array <code>a</code> and an integer <code>k</code>,
+            count the non-empty contiguous subarrays whose elements sum to <code>k</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array and a target sum.</li>
+            <li><strong>Output:</strong> Return the number of qualifying index ranges.</li>
+            <li><strong>Constraints:</strong> Array values may be negative.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = [1, 1, 1]</code> and <code>k = 2</code> return
+            <code>2</code>.</p>
+        </section>
         <pre><code>static int countSubarraysWithSumK(int[] a, int k) {
     Map&lt;Integer, Integer&gt; freq = new HashMap&lt;&gt;();
     freq.put(0, 1);
@@ -337,6 +443,18 @@ static int rangeSum(int[] prefix, int left, int rightExclusive) {
           A difference array is useful for many range updates. Suppose we repeatedly add a value to every element in a
           range. Updating every position in every range may be too slow.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Apply Range Additions.</strong> Start with a zero-filled array of length <code>n</code>. Each update
+            <code>[left, right, delta]</code> adds <code>delta</code> to every index in the inclusive range.</p>
+          <ul>
+            <li><strong>Input:</strong> An array length and a list of valid range updates.</li>
+            <li><strong>Output:</strong> Return the final array after every update.</li>
+            <li><strong>Constraints:</strong> Both endpoints of each update are inclusive.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> For <code>n = 5</code> and updates
+            <code>[[1, 3, 2], [2, 4, -1]]</code>, return <code>[0, 2, 1, 1, -1]</code>.</p>
+        </section>
         <pre><code>static int[] applyRangeAdds(int n, int[][] updates) {
     int[] diff = new int[n + 1];
     for (int[] u : updates) {
@@ -450,6 +568,7 @@ static int rangeSum(int[] prefix, int left, int rightExclusive) {
         <nav class="pager"><a href="lesson-03.html">← Previous</a><a href="lesson-05.html">Next: Linked Lists, Stacks, Queues →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

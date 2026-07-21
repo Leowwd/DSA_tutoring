@@ -42,7 +42,7 @@
           the recursive contract from Lesson 6 to understand traversal, tree properties, and binary search trees.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/tree-heap.svg" alt="Diagram comparing a binary search tree invariant and a min heap with array representation." />
+          <img src="../assets/diagrams/tree-heap.svg" data-zh-src="../assets/diagrams/tree-heap-zh.svg" alt="Diagram comparing a binary search tree invariant and a min heap with array representation." data-zh-alt="比較二元搜尋樹不變條件與最小堆積陣列表示法的示意圖。" />
           <figcaption>A BST uses ordering for search; a heap uses parent-child priority for repeated min or max access.</figcaption>
         </figure>
 
@@ -93,6 +93,18 @@
         </p>
 
         <h2>Recursive contract: sum of a tree</h2>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Sum of a Binary Tree.</strong> Given the root of a binary tree containing integers, compute the sum
+            of every node value.</p>
+          <ul>
+            <li><strong>Input:</strong> The root node, or <code>null</code> for an empty tree.</li>
+            <li><strong>Output:</strong> Return the sum of all values.</li>
+            <li><strong>Constraints:</strong> An empty tree has sum <code>0</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> A root <code>5</code> with children <code>2</code> and
+            <code>7</code> returns <code>14</code>.</p>
+        </section>
         <pre><code>static int sum(TreeNode root) {
     if (root == null) return 0;
     return root.val + sum(root.left) + sum(root.right);
@@ -104,6 +116,18 @@
         </p>
 
         <h2>Common tree property methods</h2>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Binary Tree Properties.</strong> For a binary tree, compute its node count and maximum depth, and
+            determine whether it contains a target value.</p>
+          <ul>
+            <li><strong>Input:</strong> A tree root and, for <code>contains</code>, one target integer.</li>
+            <li><strong>Output:</strong> Return the requested count, depth, or boolean result.</li>
+            <li><strong>Constraints:</strong> An empty tree has count and depth <code>0</code> and contains no value.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> A root <code>5</code> with children <code>2</code> and
+            <code>7</code> has <code>3</code> nodes, depth <code>2</code>, and contains <code>7</code>.</p>
+        </section>
         <pre><code>static int countNodes(TreeNode root) {
     if (root == null) return 0;
     return 1 + countNodes(root.left) + countNodes(root.right);
@@ -161,6 +185,18 @@ static void postorder(TreeNode root) {
         <p>
           Level-order traversal visits nodes by distance from the root. It uses a queue.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Binary Tree Level-Order Traversal.</strong> Group the values of a binary tree by their distance from
+            the root, visiting each level from left to right.</p>
+          <ul>
+            <li><strong>Input:</strong> The root node, or <code>null</code> for an empty tree.</li>
+            <li><strong>Output:</strong> Return one list of values for each level.</li>
+            <li><strong>Constraints:</strong> Return an empty list for an empty tree.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> The level-order tree
+            <code>[3, 9, 20, null, null, 15, 7]</code> returns <code>[[3], [9, 20], [15, 7]]</code>.</p>
+        </section>
         <pre><code>static List&lt;List&lt;Integer&gt;&gt; levelOrder(TreeNode root) {
     List&lt;List&lt;Integer&gt;&gt; levels = new ArrayList&lt;&gt;();
     if (root == null) return levels;
@@ -328,6 +364,18 @@ private TreeNode minNode(TreeNode node) {
           A common incorrect solution only compares each node to its children. That misses deeper violations. The correct
           recursive state is a valid range.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Validate a Binary Search Tree.</strong> Determine whether every node in a binary tree satisfies the
+            strict BST ordering rule for all of its descendants.</p>
+          <ul>
+            <li><strong>Input:</strong> The root of a binary tree.</li>
+            <li><strong>Output:</strong> Return <code>true</code> only when the entire tree is a valid BST.</li>
+            <li><strong>Constraints:</strong> Duplicate values are not allowed; an empty tree is valid.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> The level-order tree <code>[5, 3, 7, null, 6]</code>
+            returns <code>false</code> because <code>6</code> lies in the left subtree of <code>5</code>.</p>
+        </section>
         <pre><code>static boolean isValidBST(TreeNode root) {
     return valid(root, Long.MIN_VALUE, Long.MAX_VALUE);
 }
@@ -348,6 +396,18 @@ static boolean valid(TreeNode node, long low, long high) {
           The lowest common ancestor of two nodes is the deepest node that has both as descendants. For a general binary
           tree:
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Lowest Common Ancestor in a Binary Tree.</strong> Find the deepest node whose subtree contains both
+            target nodes, allowing a node to be its own descendant.</p>
+          <ul>
+            <li><strong>Input:</strong> A tree root and references to two nodes <code>p</code> and <code>q</code>.</li>
+            <li><strong>Output:</strong> Return their lowest common ancestor node.</li>
+            <li><strong>Constraints:</strong> Both target nodes are distinct and exist in the tree.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> If root <code>3</code> has children <code>5</code> and
+            <code>1</code>, the LCA of those two children is <code>3</code>.</p>
+        </section>
         <pre><code>static TreeNode lca(TreeNode root, TreeNode p, TreeNode q) {
     if (root == null || root == p || root == q) return root;
     TreeNode left = lca(root.left, p, q);
@@ -359,6 +419,18 @@ static boolean valid(TreeNode node, long low, long high) {
           In a BST, the ordering invariant gives a simpler solution: if both values are smaller, go left; if both are
           larger, go right; otherwise the current node is the split point.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Lowest Common Ancestor in a BST.</strong> Use BST ordering to find the lowest node whose subtree
+            contains the values <code>a</code> and <code>b</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> A BST root and two values stored in the tree.</li>
+            <li><strong>Output:</strong> Return the lowest common ancestor node.</li>
+            <li><strong>Constraints:</strong> Values are unique and both targets exist in the BST.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> In a BST rooted at <code>6</code> with <code>2</code> on the
+            left and <code>8</code> on the right, the LCA of <code>2</code> and <code>8</code> is <code>6</code>.</p>
+        </section>
         <pre><code>static TreeNode lcaBST(TreeNode root, int a, int b) {
     TreeNode cur = root;
     while (cur != null) {
@@ -507,6 +579,7 @@ static boolean valid(TreeNode node, long low, long high) {
         <nav class="pager"><a href="lesson-06.html">← Previous</a><a href="lesson-08.html">Next: Heaps and Priority Queues →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>
