@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">Dynamic programming state dependencies and fill order</title>
+  <desc id="desc">A grid path-counting table connects state definition, base cases, transition, and valid evaluation order.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      text { font-family: Arial, "Noto Sans TC", "PingFang TC", sans-serif; fill: #172033; }
+      .step { font-size: 17px; font-weight: 700; }
+      .detail { font-size: 15px; fill: #475569; }
+      .cellText { font-size: 19px; font-weight: 700; text-anchor: middle; }
+    </style>
+  </defs>
+  <rect width="960" height="520" fill="#f8fafc"/>
+  <text x="52" y="52" font-size="27" font-weight="700">Dynamic programming: dependencies set table order</text>
+
+  <g transform="translate(52 92)">
+    <rect x="0" y="0" width="360" height="74" fill="#eff6ff" stroke="#93c5fd"/>
+    <circle cx="31" cy="24" r="17" fill="#2563eb"/><text x="31" y="30" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">1</text>
+    <text class="step" x="58" y="29">Define the state</text>
+    <text class="detail" x="20" y="56">Each cell stores the paths reaching it.</text>
+
+    <rect x="0" y="90" width="360" height="74" fill="#fff7ed" stroke="#fdba74"/>
+    <circle cx="31" cy="114" r="17" fill="#c2410c"/><text x="31" y="120" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">2</text>
+    <text class="step" x="58" y="119">Set base cases</text>
+    <text class="detail" x="20" y="146">Top row and left column are 1.</text>
+
+    <rect x="0" y="180" width="360" height="74" fill="#ecfdf5" stroke="#86efac"/>
+    <circle cx="31" cy="204" r="17" fill="#15803d"/><text x="31" y="210" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">3</text>
+    <text class="step" x="58" y="209">Write the transition</text>
+    <text class="detail" x="20" y="236">Current cell = above + left.</text>
+
+    <rect x="0" y="270" width="360" height="74" fill="#f5f3ff" stroke="#c4b5fd"/>
+    <circle cx="31" cy="294" r="17" fill="#7c3aed"/><text x="31" y="300" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">4</text>
+    <text class="step" x="58" y="299">Choose a valid order</text>
+    <text class="detail" x="20" y="326">Fill top-to-bottom, then left-to-right.</text>
+  </g>
+
+  <g transform="translate(492 98)">
+    <text x="0" y="0" font-size="21" font-weight="700">Example: move only right or down</text>
+    <g transform="translate(46 42)">
+      <g fill="#fff7ed" stroke="#fdba74">
+        <rect x="0" y="0" width="78" height="70"/><rect x="78" y="0" width="78" height="70"/>
+        <rect x="156" y="0" width="78" height="70"/><rect x="234" y="0" width="78" height="70"/>
+      </g>
+      <g fill="#fff7ed" stroke="#fdba74">
+        <rect x="0" y="70" width="78" height="70"/><rect x="0" y="140" width="78" height="70"/>
+      </g>
+      <g fill="#ffffff" stroke="#94a3b8">
+        <rect x="78" y="70" width="78" height="70"/><rect x="156" y="70" width="78" height="70"/><rect x="234" y="70" width="78" height="70"/>
+        <rect x="78" y="140" width="78" height="70"/><rect x="156" y="140" width="78" height="70"/>
+      </g>
+      <rect x="234" y="140" width="78" height="70" fill="#bbf7d0" stroke="#15803d" stroke-width="3"/>
+      <g class="cellText">
+        <text x="39" y="43">1</text><text x="117" y="43">1</text><text x="195" y="43">1</text><text x="273" y="43">1</text>
+        <text x="39" y="113">1</text><text x="117" y="113">2</text><text x="195" y="113">3</text><text x="273" y="113">4</text>
+        <text x="39" y="183">1</text><text x="117" y="183">3</text><text x="195" y="183">6</text><text x="273" y="183">10</text>
+      </g>
+      <line x1="273" y1="125" x2="273" y2="146" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+      <line x1="222" y1="175" x2="246" y2="175" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+      <text x="273" y="240" text-anchor="middle" font-size="16" font-weight="700" fill="#166534">4 + 6 = 10 paths</text>
+    </g>
+    <rect x="0" y="326" width="414" height="66" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="18" y="353" font-size="16" font-weight="700" fill="#1d4ed8">Order check</text>
+    <text class="detail" x="18" y="377">Every dependency is already computed.</text>
+  </g>
+</svg>

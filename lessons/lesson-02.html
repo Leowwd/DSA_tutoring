@@ -41,7 +41,7 @@
           and tight bounds. The point is to predict scalability before running code.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/complexity-growth.svg" alt="Growth rate chart comparing O(1), O(log n), O(n), O(n log n), O(n squared), and O(2 to the n)." />
+          <img src="../assets/diagrams/complexity-growth.svg" data-zh-src="../assets/diagrams/complexity-growth-zh.svg" alt="Growth rate chart comparing O(1), O(log n), O(n), O(n log n), O(n squared), and O(2 to the n)." data-zh-alt="比較 O(1)、O(log n)、O(n)、O(n log n)、O(n 平方) 與 O(2 的 n 次方) 的成長率圖。" />
           <figcaption>Growth rate comparison: small inputs can hide bad algorithms, but asymptotic behavior dominates as input size grows.</figcaption>
         </figure>
 
@@ -49,6 +49,18 @@
         <p>
           Given an integer array, return whether any value appears at least twice. Here are two correct solutions.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Contains Duplicate.</strong> Given an integer array <code>nums</code>, determine whether any value
+            occurs at least twice.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array, which may be empty.</li>
+            <li><strong>Output:</strong> Return <code>true</code> when a duplicate exists; otherwise return <code>false</code>.</li>
+            <li><strong>Constraints:</strong> Do not change the input array.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[4, 1, 7, 4]</code> returns <code>true</code>;
+            <code>[4, 1, 7]</code> returns <code>false</code>.</p>
+        </section>
         <pre><code>static boolean hasDuplicateSlow(int[] nums) {
     for (int i = 0; i &lt; nums.length; i++) {
         for (int j = i + 1; j &lt; nums.length; j++) {
@@ -408,6 +420,18 @@ static void quickSort(int[] a, int lo, int hi, Random rng) {
           If we perform one membership query, scanning an array may be fine. If we perform many membership queries, we
           can preprocess the data into a set.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Count Matching Queries.</strong> Given integer arrays <code>values</code> and <code>queries</code>,
+            count how many query entries occur in <code>values</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> A collection of values and a sequence of membership queries.</li>
+            <li><strong>Output:</strong> Return the number of matching query positions.</li>
+            <li><strong>Constraints:</strong> Count repeated queries independently.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>values = [2, 5, 8]</code> and
+            <code>queries = [5, 5, 7, 8]</code> return <code>3</code>.</p>
+        </section>
         <pre><code>static int countMatches(int[] values, int[] queries) {
     HashSet&lt;Integer&gt; set = new HashSet&lt;&gt;();
     for (int x : values) set.add(x);
@@ -456,6 +480,7 @@ static void quickSort(int[] a, int lo, int hi, Random rng) {
         <nav class="pager"><a href="lesson-01.html">← Previous</a><a href="lesson-03.html">Next: Space and Amortization →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

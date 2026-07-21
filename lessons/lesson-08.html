@@ -42,7 +42,7 @@
           Heaps are useful when full sorting is unnecessary, but repeated minimum or maximum access is essential.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/tree-heap.svg" alt="Diagram of a min heap and its array representation." />
+          <img src="../assets/diagrams/tree-heap.svg" data-zh-src="../assets/diagrams/tree-heap-zh.svg" alt="Diagram of a min heap and its array representation." data-zh-alt="最小堆積與其陣列表示法的示意圖。" />
           <figcaption>The heap shape is a complete binary tree, but the implementation is usually an array.</figcaption>
         </figure>
 
@@ -211,6 +211,10 @@ private void sink(int i) {
     data.set(i, data.get(j));
     data.set(j, tmp);
 }</code></pre>
+        <figure class="visual">
+          <img src="../assets/diagrams/heap-swim-sink.svg" data-zh-src="../assets/diagrams/heap-swim-sink-zh.svg" alt="Diagram comparing heap insertion by swimming up and minimum removal by sinking down." data-zh-alt="比較堆積插入時上浮，以及移除最小值後下沉流程的示意圖。" />
+          <figcaption data-zh-html="插入時向根節點上浮；移除最小值後向下沉降以恢復堆積順序。">Insertions swim toward the root; removals restore order by sinking.</figcaption>
+        </figure>
 
         <h2>Build heap: heapify</h2>
         <p>
@@ -283,6 +287,17 @@ tasks.add(new Task("email", 4, 5));</code></pre>
         <p>
           To find the k largest values, keep a min-heap of size k. The smallest value in the heap is the cutoff.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Top K Largest Elements.</strong> Given an integer array, return the <code>k</code> largest entries.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array and an integer <code>k</code>.</li>
+            <li><strong>Output:</strong> Return exactly <code>k</code> values; their order does not matter.</li>
+            <li><strong>Constraints:</strong> <code>0 &lt;= k &lt;= nums.length</code>; duplicate entries count separately.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>nums = [3, 1, 5, 12, 2, 11]</code> and
+            <code>k = 3</code> return <code>[5, 11, 12]</code> in any order.</p>
+        </section>
         <pre><code>static List&lt;Integer&gt; topKLargest(int[] nums, int k) {
     PriorityQueue&lt;Integer&gt; heap = new PriorityQueue&lt;&gt;();
     for (int x : nums) {
@@ -302,6 +317,19 @@ tasks.add(new Task("email", 4, 5));</code></pre>
         <p>
           Count frequencies with a HashMap, then keep the k most frequent items in a min-heap by frequency.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Top K Frequent Elements.</strong> Given an integer array, return the <code>k</code> distinct values
+            with the highest frequencies.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array and a positive integer <code>k</code>.</li>
+            <li><strong>Output:</strong> Return <code>k</code> distinct values; their order does not matter.</li>
+            <li><strong>Constraints:</strong> <code>k</code> does not exceed the number of distinct values; ties may be broken
+              in any order.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>nums = [1, 1, 1, 2, 2, 3]</code> and
+            <code>k = 2</code> return <code>[1, 2]</code> in any order.</p>
+        </section>
         <pre><code>static List&lt;Integer&gt; topKFrequent(int[] nums, int k) {
     Map&lt;Integer, Integer&gt; freq = new HashMap&lt;&gt;();
     for (int x : nums) {
@@ -326,6 +354,17 @@ tasks.add(new Task("email", 4, 5));</code></pre>
         <p>
           A heap can repeatedly choose the smallest current head among k sorted lists.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Merge K Sorted Lists.</strong> Merge several ascending integer lists into one ascending list.</p>
+          <ul>
+            <li><strong>Input:</strong> A list of sorted lists; individual lists may be empty.</li>
+            <li><strong>Output:</strong> Return one sorted list containing every input element.</li>
+            <li><strong>Constraints:</strong> Preserve duplicates and do not require any order among equal values.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[[1, 4], [1, 3, 5], [2, 6]]</code> returns
+            <code>[1, 1, 2, 3, 4, 5, 6]</code>.</p>
+        </section>
         <pre><code>record Entry(int value, int listIndex, int elementIndex) { }
 
 static List&lt;Integer&gt; mergeSortedLists(List&lt;List&lt;Integer&gt;&gt; lists) {
@@ -361,6 +400,19 @@ static List&lt;Integer&gt; mergeSortedLists(List&lt;List&lt;Integer&gt;&gt; list
           Keep the smaller half in a max-heap and the larger half in a min-heap. Balance sizes so they differ by at most
           one.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Median from a Data Stream.</strong> Design a structure that accepts integers one at a time and
+            returns the median of all values seen so far.</p>
+          <ul>
+            <li><strong>Input:</strong> Calls to <code>addNum</code> followed by median queries.</li>
+            <li><strong>Output:</strong> <code>findMedian</code> returns the middle value, or the average of the two middle
+              values when the count is even.</li>
+            <li><strong>Constraints:</strong> Call <code>findMedian</code> only after at least one insertion.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> After adding <code>2</code>, the median is <code>2.0</code>;
+            after adding <code>8</code>, it is <code>5.0</code>; after adding <code>5</code>, it is <code>5.0</code>.</p>
+        </section>
         <pre><code>class MedianFinder {
     private PriorityQueue&lt;Integer&gt; small =
         new PriorityQueue&lt;&gt;((a, b) -&gt; Integer.compare(b, a));
@@ -376,7 +428,7 @@ static List&lt;Integer&gt; mergeSortedLists(List&lt;List&lt;Integer&gt;&gt; list
 
     public double findMedian() {
         if (small.size() == large.size()) {
-            return (small.peek() + large.peek()) / 2.0;
+            return ((long) small.peek() + large.peek()) / 2.0;
         }
         return small.peek();
     }
@@ -484,6 +536,7 @@ PriorityQueue&lt;State&gt; pq = new PriorityQueue&lt;&gt;(
         <nav class="pager"><a href="lesson-07.html">← Previous</a><a href="lesson-09.html">Next: Hashing →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

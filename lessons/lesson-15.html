@@ -41,12 +41,28 @@
           A greedy algorithm repeatedly makes the locally best choice and never goes back. Greedy is powerful when it is
           correct, but dangerous when the local choice does not lead to a global optimum.
         </p>
+        <figure class="visual">
+          <img src="../assets/diagrams/greedy-interval-scheduling.svg" data-zh-src="../assets/diagrams/greedy-interval-scheduling-zh.svg" alt="Timeline diagram showing interval scheduling by repeatedly choosing the earliest finishing compatible interval." data-zh-alt="以時間軸示範反覆選擇最早結束且不衝突區間的排程圖。" />
+          <figcaption data-zh-html="選擇最早結束的區間，會為後續區間保留最多空間。">Earliest finish leaves the most room for future intervals.</figcaption>
+        </figure>
 
         <h2>Example first: interval scheduling</h2>
         <p>
           Given intervals with start and end times, choose the maximum number of non-overlapping intervals. The greedy
           rule is: always pick the interval that ends earliest.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Interval Scheduling.</strong> Select as many mutually non-overlapping intervals as possible.</p>
+          <ul>
+            <li><strong>Input:</strong> A list of intervals with <code>start &lt;= end</code>.</li>
+            <li><strong>Output:</strong> Return the maximum number of intervals that can be selected.</li>
+            <li><strong>Constraints:</strong> An interval may start exactly when the previous selected interval ends; the
+              method may reorder the input list.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[(1,3), (2,4), (3,5), (5,7)]</code> returns
+            <code>3</code>.</p>
+        </section>
         <pre><code>record Interval(int start, int end) { }
 
 static int maxNonOverlapping(List&lt;Interval&gt; intervals) {
@@ -118,6 +134,19 @@ static int maxNonOverlapping(List&lt;Interval&gt; intervals) {
           Given meeting intervals, find the minimum number of rooms required. Sort by start time and use a min-heap of
           current end times. The heap stores rooms currently in use.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Minimum Meeting Rooms.</strong> Determine the fewest rooms needed so every meeting can run for its
+            full interval.</p>
+          <ul>
+            <li><strong>Input:</strong> Meeting intervals <code>[start, end]</code>.</li>
+            <li><strong>Output:</strong> Return the maximum number of meetings active at the same time.</li>
+            <li><strong>Constraints:</strong> A room can be reused when one meeting ends exactly as another starts; the
+              method may reorder the input array.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[[0, 30], [5, 10], [15, 20]]</code> returns
+            <code>2</code>.</p>
+        </section>
         <pre><code>static int minMeetingRooms(int[][] intervals) {
     Arrays.sort(intervals, Comparator.comparingInt(a -&gt; a[0]));
     PriorityQueue&lt;Integer&gt; ends = new PriorityQueue&lt;&gt;();
@@ -141,11 +170,25 @@ static int maxNonOverlapping(List&lt;Interval&gt; intervals) {
           Given <code>nums[i]</code> as the maximum jump length from index <code>i</code>, can we reach the end? Keep
           the farthest reachable index.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Jump Game.</strong> Starting at index <code>0</code>, determine whether jumps can reach the final index
+            when <code>nums[i]</code> is the maximum jump length from position <code>i</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> A non-empty array of nonnegative integers.</li>
+            <li><strong>Output:</strong> Return <code>true</code> if the last index is reachable; otherwise return
+              <code>false</code>.</li>
+            <li><strong>Constraints:</strong> Each jump length may be any value from <code>0</code> through
+              <code>nums[i]</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[2, 3, 1, 1, 4]</code> returns <code>true</code>.</p>
+        </section>
         <pre><code>static boolean canJump(int[] nums) {
-    int farthest = 0;
+    long farthest = 0;
     for (int i = 0; i &lt; nums.length; i++) {
         if (i &gt; farthest) return false;
-        farthest = Math.max(farthest, i + nums[i]);
+        farthest = Math.max(farthest, (long) i + nums[i]);
+        if (farthest &gt;= nums.length - 1) return true;
     }
     return true;
 }</code></pre>
@@ -183,6 +226,7 @@ Optimal: 3 + 3 = 2 coins</code></pre>
         <nav class="pager"><a href="lesson-14.html">&larr; Previous</a><a href="../index.html">Back to Home &rarr;</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

@@ -42,7 +42,7 @@
           lesson teaches both the data structure and the modeling skill needed before graph algorithms make sense.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/hash-graph.svg" alt="Diagram of a hash table and graph adjacency list." />
+          <img src="../assets/diagrams/hash-graph.svg" data-zh-src="../assets/diagrams/hash-graph-zh.svg" alt="Diagram of a hash table and graph adjacency list." data-zh-alt="雜湊表與圖的鄰接串列示意圖。" />
           <figcaption>Graph algorithms depend on representation: an adjacency list makes neighbor iteration explicit and efficient.</figcaption>
         </figure>
 
@@ -126,6 +126,10 @@ if parent[x] == x, x is a root</code></pre>
         <p>
           During <code>find</code>, make every visited node point directly to the root. Future finds become faster.
         </p>
+        <figure class="visual">
+          <img src="../assets/diagrams/union-find-path-compression.svg" data-zh-src="../assets/diagrams/union-find-path-compression-zh.svg" alt="Diagram showing a Union-Find parent chain before and after path compression." data-zh-alt="Union-Find 父節點鏈在路徑壓縮前後的示意圖。" />
+          <figcaption data-zh-html="一次查找會把拜訪過的父節點鏈壓平。">One find flattens the visited parent chain.</figcaption>
+        </figure>
         <pre><code>int find(int x) {
     if (parent[x] != x) {
         parent[x] = find(parent[x]);
@@ -190,6 +194,19 @@ if parent[x] == x, x is a root</code></pre>
         <p>
           Given n nodes and undirected edges, count connected components.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Number of Connected Components.</strong> Given <code>n</code> vertices and undirected edges, count
+            how many connected groups the graph contains.</p>
+          <ul>
+            <li><strong>Input:</strong> Vertices <code>0</code> through <code>n - 1</code> and edge pairs
+              <code>[u, v]</code>.</li>
+            <li><strong>Output:</strong> Return the number of connected components, including isolated vertices.</li>
+            <li><strong>Constraints:</strong> Every endpoint is a valid vertex index.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>n = 5</code> and
+            <code>edges = [[0, 1], [1, 2], [3, 4]]</code> return <code>2</code>.</p>
+        </section>
         <pre><code>static int countComponents(int n, int[][] edges) {
     DSU dsu = new DSU(n);
     for (int[] edge : edges) {
@@ -206,6 +223,19 @@ if parent[x] == x, x is a root</code></pre>
           When processing an undirected edge <code>(u, v)</code>, if u and v are already connected, then adding the edge
           creates a cycle.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Cycle Detection in an Undirected Graph.</strong> Determine whether an undirected graph contains at
+            least one cycle.</p>
+          <ul>
+            <li><strong>Input:</strong> <code>n</code> vertices and an edge list <code>[u, v]</code>.</li>
+            <li><strong>Output:</strong> Return <code>true</code> when any edge closes a cycle; otherwise return
+              <code>false</code>.</li>
+            <li><strong>Constraints:</strong> Vertices are numbered <code>0</code> through <code>n - 1</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>n = 3</code> and
+            <code>edges = [[0, 1], [1, 2], [2, 0]]</code> return <code>true</code>.</p>
+        </section>
         <pre><code>static boolean hasCycleUndirected(int n, int[][] edges) {
     DSU dsu = new DSU(n);
     for (int[] edge : edges) {
@@ -445,6 +475,7 @@ graph.get(u).add(new Edge(v, weight));</code></pre>
         <nav class="pager"><a href="lesson-10.html">← Previous</a><a href="lesson-12.html">Next: Graph Algorithms →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

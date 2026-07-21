@@ -43,7 +43,7 @@
           monotonic stack problems.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/linked-stack-queue.svg" alt="Diagram of linked list nodes, stack operations, and queue operations." />
+          <img src="../assets/diagrams/linked-stack-queue.svg" data-zh-src="../assets/diagrams/linked-stack-queue-zh.svg" alt="Diagram of linked list nodes, stack operations, and queue operations." data-zh-alt="鏈結串列節點、堆疊操作與佇列操作的示意圖。" />
           <figcaption>Linked lists, stacks, and queues are all about controlling where insertion and removal are allowed.</figcaption>
         </figure>
 
@@ -221,6 +221,18 @@ head -> ["A"] -> ["B"] -> ["C"] -> null</code></pre>
         <p>
           Reversal is a classic linked list exercise because it forces careful reference management.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Reverse a Singly Linked List.</strong> Given the head of a singly linked list, reverse every
+            <code>next</code> reference.</p>
+          <ul>
+            <li><strong>Input:</strong> The first node of a list, or <code>null</code> for an empty list.</li>
+            <li><strong>Output:</strong> Return the new head of the reversed list.</li>
+            <li><strong>Constraints:</strong> Reuse the existing nodes and do not allocate a second list.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>"A" -&gt; "B" -&gt; "C"</code> becomes
+            <code>"C" -&gt; "B" -&gt; "A"</code>.</p>
+        </section>
         <pre><code>static Node reverse(Node head) {
     Node prev = null;
     Node cur = head;
@@ -246,6 +258,20 @@ head -> ["A"] -> ["B"] -> ["C"] -> null</code></pre>
           A linked list can accidentally contain a cycle. Floyd's cycle detection uses two pointers: one moves one step,
           the other moves two steps. If there is a cycle, they eventually meet.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Linked List Cycle.</strong> Determine whether following <code>next</code> references from
+            <code>head</code> eventually visits a node more than once.</p>
+          <ul>
+            <li><strong>Input:</strong> The head of a possibly empty singly linked list.</li>
+            <li><strong>Output:</strong> Return <code>true</code> if the list contains a cycle; otherwise return
+              <code>false</code>.</li>
+            <li><strong>Constraints:</strong> Do not modify the list and use constant auxiliary space.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> If the tail of
+            <code>"A" -&gt; "B" -&gt; "C"</code> points back to the node containing <code>"B"</code>, return
+            <code>true</code>.</p>
+        </section>
         <pre><code>static boolean hasCycle(Node head) {
     Node slow = head;
     Node fast = head;
@@ -388,6 +414,19 @@ int first = queue.removeFirst(); // 10</code></pre>
           Parentheses are naturally stack-shaped. Every closing bracket should match the most recent unmatched opening
           bracket.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Valid Parentheses.</strong> Given a string of round, square, and curly brackets, determine whether
+            every opening bracket is closed by the same type in the correct order.</p>
+          <ul>
+            <li><strong>Input:</strong> A string containing only <code>()[]{}</code>.</li>
+            <li><strong>Output:</strong> Return <code>true</code> for a valid bracket sequence; otherwise return
+              <code>false</code>.</li>
+            <li><strong>Constraints:</strong> The empty string is valid.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>"{[()]}"</code> returns <code>true</code>, while
+            <code>"([)]"</code> returns <code>false</code>.</p>
+        </section>
         <pre><code>static boolean isValid(String s) {
     Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
     for (char c : s.toCharArray()) {
@@ -413,6 +452,18 @@ int first = queue.removeFirst(); // 10</code></pre>
           In postfix notation, operators come after their operands. Example: <code>2 3 + 4 *</code> means
           <code>(2 + 3) * 4</code>.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Evaluate a Postfix Expression.</strong> Evaluate a valid Reverse Polish Notation expression whose
+            tokens are integers or the operators <code>+</code>, <code>-</code>, <code>*</code>, and <code>/</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> A token array representing one valid postfix expression.</li>
+            <li><strong>Output:</strong> Return the integer result.</li>
+            <li><strong>Constraints:</strong> Division uses Java integer division, and every divisor is nonzero.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>["2", "3", "+", "4", "*"]</code> represents
+            <code>(2 + 3) * 4</code> and returns <code>20</code>.</p>
+        </section>
         <pre><code>static int evalPostfix(String[] tokens) {
     Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
     for (String token : tokens) {
@@ -443,6 +494,18 @@ static int apply(int a, int b, String op) {
         <p>
           Example: for each day's temperature, how many days until a warmer temperature?
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Daily Temperatures.</strong> For each daily temperature, find how many days must pass before a
+            strictly warmer temperature occurs.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array <code>temps</code> in chronological order.</li>
+            <li><strong>Output:</strong> Return an equally sized array of waiting times.</li>
+            <li><strong>Constraints:</strong> Write <code>0</code> when no warmer future day exists.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[73, 74, 75, 71, 69, 72, 76, 73]</code> returns
+            <code>[1, 1, 4, 2, 1, 1, 0, 0]</code>.</p>
+        </section>
         <pre><code>static int[] dailyTemperatures(int[] temps) {
     int[] ans = new int[temps.length];
     Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;(); // indices, temps decreasing
@@ -572,6 +635,7 @@ static int apply(int a, int b, String op) {
         <nav class="pager"><a href="lesson-04.html">← Previous</a><a href="lesson-06.html">Next: Recursion and Backtracking →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">字典樹與排名組成的自動完成流程</title>
+  <desc id="desc">先用前綴找到字典樹子樹，收集符合的中文詞語，再依使用頻率排出前三名。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <style>
+      text { font-family: Arial, "Noto Sans TC", "PingFang TC", sans-serif; fill: #172033; }
+      .stage { font-size: 18px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .node { fill: #ffffff; stroke: #2563eb; stroke-width: 2.5; }
+      .prefix { fill: #fde68a; stroke: #d97706; stroke-width: 3; }
+      .terminal { fill: #dcfce7; stroke: #16a34a; stroke-width: 2.5; }
+      .nodeText { font-size: 17px; font-weight: 700; text-anchor: middle; }
+    </style>
+  </defs>
+  <rect width="960" height="540" fill="#f8fafc"/>
+  <text x="52" y="52" font-size="27" font-weight="700">自動完成：找前綴、收集詞語、選出最高排名</text>
+
+  <g transform="translate(52 94)">
+    <text class="stage" x="0" y="0">1. 找到前綴節點</text>
+    <rect x="0" y="24" width="238" height="54" fill="#ffffff" stroke="#94a3b8"/>
+    <text x="18" y="58" font-size="17">輸入前綴：<tspan font-weight="700" fill="#b45309">資</tspan></text>
+
+    <g transform="translate(0 110)">
+      <g stroke="#94a3b8" stroke-width="3">
+        <line x1="119" y1="35" x2="119" y2="89"/>
+        <line x1="119" y1="141" x2="55" y2="197"/><line x1="119" y1="141" x2="119" y2="197"/><line x1="119" y1="141" x2="183" y2="197"/>
+        <line x1="55" y1="249" x2="55" y2="298"/>
+      </g>
+      <circle class="node" cx="119" cy="22" r="25"/><text class="nodeText" x="119" y="28">根</text>
+      <circle class="prefix" cx="119" cy="116" r="27"/><text class="nodeText" x="119" y="122">資</text>
+      <circle class="terminal" cx="55" cy="224" r="27"/><text class="nodeText" x="55" y="230">料</text>
+      <circle class="terminal" cx="119" cy="224" r="27"/><text class="nodeText" x="119" y="230">訊</text>
+      <circle class="terminal" cx="183" cy="224" r="27"/><text class="nodeText" x="183" y="230">源</text>
+      <circle class="terminal" cx="55" cy="325" r="27"/><text class="nodeText" x="55" y="331">庫</text>
+      <text class="small" x="152" y="105">前綴節點</text>
+      <text class="small" x="72" y="331">完整詞語</text>
+    </g>
+  </g>
+
+  <path d="M 318 270 L 364 270" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g transform="translate(378 94)">
+    <text class="stage" x="0" y="0">2. 收集所有候選詞語</text>
+    <g transform="translate(0 30)">
+      <rect x="0" y="0" width="222" height="49" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="18" y="31" font-size="16">資料</text><text x="190" y="31" text-anchor="end" font-size="15" fill="#475569">使用 12 次</text>
+      <rect x="0" y="49" width="222" height="49" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="18" y="80" font-size="16">資料庫</text><text x="190" y="80" text-anchor="end" font-size="15" fill="#475569">使用 4 次</text>
+      <rect x="0" y="98" width="222" height="49" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="18" y="129" font-size="16">資訊</text><text x="190" y="129" text-anchor="end" font-size="15" fill="#475569">使用 8 次</text>
+      <rect x="0" y="147" width="222" height="49" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="18" y="178" font-size="16">資源</text><text x="190" y="178" text-anchor="end" font-size="15" fill="#475569">使用 5 次</text>
+    </g>
+    <rect x="0" y="254" width="222" height="106" fill="#fff7ed" stroke="#fdba74"/>
+    <text x="16" y="282" font-size="16" font-weight="700" fill="#9a3412">頻率對照表</text>
+    <text class="small" x="16" y="307">記錄每個詞語被選取的次數；</text>
+    <text class="small" x="16" y="329">字典樹只負責找出符合前綴的</text>
+    <text class="small" x="16" y="351">候選詞語。</text>
+  </g>
+
+  <path d="M 624 270 L 670 270" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g transform="translate(684 94)">
+    <text class="stage" x="0" y="0">3. 保留最高的三名</text>
+    <text class="small" x="0" y="26">最小堆積只保留三個候選詞語。</text>
+    <g transform="translate(0 50)">
+      <rect x="0" y="0" width="224" height="61" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+      <circle cx="29" cy="30" r="17" fill="#15803d"/><text x="29" y="36" fill="#ffffff" text-anchor="middle" font-weight="700">1</text>
+      <text x="58" y="27" font-size="17" font-weight="700">資料</text><text x="58" y="48" class="small">使用 12 次</text>
+      <rect x="0" y="73" width="224" height="61" fill="#ecfdf5" stroke="#86efac"/>
+      <circle cx="29" cy="103" r="17" fill="#15803d"/><text x="29" y="109" fill="#ffffff" text-anchor="middle" font-weight="700">2</text>
+      <text x="58" y="100" font-size="17" font-weight="700">資訊</text><text x="58" y="121" class="small">使用 8 次</text>
+      <rect x="0" y="146" width="224" height="61" fill="#ecfdf5" stroke="#86efac"/>
+      <circle cx="29" cy="176" r="17" fill="#166534"/><text x="29" y="182" fill="#ffffff" text-anchor="middle" font-weight="700">3</text>
+      <text x="58" y="173" font-size="17" font-weight="700">資源</text><text x="58" y="194" class="small">使用 5 次</text>
+    </g>
+    <rect x="0" y="286" width="224" height="74" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="16" y="314" font-size="15" font-weight="700" fill="#1d4ed8">總工作量</text>
+    <text class="small" x="16" y="339">找到前綴 + 走訪候選 + 排名。</text>
+  </g>
+</svg>

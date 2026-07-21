@@ -43,7 +43,7 @@
           choose data structures from the operations they need to support.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/graph-dp-trie.svg" alt="Diagram showing a trie for autocomplete along with related graph and DP mental models." />
+          <img src="../assets/diagrams/graph-dp-trie.svg" data-zh-src="../assets/diagrams/graph-dp-trie-zh.svg" alt="Diagram showing a trie for autocomplete along with related graph and DP mental models." data-zh-alt="自動補全字典樹，以及相關圖論與動態規劃思考模型的示意圖。" />
           <figcaption>Autocomplete is a good integration project because a trie is a tree, suggestion collection is DFS, and ranking uses maps and heaps.</figcaption>
         </figure>
 
@@ -57,6 +57,18 @@
         <p>
           The simplest approach stores all words in an array and scans every word for each query.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Basic Autocomplete Suggestions.</strong> Given a dictionary and a prefix, return every dictionary
+            term that starts with that prefix.</p>
+          <ul>
+            <li><strong>Input:</strong> A list of strings and a prefix string.</li>
+            <li><strong>Output:</strong> Return matching terms in their original dictionary order.</li>
+            <li><strong>Constraints:</strong> Matching is case-sensitive; an empty prefix matches every term.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>words = ["apple", "apply", "ape", "bat"]</code>
+            and <code>prefix = "ap"</code> return <code>["apple", "apply", "ape"]</code>.</p>
+        </section>
         <pre><code>static List&lt;String&gt; naiveSuggestions(List&lt;String&gt; words, String prefix) {
     List&lt;String&gt; result = new ArrayList&lt;&gt;();
     for (String word : words) {
@@ -269,6 +281,10 @@ public List&lt;String&gt; suggestions(String prefix, int limit) {
           A complete version can use sorting first because it is easier to reason about. Then the project can add the
           heap version as an optimization.
         </p>
+        <figure class="visual">
+          <img src="../assets/diagrams/autocomplete-trie-ranking.svg" data-zh-src="../assets/diagrams/autocomplete-trie-ranking-zh.svg" alt="Diagram tracing autocomplete from trie prefix lookup through frequency ranking and top-k selection." data-zh-alt="追蹤自動補全從字典樹前綴查詢、頻率排名到選出前 k 名的示意圖。" />
+          <figcaption data-zh-html="自動補全結合前綴查詢、走訪、頻率統計與前 k 名排名。">Autocomplete combines prefix lookup, traversal, frequency counts, and top-k ranking.</figcaption>
+        </figure>
         <pre><code>public List&lt;String&gt; suggestionsWithHeap(String prefix, int limit) {
     if (limit &lt;= 0) return List.of();
 
@@ -420,6 +436,7 @@ static void testRanking() {
         <nav class="pager"><a href="lesson-13.html">&larr; Previous</a><a href="lesson-15.html">Next: Greedy Algorithms &rarr;</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>
