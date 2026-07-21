@@ -44,7 +44,7 @@
           and compute them in a valid order.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/graph-dp-trie.svg" alt="Diagram showing BFS layers, a dynamic programming table, and a trie." />
+          <img src="../assets/diagrams/graph-dp-trie.svg" data-zh-src="../assets/diagrams/graph-dp-trie-zh.svg" alt="Diagram showing BFS layers, a dynamic programming table, and a trie." data-zh-alt="BFS 分層、動態規劃表格與字典樹的示意圖。" />
           <figcaption>DP is easiest to reason about when every table entry has a clear meaning and every dependency points to an already-known state.</figcaption>
         </figure>
 
@@ -57,6 +57,17 @@
           The natural recursive idea is simple: to reach step <code>n</code>, the last move came from
           <code>n - 1</code> or <code>n - 2</code>.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Climbing Stairs.</strong> Starting below a staircase with <code>n</code> steps, count the distinct
+            sequences of 1-step and 2-step moves that land exactly at the top.</p>
+          <ul>
+            <li><strong>Input:</strong> A nonnegative integer <code>n</code>.</li>
+            <li><strong>Output:</strong> Return the number of valid move sequences.</li>
+            <li><strong>Constraints:</strong> For <code>n = 0</code>, count the empty sequence as one way.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>n = 4</code> returns <code>5</code>.</p>
+        </section>
         <pre><code>static int climbStairsSlow(int n) {
     if (n == 0) return 1;
     if (n &lt; 0) return 0;
@@ -155,6 +166,17 @@ static int climb(int stepsLeft, int[] memo) {
           Example: a row of houses contains money. Adjacent houses cannot both be chosen. What is the maximum money
           that can be collected?
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>House Robber.</strong> Choose houses from a row to maximize the collected money without choosing
+            two adjacent houses.</p>
+          <ul>
+            <li><strong>Input:</strong> An array of nonnegative amounts in house order.</li>
+            <li><strong>Output:</strong> Return the maximum amount that can be collected.</li>
+            <li><strong>Constraints:</strong> Choosing no house is allowed, so an empty array returns <code>0</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[2, 7, 9, 3, 1]</code> returns <code>12</code>.</p>
+        </section>
         <pre><code>static int rob(int[] money) {
     if (money.length == 0) return 0;
 
@@ -198,6 +220,22 @@ static int climb(int stepsLeft, int[] memo) {
           Example: starting at the top-left corner, moving only right or down, how many paths reach the bottom-right
           corner?
         </p>
+        <figure class="visual">
+          <img src="../assets/diagrams/dp-state-order.svg" data-zh-src="../assets/diagrams/dp-state-order-zh.svg" alt="Diagram connecting dynamic programming state, base cases, transitions, and table fill order." data-zh-alt="連結動態規劃狀態、基礎情況、轉移與填表順序的示意圖。" />
+          <figcaption data-zh-html="相依關係決定狀態轉移，以及合法的填表順序。">Dependencies determine the transition and valid fill order.</figcaption>
+        </figure>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Unique Grid Paths.</strong> Count the paths from the top-left to the bottom-right cell when each move
+            goes exactly one cell right or down.</p>
+          <ul>
+            <li><strong>Input:</strong> Positive grid dimensions <code>rows</code> and <code>cols</code>.</li>
+            <li><strong>Output:</strong> Return the number of distinct valid paths.</li>
+            <li><strong>Constraints:</strong> The grid contains no blocked cells.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>rows = 3</code> and <code>cols = 7</code> return
+            <code>28</code>.</p>
+        </section>
         <pre><code>static int uniquePaths(int rows, int cols) {
     int[][] dp = new int[rows][cols];
 
@@ -221,6 +259,18 @@ static int climb(int stepsLeft, int[] memo) {
           Instead of counting paths, sometimes we want the cheapest path. The state shape is the same, but the transition
           changes from addition to minimum.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Minimum Path Sum.</strong> Find the least possible sum along a path from the top-left to the
+            bottom-right cell, moving only right or down.</p>
+          <ul>
+            <li><strong>Input:</strong> A non-empty rectangular grid of integer costs.</li>
+            <li><strong>Output:</strong> Return the minimum total cost, including both endpoint cells.</li>
+            <li><strong>Constraints:</strong> The method does not modify the cost grid.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[[1, 3, 1], [1, 5, 1], [4, 2, 1]]</code>
+            returns <code>7</code>.</p>
+        </section>
         <pre><code>static int minPathSum(int[][] cost) {
     int rows = cost.length;
     int cols = cost[0].length;
@@ -255,6 +305,18 @@ static int climb(int stepsLeft, int[] memo) {
         <p>
           Example: what is the length of the longest common subsequence between two strings?
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Longest Common Subsequence.</strong> Find the maximum length of a sequence obtainable from both
+            strings by deleting characters without changing the order of those kept.</p>
+          <ul>
+            <li><strong>Input:</strong> Two strings <code>a</code> and <code>b</code>.</li>
+            <li><strong>Output:</strong> Return the LCS length, not the subsequence itself.</li>
+            <li><strong>Constraints:</strong> An empty string has LCS length <code>0</code> with any string.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = "abcde"</code> and <code>b = "ace"</code>
+            return <code>3</code>.</p>
+        </section>
         <pre><code>static int longestCommonSubsequence(String a, String b) {
     int[][] dp = new int[a.length() + 1][b.length() + 1];
 
@@ -287,6 +349,18 @@ static int climb(int stepsLeft, int[] memo) {
         <p>
           In 0/1 knapsack, each item can be chosen at most once.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>0/1 Knapsack.</strong> Select items with maximum total value without exceeding a weight capacity.</p>
+          <ul>
+            <li><strong>Input:</strong> Equal-length <code>weight</code> and <code>value</code> arrays plus a nonnegative
+              capacity.</li>
+            <li><strong>Output:</strong> Return the maximum achievable value.</li>
+            <li><strong>Constraints:</strong> Every weight is positive, and each item may be selected at most once.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>weight = [2, 3, 4]</code>,
+            <code>value = [4, 5, 7]</code>, and <code>capacity = 5</code> return <code>9</code>.</p>
+        </section>
         <pre><code>static int knapsack(int[] weight, int[] value, int capacity) {
     int n = weight.length;
     int[][] dp = new int[n + 1][capacity + 1];
@@ -332,33 +406,42 @@ static int climb(int stepsLeft, int[] memo) {
           which would turn the solution into an unbounded knapsack variant by accident.
         </p>
 
-        <h2>Top-down DP with non-array states</h2>
+        <h2>Choosing a DP table or memo</h2>
         <p>
-          Not every DP state is a clean integer index. Sometimes a state is a pair, a string, a bitmask, or a custom
-          object. In those cases, a <code>HashMap</code> memo can be easier than an array.
+          Dense integer states fit an array. A pair, string, bitmask, or custom-object state may be easier to memoize
+          with a <code>HashMap</code>. Choose the storage that represents each state directly.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Coin Change.</strong> Find the fewest coins needed to form an exact target amount when each coin
+            denomination may be reused.</p>
+          <ul>
+            <li><strong>Input:</strong> Positive coin denominations and a nonnegative <code>amount</code>.</li>
+            <li><strong>Output:</strong> Return the minimum coin count, or <code>-1</code> if the amount is impossible.</li>
+            <li><strong>Constraints:</strong> <code>1 &lt;= coins.length</code>, every coin is positive, and
+              <code>0 &lt;= amount &lt;= 10,000</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>coins = [1, 3, 4]</code> and
+            <code>amount = 6</code> return <code>2</code>.</p>
+        </section>
         <pre><code>static int minCoins(int[] coins, int amount) {
-    Map&lt;Integer, Integer&gt; memo = new HashMap&lt;&gt;();
-    int ans = minCoinsFrom(coins, amount, memo);
-    return ans &gt;= 1_000_000 ? -1 : ans;
-}
+    int unreachable = amount + 1;
+    int[] dp = new int[amount + 1];
+    Arrays.fill(dp, unreachable);
+    dp[0] = 0;
 
-static int minCoinsFrom(int[] coins, int remaining, Map&lt;Integer, Integer&gt; memo) {
-    if (remaining == 0) return 0;
-    if (remaining &lt; 0) return 1_000_000;
-    if (memo.containsKey(remaining)) return memo.get(remaining);
-
-    int best = 1_000_000;
-    for (int coin : coins) {
-        best = Math.min(best, 1 + minCoinsFrom(coins, remaining - coin, memo));
+    for (int current = 1; current &lt;= amount; current++) {
+        for (int coin : coins) {
+            if (coin &lt;= current) {
+                dp[current] = Math.min(dp[current], dp[current - coin] + 1);
+            }
+        }
     }
-
-    memo.put(remaining, best);
-    return best;
+    return dp[amount] == unreachable ? -1 : dp[amount];
 }</code></pre>
         <p>
-          This is DP because <code>remaining</code> is the state, and many paths may ask for the same remaining amount.
-          It is also a shortest-path-like problem where every coin is an edge from one amount to a smaller amount.
+          Here each amount is a dense integer state, so a bottom-up array avoids recursion depth limits. If the state
+          were sparse or structured, the same dependency idea could use a <code>HashMap</code> memo instead.
         </p>
 
         <h2>DP as a graph of dependencies</h2>
@@ -459,6 +542,7 @@ space = number of stored states + recursion stack if memoized</code></pre>
         <nav class="pager"><a href="lesson-12.html">&larr; Previous</a><a href="lesson-14.html">Next: Integration Project &rarr;</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

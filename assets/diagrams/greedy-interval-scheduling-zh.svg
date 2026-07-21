@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">貪心區間排程</title>
+  <desc id="desc">時間軸上的六個區間顯示，每次選擇相容且最早結束的區間，最後能選出四個區間。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"/>
+    </marker>
+    <style>
+      text { font-family: Arial, "Noto Sans TC", "PingFang TC", sans-serif; fill: #172033; }
+      .tick { font-size: 13px; fill: #64748b; text-anchor: middle; }
+      .name { font-size: 15px; font-weight: 700; text-anchor: end; }
+      .barText { font-size: 14px; font-weight: 700; text-anchor: middle; }
+      .note { font-size: 15px; fill: #475569; }
+    </style>
+  </defs>
+  <rect width="960" height="540" fill="#f8fafc"/>
+  <text x="52" y="52" font-size="27" font-weight="700">區間排程：每次選擇最早結束且不衝突的區間</text>
+  <text x="52" y="82" class="note">這個選擇會留下最多後續空間，因此還能容納更多區間。</text>
+
+  <g transform="translate(80 112)">
+    <line x1="80" y1="30" x2="760" y2="30" stroke="#94a3b8" stroke-width="2"/>
+    <g stroke="#cbd5e1" stroke-width="1">
+      <line x1="80" y1="24" x2="80" y2="342"/><line x1="148" y1="24" x2="148" y2="342"/>
+      <line x1="216" y1="24" x2="216" y2="342"/><line x1="284" y1="24" x2="284" y2="342"/>
+      <line x1="352" y1="24" x2="352" y2="342"/><line x1="420" y1="24" x2="420" y2="342"/>
+      <line x1="488" y1="24" x2="488" y2="342"/><line x1="556" y1="24" x2="556" y2="342"/>
+      <line x1="624" y1="24" x2="624" y2="342"/><line x1="692" y1="24" x2="692" y2="342"/>
+      <line x1="760" y1="24" x2="760" y2="342"/>
+    </g>
+    <g class="tick">
+      <text x="80" y="18">0</text><text x="148" y="18">1</text><text x="216" y="18">2</text>
+      <text x="284" y="18">3</text><text x="352" y="18">4</text><text x="420" y="18">5</text>
+      <text x="488" y="18">6</text><text x="556" y="18">7</text><text x="624" y="18">8</text>
+      <text x="692" y="18">9</text><text x="760" y="18">10</text>
+    </g>
+
+    <g>
+      <text class="name" x="62" y="74">甲</text><rect x="148" y="51" width="204" height="34" fill="#bbf7d0" stroke="#15803d" stroke-width="2"/><text class="barText" x="250" y="73" fill="#166534">選取：時間 4 結束</text>
+      <text class="name" x="62" y="124">乙</text><rect x="216" y="101" width="272" height="34" fill="#e2e8f0" stroke="#94a3b8"/><text class="barText" x="352" y="123" fill="#475569">略過：與甲衝突</text>
+      <text class="name" x="62" y="174">丙</text><rect x="352" y="151" width="68" height="34" fill="#bbf7d0" stroke="#15803d" stroke-width="2"/><text class="barText" x="386" y="173" fill="#166534">選取</text>
+      <text class="name" x="62" y="224">丁</text><rect x="420" y="201" width="204" height="34" fill="#bbf7d0" stroke="#15803d" stroke-width="2"/><text class="barText" x="522" y="223" fill="#166534">選取</text>
+      <text class="name" x="62" y="274">戊</text><rect x="488" y="251" width="204" height="34" fill="#e2e8f0" stroke="#94a3b8"/><text class="barText" x="590" y="273" fill="#475569">略過：與丁衝突</text>
+      <text class="name" x="62" y="324">己</text><rect x="624" y="301" width="136" height="34" fill="#bbf7d0" stroke="#15803d" stroke-width="2"/><text class="barText" x="692" y="323" fill="#166534">選取</text>
+    </g>
+  </g>
+
+  <g transform="translate(54 466)">
+    <rect x="0" y="0" width="852" height="48" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="20" y="30" font-size="17" font-weight="700" fill="#166534">選取順序：甲 → 丙 → 丁 → 己</text>
+    <text x="383" y="30" font-size="15" fill="#475569">每次選取後排除衝突，再對剩餘區間重複相同步驟。</text>
+  </g>
+</svg>

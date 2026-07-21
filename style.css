@@ -252,6 +252,46 @@ p {
   background: var(--green-soft);
 }
 
+.problem-statement {
+  margin: 18px 0;
+  padding: 16px 18px;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid var(--link);
+  border-radius: 0 8px 8px 0;
+  background: #f8fbff;
+}
+
+.problem-statement p {
+  margin: 8px 0;
+}
+
+.problem-statement .problem-label {
+  margin: 0 0 8px;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.problem-statement ul {
+  margin: 10px 0;
+  padding-left: 22px;
+}
+
+.problem-statement li {
+  margin: 5px 0;
+}
+
+.problem-statement .problem-example {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #dbeafe;
+}
+
+html:lang(zh-Hant) .problem-statement .problem-label {
+  text-transform: none;
+}
+
 .concept-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -642,6 +682,17 @@ th {
 }
 
 @media (max-width: 640px) {
+  .visual {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .visual img {
+    width: 100%;
+    min-width: 720px;
+    max-width: none;
+  }
+
   table {
     display: block;
     overflow-x: auto;

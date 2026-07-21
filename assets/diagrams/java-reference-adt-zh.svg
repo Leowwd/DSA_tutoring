@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">Java 參照與抽象資料型別</title>
+  <desc id="desc">Java 變數指向物件、陣列保存數值，以及介面隱藏實作細節。</desc>
+  <rect width="920" height="420" rx="18" fill="#f8fafc"/>
+  <text x="56" y="54" fill="#0f172a" font-family="Arial" font-size="24" font-weight="700">Java 資料結構與演算法起點</text>
+  <g transform="translate(60 96)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">參照變數</text>
+    <rect x="0" y="34" width="150" height="58" rx="8" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="28" y="69" font-family="Arial" font-size="16">scores</text>
+    <line x1="150" y1="63" x2="238" y2="63" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="238" y="22" width="220" height="82" rx="10" fill="#ffffff" stroke="#94a3b8"/>
+    <text x="260" y="53" fill="#334155" font-family="Arial" font-size="15">堆積中的 int[] 物件</text>
+    <g transform="translate(258 66)" font-family="Arial" font-size="14" text-anchor="middle">
+      <rect x="0" y="0" width="36" height="26" fill="#e0f2fe" stroke="#38bdf8"/>
+      <rect x="36" y="0" width="36" height="26" fill="#e0f2fe" stroke="#38bdf8"/>
+      <rect x="72" y="0" width="36" height="26" fill="#e0f2fe" stroke="#38bdf8"/>
+      <rect x="108" y="0" width="36" height="26" fill="#e0f2fe" stroke="#38bdf8"/>
+      <text x="18" y="18">88</text>
+      <text x="54" y="18">91</text>
+      <text x="90" y="18">76</text>
+      <text x="126" y="18">95</text>
+    </g>
+    <text x="0" y="142" fill="#475569" font-family="Arial" font-size="15">變數可以保存基本型別的值，也可以保存指向物件的參照。</text>
+  </g>
+  <g transform="translate(60 250)">
+    <text x="0" y="0" fill="#334155" font-family="Arial" font-size="18" font-weight="700">抽象資料型別思維</text>
+    <rect x="0" y="28" width="220" height="82" rx="10" fill="#fef3c7" stroke="#f59e0b"/>
+    <text x="24" y="62" font-family="Arial" font-size="16" font-weight="700">ScoreBook 介面</text>
+    <text x="24" y="88" font-family="Arial" font-size="14">add, max, average, contains</text>
+    <line x1="220" y1="69" x2="304" y2="69" stroke="#64748b" stroke-width="3" marker-end="url(#arrowGray)"/>
+    <rect x="304" y="14" width="158" height="48" rx="8" fill="#dcfce7" stroke="#16a34a"/>
+    <text x="331" y="44" font-family="Arial" font-size="15">陣列版本</text>
+    <rect x="304" y="78" width="158" height="48" rx="8" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="326" y="108" font-family="Arial" font-size="15">雜湊版本</text>
+    <text x="520" y="68" fill="#475569" font-family="Arial" font-size="15">行為相同，但效能取捨不同。</text>
+  </g>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+</svg>

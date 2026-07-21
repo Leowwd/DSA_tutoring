@@ -42,7 +42,7 @@
           membership, lookup, and counting operations expected O(1).
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/hash-graph.svg" alt="Diagram of a hash table with buckets and a graph represented as an adjacency list." />
+          <img src="../assets/diagrams/hash-graph.svg" data-zh-src="../assets/diagrams/hash-graph-zh.svg" alt="Diagram of a hash table with buckets and a graph represented as an adjacency list." data-zh-alt="含雜湊桶的雜湊表，以及以鄰接串列表示圖的示意圖。" />
           <figcaption>A hash table maps keys to buckets. Collisions are normal, so the implementation needs a bucket strategy.</figcaption>
         </figure>
 
@@ -51,6 +51,18 @@
           Given a list of words, return the first word that appears twice. The direct approach compares each word to all
           previous words. A hash set remembers what we have seen.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>First Repeated Word.</strong> Scan words from left to right and return the first word whose current
+            occurrence has appeared before.</p>
+          <ul>
+            <li><strong>Input:</strong> An array of strings.</li>
+            <li><strong>Output:</strong> Return the first repeated word, or <code>null</code> if every word is unique.</li>
+            <li><strong>Constraints:</strong> Comparisons use the strings' exact, case-sensitive values.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>["red", "blue", "red", "blue"]</code> returns
+            <code>"red"</code>.</p>
+        </section>
         <pre><code>static String firstRepeated(String[] words) {
     HashSet&lt;String&gt; seen = new HashSet&lt;&gt;();
     for (String word : words) {
@@ -278,6 +290,17 @@ int algorithmCredits = credits.get("Algorithms");</code></pre>
         <p>
           Counting occurrences is one of the most common map patterns.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Character Frequency Map.</strong> Count how many times each character appears in a string.</p>
+          <ul>
+            <li><strong>Input:</strong> A Java <code>String</code>.</li>
+            <li><strong>Output:</strong> Return a map from each present character to its occurrence count.</li>
+            <li><strong>Constraints:</strong> Characters absent from the string do not need map entries.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>"banana"</code> returns counts
+            <code>{b=1, a=3, n=2}</code>, with map iteration order unspecified.</p>
+        </section>
         <pre><code>static Map&lt;Character, Integer&gt; frequencies(String s) {
     Map&lt;Character, Integer&gt; freq = new HashMap&lt;&gt;();
     for (char c : s.toCharArray()) {
@@ -293,6 +316,18 @@ int algorithmCredits = credits.get("Algorithms");</code></pre>
         <p>
           For each number x, ask whether we have already seen <code>target - x</code>.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Two Sum.</strong> Given an unsorted integer array, find two different indices whose values add to
+            <code>target</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array and a target sum.</li>
+            <li><strong>Output:</strong> Return a matching pair of indices.</li>
+            <li><strong>Constraints:</strong> Return <code>[-1, -1]</code> if no pair exists; any valid pair is acceptable.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>nums = [2, 7, 11, 15]</code> and
+            <code>target = 9</code> return <code>[0, 1]</code>.</p>
+        </section>
         <pre><code>static int[] twoSum(int[] nums, int target) {
     Map&lt;Integer, Integer&gt; indexByValue = new HashMap&lt;&gt;();
     for (int i = 0; i &lt; nums.length; i++) {
@@ -313,6 +348,18 @@ int algorithmCredits = credits.get("Algorithms");</code></pre>
         <p>
           Anagrams have the same letter counts. We need a key that represents the group.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Group Anagrams.</strong> Partition words so two words share a group exactly when they contain the
+            same letters with the same multiplicities.</p>
+          <ul>
+            <li><strong>Input:</strong> An array of strings containing only lowercase English letters.</li>
+            <li><strong>Output:</strong> Return all anagram groups.</li>
+            <li><strong>Constraints:</strong> The groups may be returned in any order.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>["eat", "tea", "tan", "ate", "nat", "bat"]</code>
+            returns groups equivalent to <code>[["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]</code>.</p>
+        </section>
         <pre><code>static List&lt;List&lt;String&gt;&gt; groupAnagrams(String[] words) {
     Map&lt;String, List&lt;String&gt;&gt; groups = new HashMap&lt;&gt;();
 
@@ -336,6 +383,18 @@ int algorithmCredits = credits.get("Algorithms");</code></pre>
           Count subarrays with sum k. If the current prefix sum is <code>S</code>, we need a previous prefix sum
           <code>S - k</code>.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Subarray Sum Equals K.</strong> Count the non-empty contiguous subarrays of <code>nums</code> whose
+            sum equals <code>k</code>.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array and an integer target sum.</li>
+            <li><strong>Output:</strong> Return the number of qualifying index ranges.</li>
+            <li><strong>Constraints:</strong> Values may be positive, zero, or negative.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>nums = [1, 2, 1, 2]</code> and <code>k = 3</code>
+            return <code>3</code>.</p>
+        </section>
         <pre><code>static int countSubarraysWithSumK(int[] nums, int k) {
     Map&lt;Integer, Integer&gt; freq = new HashMap&lt;&gt;();
     freq.put(0, 1);
@@ -354,16 +413,29 @@ int algorithmCredits = credits.get("Algorithms");</code></pre>
         <p>
           Put all values in a set. Only start counting from numbers that do not have a predecessor.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Longest Consecutive Sequence.</strong> Find the length of the longest run of consecutive integer
+            values present in an unsorted array.</p>
+          <ul>
+            <li><strong>Input:</strong> An unsorted integer array.</li>
+            <li><strong>Output:</strong> Return the maximum consecutive run length.</li>
+            <li><strong>Constraints:</strong> Input order does not matter, and duplicate values do not extend a run.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[100, 4, 200, 1, 3, 2]</code> returns <code>4</code>
+            for the run <code>1, 2, 3, 4</code>.</p>
+        </section>
         <pre><code>static int longestConsecutive(int[] nums) {
     Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
     for (int x : nums) set.add(x);
 
     int best = 0;
     for (int x : set) {
-        if (!set.contains(x - 1)) {
+        boolean startsRun = x == Integer.MIN_VALUE || !set.contains(x - 1);
+        if (startsRun) {
             int cur = x;
             int length = 1;
-            while (set.contains(cur + 1)) {
+            while (cur != Integer.MAX_VALUE &amp;&amp; set.contains(cur + 1)) {
                 cur++;
                 length++;
             }
@@ -493,6 +565,7 @@ int algorithmCredits = credits.get("Algorithms");</code></pre>
         <nav class="pager"><a href="lesson-08.html">← Previous</a><a href="lesson-10.html">Next: Sorting →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

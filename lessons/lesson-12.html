@@ -42,7 +42,7 @@
           distance, dependency order, and minimum-cost connection.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/graph-dp-trie.svg" alt="Diagram showing BFS layers, a dynamic programming table, and a trie." />
+          <img src="../assets/diagrams/graph-dp-trie.svg" data-zh-src="../assets/diagrams/graph-dp-trie-zh.svg" alt="Diagram showing BFS layers, a dynamic programming table, and a trie." data-zh-alt="BFS 分層、動態規劃表格與字典樹的示意圖。" />
           <figcaption>BFS explores graphs layer by layer; the same dependency mindset later appears in DP tables and trie traversal.</figcaption>
         </figure>
 
@@ -51,6 +51,19 @@
           A grid can be modeled as a graph: each open cell is a vertex, and adjacent open cells have edges between them.
           If every move has the same cost, BFS finds the shortest number of moves.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Shortest Path in a Binary Maze.</strong> Starting at the top-left cell, reach the bottom-right cell
+            using the fewest horizontal or vertical moves through open cells.</p>
+          <ul>
+            <li><strong>Input:</strong> A non-empty rectangular grid where <code>0</code> is open and <code>1</code> is
+              blocked.</li>
+            <li><strong>Output:</strong> Return the minimum number of moves, or <code>-1</code> when no path exists.</li>
+            <li><strong>Constraints:</strong> The start and destination cells are open; the input is not modified.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[[0, 0, 1], [1, 0, 0], [1, 1, 0]]</code>
+            returns <code>4</code>.</p>
+        </section>
         <pre><code>static int shortestPath(int[][] grid) {
     int rows = grid.length;
     int cols = grid[0].length;
@@ -125,6 +138,17 @@
         </p>
 
         <h2>Connected components with DFS</h2>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Connected Components with DFS.</strong> Count the connected components in an undirected graph
+            represented by adjacency lists.</p>
+          <ul>
+            <li><strong>Input:</strong> One neighbor list for every vertex.</li>
+            <li><strong>Output:</strong> Return the number of connected components, including isolated vertices.</li>
+            <li><strong>Constraints:</strong> Every undirected edge appears in both endpoint lists.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[[1], [0], [3], [2]]</code> returns <code>2</code>.</p>
+        </section>
         <pre><code>static int countComponents(List&lt;List&lt;Integer&gt;&gt; graph) {
     boolean[] seen = new boolean[graph.size()];
     int count = 0;
@@ -150,6 +174,18 @@ static void dfs(List&lt;List&lt;Integer&gt;&gt; graph, int node, boolean[] seen)
           A grid of land and water is a graph without explicitly building an adjacency list. Neighbors are computed from
           coordinates.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Number of Islands.</strong> Count the groups of horizontally or vertically adjacent land cells in a
+            binary grid.</p>
+          <ul>
+            <li><strong>Input:</strong> A non-empty rectangular grid of <code>'1'</code> land and <code>'0'</code> water.</li>
+            <li><strong>Output:</strong> Return the number of four-directionally connected islands.</li>
+            <li><strong>Constraints:</strong> The implementation marks visited land by changing the input grid.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[['1', '1', '0'], ['0', '1', '0'],
+            ['1', '0', '1']]</code> contains <code>3</code> islands.</p>
+        </section>
         <pre><code>static int numIslands(char[][] grid) {
     int count = 0;
     for (int r = 0; r &lt; grid.length; r++) {
@@ -180,6 +216,18 @@ static void floodFill(char[][] grid, int r, int c) {
         <p>
           Directed cycle detection needs more than a simple seen set. We track nodes currently on the recursion stack.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Cycle Detection in a Directed Graph.</strong> Determine whether a directed graph contains a path
+            that returns to a vertex already on that same path.</p>
+          <ul>
+            <li><strong>Input:</strong> A directed graph represented by adjacency lists.</li>
+            <li><strong>Output:</strong> Return <code>true</code> if any directed cycle exists; otherwise return
+              <code>false</code>.</li>
+            <li><strong>Constraints:</strong> The graph may be disconnected.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[[1], [2], [0]]</code> returns <code>true</code>.</p>
+        </section>
         <pre><code>static boolean hasDirectedCycle(List&lt;List&lt;Integer&gt;&gt; graph) {
     int[] state = new int[graph.size()]; // 0 unvisited, 1 visiting, 2 done
     for (int v = 0; v &lt; graph.size(); v++) {
@@ -203,6 +251,18 @@ static boolean dfsCycle(List&lt;List&lt;Integer&gt;&gt; graph, int node, int[] s
           A topological order lists vertices so every directed edge goes from earlier to later. It exists only for a
           directed acyclic graph, or DAG.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Topological Sort.</strong> Order the vertices of a directed graph so every edge points from an
+            earlier vertex to a later one.</p>
+          <ul>
+            <li><strong>Input:</strong> A directed graph represented by adjacency lists.</li>
+            <li><strong>Output:</strong> Return any valid ordering.</li>
+            <li><strong>Constraints:</strong> Return an empty list when a directed cycle makes an ordering impossible.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> For <code>[[1, 2], [3], [3], []]</code>, one valid output
+            is <code>[0, 1, 2, 3]</code>.</p>
+        </section>
         <pre><code>static List&lt;Integer&gt; topologicalSort(List&lt;List&lt;Integer&gt;&gt; graph) {
     int n = graph.size();
     int[] indegree = new int[n];
@@ -235,17 +295,35 @@ static boolean dfsCycle(List&lt;List&lt;Integer&gt;&gt; graph, int node, int[] s
           Dijkstra finds shortest paths from a source in a graph with nonnegative edge weights. It is BFS with a priority
           queue ordered by current best distance.
         </p>
+        <figure class="visual">
+          <img src="../assets/diagrams/dijkstra-relaxation.svg" data-zh-src="../assets/diagrams/dijkstra-relaxation-zh.svg" alt="Diagram tracing Dijkstra's priority queue and edge relaxations on a weighted graph." data-zh-alt="追蹤 Dijkstra 優先佇列與加權圖邊鬆弛過程的示意圖。" />
+          <figcaption data-zh-html="鬆弛操作會反覆改善暫定距離。">Relaxation repeatedly improves tentative distances.</figcaption>
+        </figure>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Single-Source Shortest Paths.</strong> Compute the minimum distance from one source to every vertex
+            in a weighted graph.</p>
+          <ul>
+            <li><strong>Input:</strong> A weighted adjacency list and a valid source vertex.</li>
+            <li><strong>Output:</strong> Return a <code>long</code> distance array indexed by vertex.</li>
+            <li><strong>Constraints:</strong> Edge weights are nonnegative; unreachable vertices keep
+              <code>Long.MAX_VALUE</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> With edges <code>0-&gt;1 (4)</code>,
+            <code>0-&gt;2 (1)</code>, and <code>2-&gt;1 (2)</code>, source <code>0</code> returns
+            <code>[0, 3, 1]</code>.</p>
+        </section>
         <pre><code>record Edge(int to, int weight) { }
-record State(int node, int dist) { }
+record State(int node, long dist) { }
 
-static int[] dijkstra(List&lt;List&lt;Edge&gt;&gt; graph, int source) {
+static long[] dijkstra(List&lt;List&lt;Edge&gt;&gt; graph, int source) {
     int n = graph.size();
-    int[] dist = new int[n];
-    Arrays.fill(dist, Integer.MAX_VALUE);
+    long[] dist = new long[n];
+    Arrays.fill(dist, Long.MAX_VALUE);
     dist[source] = 0;
 
     PriorityQueue&lt;State&gt; pq = new PriorityQueue&lt;&gt;(
-        Comparator.comparingInt(State::dist)
+        Comparator.comparingLong(State::dist)
     );
     pq.add(new State(source, 0));
 
@@ -254,7 +332,7 @@ static int[] dijkstra(List&lt;List&lt;Edge&gt;&gt; graph, int source) {
         if (cur.dist() != dist[cur.node()]) continue;
 
         for (Edge edge : graph.get(cur.node())) {
-            int nextDist = cur.dist() + edge.weight();
+            long nextDist = cur.dist() + edge.weight();
             if (nextDist &lt; dist[edge.to()]) {
                 dist[edge.to()] = nextDist;
                 pq.add(new State(edge.to(), nextDist));
@@ -278,15 +356,29 @@ static int[] dijkstra(List&lt;List&lt;Edge&gt;&gt; graph, int source) {
           Sort edges by weight, then add an edge if it connects two different components. Union-Find detects whether the
           edge would create a cycle.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Minimum Spanning Tree with Kruskal.</strong> Connect all vertices of an undirected weighted graph
+            with minimum total edge weight and no cycles.</p>
+          <ul>
+            <li><strong>Input:</strong> <code>n</code> vertices and a list of undirected weighted edges.</li>
+            <li><strong>Output:</strong> Return the minimum spanning-tree weight.</li>
+            <li><strong>Constraints:</strong> <code>n &gt;= 1</code>, edge weights are nonnegative, every endpoint is valid,
+              and the method must not reorder the input list; return <code>-1</code> if the graph is disconnected.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> For <code>n = 4</code> and edges
+            <code>[(0,1,1), (1,2,2), (2,3,1), (0,3,4)]</code>, return <code>4</code>.</p>
+        </section>
         <pre><code>record WeightedEdge(int u, int v, int weight) { }
 
-static int kruskal(int n, List&lt;WeightedEdge&gt; edges) {
-    edges.sort(Comparator.comparingInt(WeightedEdge::weight));
+static long kruskal(int n, List&lt;WeightedEdge&gt; edges) {
+    List&lt;WeightedEdge&gt; sortedEdges = new ArrayList&lt;&gt;(edges);
+    sortedEdges.sort(Comparator.comparingInt(WeightedEdge::weight));
     DSU dsu = new DSU(n);
-    int total = 0;
+    long total = 0;
     int used = 0;
 
-    for (WeightedEdge edge : edges) {
+    for (WeightedEdge edge : sortedEdges) {
         if (dsu.union(edge.u(), edge.v())) {
             total += edge.weight();
             used++;
@@ -385,6 +477,7 @@ static int kruskal(int n, List&lt;WeightedEdge&gt; edges) {
         <nav class="pager"><a href="lesson-11.html">← Previous</a><a href="lesson-13.html">Next: Dynamic Programming →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Autocomplete pipeline with a trie and ranking</title>
+  <desc id="desc">A prefix search locates a trie subtree, collects matching terms, and ranks the top three by frequency.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <style>
+      text { font-family: Arial, "Noto Sans TC", "PingFang TC", sans-serif; fill: #172033; }
+      .stage { font-size: 18px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .node { fill: #ffffff; stroke: #2563eb; stroke-width: 2.5; }
+      .prefix { fill: #fde68a; stroke: #d97706; stroke-width: 3; }
+      .terminal { fill: #dcfce7; stroke: #16a34a; stroke-width: 2.5; }
+      .nodeText { font-size: 17px; font-weight: 700; text-anchor: middle; }
+    </style>
+  </defs>
+  <rect width="960" height="540" fill="#f8fafc"/>
+  <text x="52" y="52" font-size="27" font-weight="700">Autocomplete: from prefix to top results</text>
+
+  <g transform="translate(52 94)">
+    <text class="stage" x="0" y="0">1. Find the prefix node</text>
+    <rect x="0" y="24" width="238" height="54" fill="#ffffff" stroke="#94a3b8"/>
+    <text x="18" y="58" font-size="17">Input prefix: <tspan font-weight="700" fill="#b45309">ca</tspan></text>
+
+    <g transform="translate(0 110)">
+      <g stroke="#94a3b8" stroke-width="3">
+        <line x1="119" y1="35" x2="119" y2="89"/>
+        <line x1="119" y1="141" x2="55" y2="197"/><line x1="119" y1="141" x2="119" y2="197"/><line x1="119" y1="141" x2="183" y2="197"/>
+        <line x1="55" y1="249" x2="55" y2="298"/>
+      </g>
+      <circle class="node" cx="119" cy="22" r="25"/><text class="nodeText" x="119" y="28" font-size="13">root</text>
+      <circle class="prefix" cx="119" cy="116" r="27"/><text class="nodeText" x="119" y="122">ca</text>
+      <circle class="terminal" cx="55" cy="224" r="27"/><text class="nodeText" x="55" y="230">r</text>
+      <circle class="terminal" cx="119" cy="224" r="27"/><text class="nodeText" x="119" y="230">t</text>
+      <circle class="terminal" cx="183" cy="224" r="27"/><text class="nodeText" x="183" y="230">n</text>
+      <circle class="terminal" cx="55" cy="325" r="27"/><text class="nodeText" x="55" y="331">d</text>
+      <text class="small" x="152" y="105">prefix node</text>
+      <text class="small" x="72" y="331">complete terms</text>
+    </g>
+  </g>
+
+  <path d="M 318 270 L 364 270" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g transform="translate(378 94)">
+    <text class="stage" x="0" y="0">2. Collect matches</text>
+    <g transform="translate(0 30)">
+      <rect x="0" y="0" width="222" height="49" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="18" y="31" font-size="16">cat</text><text x="190" y="31" text-anchor="end" font-size="15" fill="#475569">12 uses</text>
+      <rect x="0" y="49" width="222" height="49" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="18" y="80" font-size="16">card</text><text x="190" y="80" text-anchor="end" font-size="15" fill="#475569">4 uses</text>
+      <rect x="0" y="98" width="222" height="49" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="18" y="129" font-size="16">car</text><text x="190" y="129" text-anchor="end" font-size="15" fill="#475569">8 uses</text>
+      <rect x="0" y="147" width="222" height="49" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="18" y="178" font-size="16">can</text><text x="190" y="178" text-anchor="end" font-size="15" fill="#475569">5 uses</text>
+    </g>
+    <rect x="0" y="254" width="222" height="106" fill="#fff7ed" stroke="#fdba74"/>
+    <text x="16" y="282" font-size="16" font-weight="700" fill="#9a3412">Frequency map</text>
+    <text class="small" x="16" y="307">Records how often each term</text>
+    <text class="small" x="16" y="329">was selected; the trie only</text>
+    <text class="small" x="16" y="351">finds prefix matches.</text>
+  </g>
+
+  <path d="M 624 270 L 670 270" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g transform="translate(684 94)">
+    <text class="stage" x="0" y="0">3. Keep the best three</text>
+    <text class="small" x="0" y="26">A min-heap retains only three candidates.</text>
+    <g transform="translate(0 50)">
+      <rect x="0" y="0" width="224" height="61" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+      <circle cx="29" cy="30" r="17" fill="#15803d"/><text x="29" y="36" fill="#ffffff" text-anchor="middle" font-weight="700">1</text>
+      <text x="58" y="27" font-size="17" font-weight="700">cat</text><text x="58" y="48" class="small">12 uses</text>
+      <rect x="0" y="73" width="224" height="61" fill="#ecfdf5" stroke="#86efac"/>
+      <circle cx="29" cy="103" r="17" fill="#15803d"/><text x="29" y="109" fill="#ffffff" text-anchor="middle" font-weight="700">2</text>
+      <text x="58" y="100" font-size="17" font-weight="700">car</text><text x="58" y="121" class="small">8 uses</text>
+      <rect x="0" y="146" width="224" height="61" fill="#ecfdf5" stroke="#86efac"/>
+      <circle cx="29" cy="176" r="17" fill="#166534"/><text x="29" y="182" fill="#ffffff" text-anchor="middle" font-weight="700">3</text>
+      <text x="58" y="173" font-size="17" font-weight="700">can</text><text x="58" y="194" class="small">5 uses</text>
+    </g>
+    <rect x="0" y="286" width="224" height="74" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="16" y="314" font-size="15" font-weight="700" fill="#1d4ed8">Total work</text>
+    <text class="small" x="16" y="339">Find prefix + visit matches + rank.</text>
+  </g>
+</svg>

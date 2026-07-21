@@ -42,7 +42,7 @@
           two pointers, duplicate detection, interval merging, and many greedy algorithms become easier.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/sorting-methods.svg" alt="Diagram comparing insertion sort, merge sort, quick sort, and heap sort." />
+          <img src="../assets/diagrams/sorting-methods.svg" data-zh-src="../assets/diagrams/sorting-methods-zh.svg" alt="Diagram comparing insertion sort, merge sort, quick sort, and heap sort." data-zh-alt="比較插入排序、合併排序、快速排序與堆積排序的示意圖。" />
           <figcaption>Sorting algorithms differ by mental model: insert into a prefix, split and merge, partition around a pivot, or repeatedly remove from a heap.</figcaption>
         </figure>
 
@@ -50,6 +50,19 @@
         <p>
           Given meeting intervals, merge all overlapping intervals. The key first step is sorting by start time.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Merge Intervals.</strong> Given closed intervals <code>[start, end]</code>, combine every pair of
+            overlapping intervals.</p>
+          <ul>
+            <li><strong>Input:</strong> An array of valid intervals with <code>start &lt;= end</code>.</li>
+            <li><strong>Output:</strong> Return the non-overlapping merged intervals in ascending start order.</li>
+            <li><strong>Constraints:</strong> Intervals that share an endpoint are merged; the method may reorder and
+              reuse the input interval arrays.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[[1, 3], [2, 6], [8, 10], [10, 12]]</code>
+            returns <code>[[1, 6], [8, 12]]</code>.</p>
+        </section>
         <pre><code>static int[][] mergeIntervals(int[][] intervals) {
     Arrays.sort(intervals, Comparator.comparingInt(a -&gt; a[0]));
     ArrayList&lt;int[]&gt; merged = new ArrayList&lt;&gt;();
@@ -239,6 +252,17 @@ for (Player p : players) {
         <p>
           Merge is the core operation behind merge sort.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Merge Two Sorted Arrays.</strong> Combine two ascending integer arrays into one ascending array.</p>
+          <ul>
+            <li><strong>Input:</strong> Two arrays individually sorted in ascending order.</li>
+            <li><strong>Output:</strong> Return a new array containing every value from both inputs.</li>
+            <li><strong>Constraints:</strong> Preserve duplicates and do not modify either input array.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = [1, 4, 7]</code> and
+            <code>b = [2, 2, 8]</code> return <code>[1, 2, 2, 4, 7, 8]</code>.</p>
+        </section>
         <pre><code>static int[] merge(int[] a, int[] b) {
     int[] out = new int[a.length + b.length];
     int i = 0;
@@ -543,6 +567,7 @@ list.sort(Comparator.comparingInt(String::length));</code></pre>
         <nav class="pager"><a href="lesson-09.html">← Previous</a><a href="lesson-11.html">Next: Union-Find and Graphs →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

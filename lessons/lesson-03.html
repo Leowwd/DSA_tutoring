@@ -42,7 +42,7 @@
           to reason about operations that are occasionally expensive but cheap on average.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/memory-amortized.svg" alt="Diagram showing call stack frames, heap objects, and dynamic array capacity doubling." />
+          <img src="../assets/diagrams/memory-amortized.svg" data-zh-src="../assets/diagrams/memory-amortized-zh.svg" alt="Diagram showing call stack frames, heap objects, and dynamic array capacity doubling." data-zh-alt="呼叫堆疊框架、堆積物件與動態陣列容量倍增的示意圖。" />
           <figcaption>Space analysis counts stack frames and heap allocations; amortized analysis explains why occasional resizing can still average to constant time.</figcaption>
         </figure>
 
@@ -50,6 +50,19 @@
         <p>
           Suppose we have an array and want the elements in reverse order. The first solution creates a new array.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Reverse an Array.</strong> Given an integer array <code>a</code>, place its elements in the opposite
+            order.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array, possibly empty.</li>
+            <li><strong>Output:</strong> <code>reversedCopy</code> returns a new reversed array.</li>
+            <li><strong>Constraints:</strong> <code>reversedCopy</code> preserves <code>a</code>; <code>reverseInPlace</code>
+              modifies <code>a</code> and returns nothing.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> For <code>a = [3, 8, 2]</code>, the reversed order is
+            <code>[2, 8, 3]</code>.</p>
+        </section>
         <pre><code>static int[] reversedCopy(int[] a) {
     int[] out = new int[a.length];
     for (int i = 0; i &lt; a.length; i++) {
@@ -390,6 +403,19 @@ When shrinking, resize to capacity / 2.</code></pre>
         <p>
           Suppose we need to answer many range-sum queries over the same array.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Immutable Range Sum.</strong> Preprocess an integer array so the sum of any half-open range
+            <code>[left, rightExclusive)</code> can be answered quickly.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array followed by valid range bounds.</li>
+            <li><strong>Output:</strong> <code>buildPrefix</code> returns the prefix array; <code>rangeSum</code> returns the
+              selected range sum.</li>
+            <li><strong>Constraints:</strong> A range includes <code>left</code> but excludes <code>rightExclusive</code>.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> For <code>a = [2, 4, -1, 5]</code>, range
+            <code>[1, 4)</code> has sum <code>8</code>.</p>
+        </section>
         <pre><code>static int[] buildPrefix(int[] a) {
     int[] prefix = new int[a.length + 1];
     for (int i = 0; i &lt; a.length; i++) {
@@ -471,6 +497,7 @@ static int rangeSum(int[] prefix, int left, int rightExclusive) {
         <nav class="pager"><a href="lesson-02.html">← Previous</a><a href="lesson-04.html">Next: Arrays and Patterns →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

@@ -43,7 +43,7 @@
           combine the results.
         </p>
         <figure class="visual">
-          <img src="../assets/diagrams/recursion-backtracking.svg" alt="Diagram showing recursive stack frames and a backtracking decision tree." />
+          <img src="../assets/diagrams/recursion-backtracking.svg" data-zh-src="../assets/diagrams/recursion-backtracking-zh.svg" alt="Diagram showing recursive stack frames and a backtracking decision tree." data-zh-alt="遞迴堆疊框架與回溯決策樹的示意圖。" />
           <figcaption>Recursion creates stack frames; backtracking uses the recursive call tree to explore choices and undo state.</figcaption>
         </figure>
 
@@ -176,6 +176,17 @@ n! = n * (n - 1)! for n > 0</code></pre>
         <p>
           Given <code>[1, 2, 3]</code>, generate all subsets. For each number, choose include or skip.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Subsets.</strong> Given an array of distinct integers, generate its power set.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array <code>nums</code> with no duplicate values.</li>
+            <li><strong>Output:</strong> Return every possible subset, including the empty subset.</li>
+            <li><strong>Constraints:</strong> The subsets may be returned in any order.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[1, 2]</code> returns
+            <code>[[], [1], [2], [1, 2]]</code> in any order.</p>
+        </section>
         <pre><code>static List&lt;List&lt;Integer&gt;&gt; subsets(int[] nums) {
     List&lt;List&lt;Integer&gt;&gt; ans = new ArrayList&lt;&gt;();
     buildSubsets(nums, 0, new ArrayList&lt;&gt;(), ans);
@@ -211,6 +222,18 @@ static void buildSubsets(
         <p>
           A permutation chooses every number exactly once. We need to remember which indices are already used.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Permutations.</strong> Given an array of distinct integers, generate every ordering that uses each
+            value exactly once.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array <code>nums</code> with distinct values.</li>
+            <li><strong>Output:</strong> Return all <code>nums.length!</code> permutations.</li>
+            <li><strong>Constraints:</strong> The permutations may be returned in any order.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[1, 2]</code> returns
+            <code>[[1, 2], [2, 1]]</code>.</p>
+        </section>
         <pre><code>static List&lt;List&lt;Integer&gt;&gt; permutations(int[] nums) {
     List&lt;List&lt;Integer&gt;&gt; ans = new ArrayList&lt;&gt;();
     boolean[] used = new boolean[nums.length];
@@ -247,6 +270,19 @@ static void permute(
           Given candidate numbers and a target, find combinations that sum to the target. We can reuse a candidate
           multiple times.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Combination Sum.</strong> Given distinct positive candidate values and a positive target, find every
+            unique combination whose sum equals the target.</p>
+          <ul>
+            <li><strong>Input:</strong> An array of distinct positive integers and a positive target.</li>
+            <li><strong>Output:</strong> Return all unique value combinations that reach the target.</li>
+            <li><strong>Constraints:</strong> A candidate may be chosen any number of times; combination order does not
+              create a new answer, and the method sorts <code>nums</code> in place.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>nums = [2, 3, 6, 7]</code> and
+            <code>target = 7</code> return <code>[[2, 2, 3], [7]]</code>.</p>
+        </section>
         <pre><code>static List&lt;List&lt;Integer&gt;&gt; combinationSum(int[] nums, int target) {
     List&lt;List&lt;Integer&gt;&gt; ans = new ArrayList&lt;&gt;();
     Arrays.sort(nums);
@@ -321,6 +357,18 @@ static void combo(
     combine the results</code></pre>
 
         <h2>Example: recursive binary search</h2>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Recursive Binary Search.</strong> Given an ascending integer array and a target, locate the target
+            by recursively discarding half of the remaining range.</p>
+          <ul>
+            <li><strong>Input:</strong> A sorted integer array and one target value.</li>
+            <li><strong>Output:</strong> Return a matching index, or <code>-1</code> if the target is absent.</li>
+            <li><strong>Constraints:</strong> When duplicates exist, any matching index is acceptable.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>a = [2, 5, 8, 12]</code> and
+            <code>target = 8</code> return <code>2</code>.</p>
+        </section>
         <pre><code>static int binarySearch(int[] a, int target) {
     return binarySearch(a, target, 0, a.length - 1);
 }
@@ -341,6 +389,18 @@ static int binarySearch(int[] a, int target, int lo, int hi) {
         <p>
           Merge sort recursively sorts two halves, then merges them.
         </p>
+        <section class="problem-statement">
+          <p class="problem-label">Problem</p>
+          <p><strong>Merge Sort.</strong> Rearrange an integer array into ascending order by recursively sorting two
+            halves and merging them.</p>
+          <ul>
+            <li><strong>Input:</strong> An integer array, possibly empty.</li>
+            <li><strong>Output:</strong> The method returns nothing; the input array is sorted in place.</li>
+            <li><strong>Constraints:</strong> Use one auxiliary array shared by all recursive calls.</li>
+          </ul>
+          <p class="problem-example"><strong>Example:</strong> <code>[5, 1, 4, 2]</code> becomes
+            <code>[1, 2, 4, 5]</code>.</p>
+        </section>
         <pre><code>static void mergeSort(int[] a) {
     int[] aux = new int[a.length];
     mergeSort(a, aux, 0, a.length);
@@ -449,6 +509,7 @@ static void mergeSort(int[] a, int[] aux, int lo, int hi) {
         <nav class="pager"><a href="lesson-05.html">← Previous</a><a href="lesson-07.html">Next: Trees and BSTs →</a></nav>
       </main>
     </div>
+    <script src="../problem-translations.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

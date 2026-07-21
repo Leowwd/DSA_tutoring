@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
+  <title id="title">Path compression in union-find</title>
+  <desc id="desc">A long parent chain is flattened after find makes every visited node point directly to the root.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <style>
+      text { font-family: Arial, "Noto Sans TC", "PingFang TC", sans-serif; fill: #172033; }
+      .heading { font-size: 18px; font-weight: 700; }
+      .node { fill: #ffffff; stroke: #2563eb; stroke-width: 3; }
+      .root { fill: #bbf7d0; stroke: #15803d; stroke-width: 3; }
+      .nodeText { font-size: 19px; font-weight: 700; text-anchor: middle; }
+      .caption { font-size: 16px; fill: #475569; }
+    </style>
+  </defs>
+  <rect width="960" height="500" fill="#f8fafc"/>
+  <text x="52" y="52" font-size="27" font-weight="700">Path compression: one find shortens future finds</text>
+
+  <g transform="translate(54 94)">
+    <text class="heading" x="0" y="0">Before: root of 6 is three edges away</text>
+    <g stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#arrow)">
+      <line x1="80" y1="230" x2="151" y2="178"/>
+      <line x1="189" y1="151" x2="260" y2="99"/>
+      <line x1="298" y1="72" x2="369" y2="49"/>
+    </g>
+    <circle class="node" cx="58" cy="248" r="28"/><text class="nodeText" x="58" y="255">6</text>
+    <circle class="node" cx="173" cy="165" r="28"/><text class="nodeText" x="173" y="172">5</text>
+    <circle class="node" cx="282" cy="86" r="28"/><text class="nodeText" x="282" y="93">3</text>
+    <circle class="root" cx="395" cy="40" r="31"/><text class="nodeText" x="395" y="47">1</text>
+    <text x="352" y="92" font-size="15" fill="#166534" font-weight="700">root</text>
+    <rect x="0" y="302" width="410" height="62" fill="#fff7ed" stroke="#fdba74"/>
+    <text class="caption" x="18" y="328">Visited path: 6 → 5 → 3 → 1</text>
+    <text class="caption" x="18" y="352">On return, rewrite each visited parent pointer.</text>
+  </g>
+
+  <path d="M 463 245 L 513 245" stroke="#0f766e" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="488" y="222" text-anchor="middle" font-size="16" font-weight="700" fill="#0f766e">compress</text>
+
+  <g transform="translate(540 94)">
+    <text class="heading" x="0" y="0">After: visited nodes point straight to root</text>
+    <g stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#arrow)">
+      <line x1="80" y1="245" x2="190" y2="92"/>
+      <line x1="205" y1="245" x2="220" y2="104"/>
+      <line x1="330" y1="245" x2="251" y2="96"/>
+    </g>
+    <circle class="root" cx="225" cy="66" r="32"/><text class="nodeText" x="225" y="73">1</text>
+    <circle class="node" cx="58" cy="268" r="28"/><text class="nodeText" x="58" y="275">6</text>
+    <circle class="node" cx="205" cy="268" r="28"/><text class="nodeText" x="205" y="275">5</text>
+    <circle class="node" cx="345" cy="268" r="28"/><text class="nodeText" x="345" y="275">3</text>
+    <rect x="0" y="302" width="365" height="62" fill="#ecfdf5" stroke="#86efac"/>
+    <text class="caption" x="18" y="328">Find 6 again: 6 → 1, only one edge.</text>
+    <text class="caption" x="18" y="352">Frequently used paths become flat naturally.</text>
+  </g>
+</svg>
